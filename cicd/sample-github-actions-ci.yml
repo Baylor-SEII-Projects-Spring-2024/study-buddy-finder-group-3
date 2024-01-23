@@ -1,0 +1,46 @@
+name: Sample Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        # This step builds both the frontend and backend docker images using
+        # Docker Compose. To change how the images are built or their actual
+        # buildscripts, modify the corresponding files in the docker/ directory.
+        #
+        # You will need to point this command to the correct Docker Compose file.
+        run: |
+          docker compose -f docker/production.docker-compose.yml build
+
+      - name: Deploy
+        # This script simply runs the images that were built in the previous step.
+        # This uses the same Docker Compose file in the previous step.
+        #
+        # If the frontend and backend are already running on the VM, we first
+        # need to stop them to free the port and delete them to free the
+        # container name before trying to start the new versions
+        #
+        # It is important you prune your docker repository after all containers
+        # are deployed. This is because all images used in the build stages are
+        # saved by docker; this can quickly consume a lot of memory after a few
+        # builds. Using `docker image prune -af` here will free up some space, but
+        # you may want to consider running `docker system prune -f` on your
+        # GCP instance to free up additional cached objects if you are running
+        # out of storage space.
+        #
+        # This command assumes that the docker compose is also set up to properly
+        # manage a MYSQL server.
+        #
+        # You will need to point these commands to the correct Docker Compose file.
+        run: |
+          docker compose -f docker/production.docker-compose.yml down
+          docker compose -f docker/production.docker-compose.yml up -d --build
+          docker image prune -af

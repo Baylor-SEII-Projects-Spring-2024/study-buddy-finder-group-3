@@ -1,0 +1,38 @@
+version: '3'
+services:
+  frontend:
+    image: study-buddy-frontend
+    build:
+      context: ../study-buddy-frontend
+      dockerfile: ../docker/study-buddy-frontend.Dockerfile
+    restart: always
+    ports:
+      - '3000:3000'
+
+  api:
+    image: study-buddy-api
+    build:
+      context: ../study-buddy-api
+      dockerfile: ../docker/study-buddy-api.Dockerfile
+    restart: always
+    ports:
+      - '8080:8080'
+    environment:
+      MYSQL_HOST: db
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: studybuddy
+    volumes:
+      - mysql-data:/var/lib/mysql
+volumes:
+  mysql-data:
+
+# Note: we are taking advantage of the Docker network that is automatically created so
+# that these containers are able to communicate with each other.
