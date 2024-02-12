@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
 function DisplayMeetings() {
-  return <h1>Display meetings comp</h1>;
+  return <h1>Display meetings comp</h1>
 }
 
-export default DisplayMeetings;
+export default DisplayMeetings
