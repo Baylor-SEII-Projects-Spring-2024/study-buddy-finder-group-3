@@ -24,6 +24,6 @@ public class User {
     @Column(name = "PASSWORD")
     String password;
 
-    @Column(name = "USER_TYPE")
+    @Column(name = "ISTUTOR")
     String userType;
 }
