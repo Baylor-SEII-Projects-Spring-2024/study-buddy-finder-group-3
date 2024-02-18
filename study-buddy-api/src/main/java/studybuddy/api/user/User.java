@@ -10,13 +10,12 @@ public class User {
     public static final String TABLE_NAME = "USERS";
 
     @Id
-    @GeneratedValue(generator = TABLE_NAME + "_GENERATOR")
-    @SequenceGenerator(
-            name = TABLE_NAME + "_GENERATOR",
-            sequenceName = TABLE_NAME + "_SEQUENCE"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     Long id;
+
+    @Column(name = "USERNAME")
+    String username;
 
     @Column(name = "EMAIL_ADDRESS")
     String emailAddress;
@@ -26,4 +25,13 @@ public class User {
 
     @Column(name = "ISTUTOR")
     String userType;
+
+    @Column(name = "NAMEFIRST")
+    String nameFirst;
+
+    @Column(name = "NAMELAST")
+    String nameLast;
+
+    @Column(name = "AREAOFSTUDY")
+    String areaOfStudy;
 }
