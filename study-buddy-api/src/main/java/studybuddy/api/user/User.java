@@ -25,5 +25,14 @@ public class User {
     String password;
 
     @Column(name = "ISTUTOR")
-    String userType;
+    Boolean userType;
+
+    @Column(name = "FIRSTNAME")
+    String firstName;
+
+    @Column(name = "LASTNAME")
+    String lastName;
+
+    @Column(name = "USERNAME")
+    String username;
 }
