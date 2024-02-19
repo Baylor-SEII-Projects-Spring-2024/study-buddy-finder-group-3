@@ -7,7 +7,6 @@ function home() {
       <Header />
       <Sidebar />
 
-      <h1>home dashboard</h1>
     </>
   )
 }

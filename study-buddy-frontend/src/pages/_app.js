@@ -8,6 +8,9 @@ import { CssBaseline } from '@mui/material';
 import { StudyBuddyThemeProvider } from '@/utils/theme';
 import { buildStore } from '@/utils/redux';
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import '@/styles/globals.css'
 
 // Initialize Redux
@@ -16,6 +19,7 @@ let reduxStore = buildStore(initialState);
 
 export default function App({ Component, pageProps }) {
   return (
+    <>
     <ReduxProvider store={reduxStore}>
       <AppCacheProvider>
         <Head>
@@ -30,6 +34,9 @@ export default function App({ Component, pageProps }) {
           <Component {...pageProps} />
         </StudyBuddyThemeProvider>
       </AppCacheProvider>
+      <ToastContainer/>
+
     </ReduxProvider>
+    </>
   );
 }
