@@ -34,4 +34,5 @@ public class User {
 
     @Column(name = "AREAOFSTUDY")
     String areaOfStudy;
+
 }
