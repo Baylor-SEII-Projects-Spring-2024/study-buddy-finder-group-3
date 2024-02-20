@@ -8,9 +8,12 @@ import styles from "@/styles/login-create.module.css";
 import { toast } from 'react-toastify';
 import { useRouter } from "next/router"
 import axios from "axios"
+import { useDispatch } from 'react-redux';
+import { setToken } from '@/utils/authSlice.js';
 
 
 function Login({ open, onClose }) {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter()
@@ -48,6 +51,7 @@ function Login({ open, onClose }) {
       })
       console.log(response)
       if (response.status === 200){
+        dispatch(setToken(response.data.token))
         //authenticate token
 
         router.push('/home')
