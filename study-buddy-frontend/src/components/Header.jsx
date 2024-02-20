@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import axios from "axios"
 import Login from "./Login"
+import CreateAccount from "./CreateAccount"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
@@ -9,10 +10,14 @@ import SearchIcon from "@mui/icons-material/Search"
 
 function Header() {
   const [open, setOpen] = useState(false)
+    const [accountOpen, setAccountOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+
+    const handleAccountOpen = () => setAccountOpen(true)
+    const handleAccountClose = () => setAccountOpen(false)
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -58,7 +63,20 @@ function Header() {
       >
         Login
       </Button>
+        <Button
+        variant="contained"
+        onClick={handleAccountOpen}
+        sx={{
+            backgroundColor: "#1d612a",
+            "&:hover": {
+                backgroundColor: "#0a3011",
+            },
+            marginRight: "10px"
+        }}
+    >Create Account
+    </Button>
       <Login open={open} onClose={handleClose} />
+        <CreateAccount open={accountOpen} onClose={handleAccountClose} />
     </Box>
   )
 }
