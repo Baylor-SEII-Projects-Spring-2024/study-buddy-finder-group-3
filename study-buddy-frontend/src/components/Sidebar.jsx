@@ -13,6 +13,9 @@ function Sidebar() {
       <Button fullWidth>Home</Button>
       <Button fullWidth>Profile</Button>
       <Button fullWidth>Friends</Button>
+
+        <Button fullWidth>Settings</Button>
+
     </Box>
   )
 }
