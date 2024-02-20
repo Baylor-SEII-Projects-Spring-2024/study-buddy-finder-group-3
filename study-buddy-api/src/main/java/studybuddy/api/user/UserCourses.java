@@ -23,4 +23,7 @@ public class UserCourses {
     @JoinColumn(name = "COURSE_ID", referencedColumnName = "COURSE_ID", foreignKey = @ForeignKey(name = "FK_COURSE_ID"))
     Courses course_id;
 
+    @Column(name = "ISTUTORED")
+    boolean isTutored;
+
 }
