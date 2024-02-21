@@ -37,6 +37,10 @@ function Header() {
     dispatch(setToken(null))
     router.push('/')
   }
+  
+  const handleCreateAccount = async () => {
+    router.push('/createAccount')
+  }
 
 
   return (
@@ -83,6 +87,20 @@ function Header() {
       >
         Logout
       </Button>}
+      {!token && <Button
+              variant="contained"
+              onClick={handleCreateAccount}
+              sx={{
+                backgroundColor: "#1d612a",
+                "&:hover": {
+                  backgroundColor: "#0a3011",
+                },
+              }}
+      >
+        Create Account
+      </Button>
+
+      }
       
       <Login open={open} onClose={handleClose} />
     </Box>
