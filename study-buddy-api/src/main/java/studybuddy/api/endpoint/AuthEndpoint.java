@@ -88,7 +88,7 @@ public class AuthEndpoint {
         private String firstName;
         private String lastName;
         private String email;
-        private String isTutor;
+        private Boolean isTutor;
 
         public String getUsername() {
             return username;
@@ -110,7 +110,7 @@ public class AuthEndpoint {
             return email;
         }
 
-        public String getIsTutor() {
+        public Boolean getIsTutor() {
             return isTutor;
         }
 
