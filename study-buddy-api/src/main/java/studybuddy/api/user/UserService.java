@@ -13,8 +13,15 @@ public class UserService {
     private UserRepository userRepository;
 
     //TODO: hash password with bcrypt when user created
-//    public User createUser(User user) {
-//    }
+    //public User encryptPassword(User user) {
+    public String encryptPassword(String pass) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(pass);
+        return hashedPassword;
+        //String hashedPassword = encoder.encode(user.getPassword());
+        //user.setPassword(hashedPassword);
+        //return userRepository.save(user);
+    }
 
 
 

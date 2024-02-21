@@ -8,12 +8,15 @@ import styles from "@/styles/login-create.module.css";
 import { toast } from 'react-toastify';
 import { useRouter } from "next/router"
 import axios from "axios"
+import Checkbox from "@mui/material/Checkbox"
+import {FormControlLabel, FormGroup} from "@mui/material";
 
 
 function CreateAccount({ open, onClose }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [isTutor, setIsTutor] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter()
@@ -27,6 +30,11 @@ function CreateAccount({ open, onClose }) {
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
+
+  const handleIsTutorChange = (event)=> {
+    setIsTutor(event.target.checked);
+    isTutor
+  }
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -69,10 +77,13 @@ function CreateAccount({ open, onClose }) {
     }
 
     try {
-      const response = await axios.post(`http://localhost:8080/auth/create-account`, {
-        email,
+      const response = await axios.post(`http://localhost:8080/auth/createAccount`, {
         username,
-        password
+        password,
+        firstName,
+        lastName,
+        email,
+        isTutor
       })
       console.log(response)
       if (response.status === 200){
@@ -97,7 +108,12 @@ function CreateAccount({ open, onClose }) {
           aria-labelledby="create-account-modal-title"
       >
         <Box className={styles.loginCreate}>
-          <Typography id="create-account-modal-title" variant="h6" component="h2">
+          <Typography
+              id="create-account-modal-title"
+              variant="h6"
+              component="h2"
+              style={{ textAlign: 'center', width: '100%', fontSize: '24px' }}
+          >
             Create Account
           </Typography>
           <Box component="form" sx={{ mt: 1 }} onSubmit={handleCreateAccount}>
@@ -131,6 +147,7 @@ function CreateAccount({ open, onClose }) {
                 onChange={handleEmailChange}
                 value={email}
             />
+
             <TextField
                 margin="normal"
                 fullWidth
@@ -151,6 +168,13 @@ function CreateAccount({ open, onClose }) {
                 onChange={handlePasswordChange}
                 value={password}
             />
+            <FormGroup style={{ display: 'flex', alignItems: 'center' }}>
+              <FormControlLabel
+                control={<Checkbox checked={isTutor} onChange={handleIsTutorChange} />}
+                label="Are you a tutor?"
+                labelPlacement="start"
+              />
+            </FormGroup>
             <Button
                 type="submit"
                 fullWidth

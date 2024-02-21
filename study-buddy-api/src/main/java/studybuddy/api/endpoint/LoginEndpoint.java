@@ -3,11 +3,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 import studybuddy.api.utils.JwtUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -25,6 +29,9 @@ public class LoginEndpoint {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
 
     @PostMapping("/login")
@@ -50,6 +57,22 @@ public class LoginEndpoint {
         }
 
         return ResponseEntity.status(401).body("Unauthorized");
+    }
+
+
+    @RequestMapping(value = "/createAccount", method = RequestMethod.GET)
+    @CrossOrigin(origins = "http://localhost:3000")
+    public boolean addUser(@RequestParam("username") String username, @RequestParam("password") String password,
+                           @RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName,
+                           @RequestParam("email") String email, @RequestParam("isTutor") String isTutor){
+        List<Object[]> parameters =  new ArrayList<>();
+        String hashedPassword = passwordEncoder.encode(password);
+
+        parameters.add(new Object[]{email, hashedPassword, "Computer Science", firstName, lastName, isTutor, username});
+
+        jdbcTemplate.batchUpdate("INSERT INTO users (email_address, password, areaofstudy, namefirst, " +
+                "namelast, istutor, username) VALUES(?,?,?,?,?,?,?)", parameters);
+        return true;
     }
 
 
