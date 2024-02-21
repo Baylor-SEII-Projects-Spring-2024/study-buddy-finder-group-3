@@ -9,11 +9,15 @@ function Sidebar() {
   const navigateToProfile = () => {
     router.push("/profiles")
   }
+
+  const navigateHome = () => {
+    router.push("/home")
+  }
   return (
     <Box
       sx={{ width: "250px", minHeight: "100vh", borderRight: "1px solid #ddd" }}
     >
-      <Button fullWidth>Home</Button>
+      <Button  onClick={navigateHome} fullWidth>Home</Button>
       <Button onClick={navigateToProfile} fullWidth>Profile</Button>
       <Button fullWidth>Friends</Button>
     </Box>
