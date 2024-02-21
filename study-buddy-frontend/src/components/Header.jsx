@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Login from "./Login"
 import Box from "@mui/material/Box"
@@ -6,10 +6,17 @@ import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import IconButton from "@mui/material/IconButton"
 import SearchIcon from "@mui/icons-material/Search"
+import { useRouter } from "next/router"
+import { useSelector, useDispatch } from 'react-redux';
+import { selectToken, setToken } from '@/utils/authSlice.js';
 
 function Header() {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+
+  const token = useSelector(selectToken);
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
@@ -25,6 +32,16 @@ function Header() {
       console.error("Search failed:", error)
     }
   }
+
+  const handleLogout = async () => {
+    dispatch(setToken(null))
+    router.push('/')
+  }
+  
+  const handleCreateAccount = async () => {
+    router.push('/createAccount')
+  }
+
 
   return (
     <Box
@@ -46,7 +63,7 @@ function Header() {
         size="small"
         style={{ flex: 1, margin: "0 10px" }}
       />
-      <Button
+      {!token && <Button
         variant="contained"
         onClick={handleOpen}
         sx={{
@@ -57,7 +74,34 @@ function Header() {
         }}
       >
         Login
+      </Button> }
+      {token && <Button
+        variant="contained"
+        onClick={handleLogout}
+        sx={{
+          backgroundColor: "#1d612a",
+          "&:hover": {
+            backgroundColor: "#0a3011",
+          },
+        }}
+      >
+        Logout
+      </Button>}
+      {!token && <Button
+              variant="contained"
+              onClick={handleCreateAccount}
+              sx={{
+                backgroundColor: "#1d612a",
+                "&:hover": {
+                  backgroundColor: "#0a3011",
+                },
+              }}
+      >
+        Create Account
       </Button>
+
+      }
+      
       <Login open={open} onClose={handleClose} />
     </Box>
   )
