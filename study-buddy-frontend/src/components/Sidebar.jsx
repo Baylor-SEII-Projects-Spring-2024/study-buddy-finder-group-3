@@ -1,10 +1,8 @@
 import React from "react"
 import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
 import Box from "@mui/material/Box"
-import IconButton from "@mui/material/IconButton"
-import SearchIcon from "@mui/icons-material/Search"
 import { useRouter } from "next/router"
+
 
 function Sidebar() {
   const router = useRouter();

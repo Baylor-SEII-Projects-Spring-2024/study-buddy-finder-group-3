@@ -24,7 +24,7 @@ public class User {
     String password;
 
     @Column(name = "ISTUTOR")
-    String userType;
+    boolean userType;
 
     @Column(name = "NAMEFIRST")
     String nameFirst;
