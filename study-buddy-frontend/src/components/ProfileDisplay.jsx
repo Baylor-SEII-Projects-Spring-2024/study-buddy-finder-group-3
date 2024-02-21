@@ -5,14 +5,35 @@ import Typography from "@mui/material/Typography";
 import styles from "@/styles/ProfileDisplay.module.css";
 import {TextField} from "@mui/material";
 import Avatar from '@mui/material/Avatar';
+import { useSelector } from "react-redux"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { useRouter } from "next/router"
+
 
 function ProfileDisplay() {
+  const token = useSelector(selectToken)
+  const user = useSelector(selectUser)
+  const router = useRouter()
   const [profile, setProfile] = useState('');
-  let foo = 1;
-  let userId=1;//temp var
+  const [userId, setUserid] = useState('')
+
+  useEffect(() => {
+    if (!token || !user) {
+      router.push('/');
+    }
+  }, [token, router]);
+
+  useEffect(() => {
+    if (user){
+      console.log('here')
+      setUserid(user.id)
+    }
+    fetchProfileInfo()
+  }, [user])
+  
   const fetchProfileInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/profile/${userId}`);
+      const response = await axios.get(`http://localhost:8080/profile/${user.id}`);
       setProfile(response.data);
     } catch (error) {
       console.error("Error fetching profile info:", error);
@@ -20,10 +41,7 @@ function ProfileDisplay() {
   }
   
 
-  useEffect(() => {
 
-    fetchProfileInfo()
-  }, [foo])
 
   return (
       <Box className={styles.profileCreate} sx={{ marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
@@ -36,36 +54,36 @@ function ProfileDisplay() {
           <TextField
               margin="normal"
               fullWidth
-              // label="Email"
+              label=""
               name="email"
-              value={profile.emailAddress}
+              value={profile.emailAddress || ''}
               disabled
               sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
           />
           <TextField
               margin="normal"
               fullWidth
-              // label="Email"
+              label=""
               name="username"
-              value={profile.username}
+              value={profile.username || ''}
               disabled
               sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
           />
           <TextField
               margin="normal"
               fullWidth
-              // label="Email"
+              label=""
               name="nameFirst"
-              value={profile.nameFirst}
+              value={profile.nameFirst || ''}
               disabled
               sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
           />
           <TextField
               margin="normal"
               fullWidth
-              // label="Email"
+              label=""
               name="nameLast"
-              value={profile.nameLast}
+              value={profile.nameLast || ''}
               disabled
               sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
           />

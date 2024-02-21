@@ -7,7 +7,7 @@ import { useRouter } from "next/router"
 function Sidebar() {
   const router = useRouter();
   const navigateToProfile = () => {
-    router.push("/profiles")
+    router.push("/profile")
   }
 
   const navigateHome = () => {

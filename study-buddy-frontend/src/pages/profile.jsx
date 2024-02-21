@@ -5,10 +5,16 @@ import { selectToken } from "@/utils/authSlice.js"
 import Header from "@/components/Header"
 import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
+import { useRouter } from "next/router"
 
 function profiles() {
   const token = useSelector(selectToken)
-  console.log("token in profiles", token)
+  const router = useRouter()
+  useEffect(() => {
+    if (!token) {
+      router.push('/');
+    }
+  }, [token, router]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>

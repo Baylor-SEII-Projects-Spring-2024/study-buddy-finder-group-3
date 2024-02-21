@@ -8,11 +8,9 @@ import { useRouter } from "next/router"
 function home() {
   const router = useRouter();
   const token = useSelector(selectToken);
-  console.log('token in home', token)
 
   useEffect(() => {
     if (!token) {
-      console.log('no token, routing to landing')
       router.push('/');
     }
   }, [token, router]);
@@ -21,6 +19,7 @@ function home() {
     <>
       <Header />
       <Sidebar />
+      welcome home 
 
     </>
   )
