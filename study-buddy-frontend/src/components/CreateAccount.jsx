@@ -87,7 +87,7 @@ function CreateAccount({ open, onClose }) {
       })
       console.log(response)
       if (response.status === 200){
-        // Optionally, you can redirect the user after successful account creation
+        toast.success("Account created successfully!")
         router.push('/home')
       } else {
         toast.error("Failed to create account")
