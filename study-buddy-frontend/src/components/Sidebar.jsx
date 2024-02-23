@@ -2,6 +2,7 @@ import React from "react"
 import Button from "@mui/material/Button"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
+import FriendsList from "./FriendsList";
 
 
 function Sidebar() {
@@ -19,7 +20,7 @@ function Sidebar() {
     >
       <Button  onClick={navigateHome} fullWidth>Home</Button>
       <Button onClick={navigateToProfile} fullWidth>Profile</Button>
-      <Button fullWidth>Friends</Button>
+      <FriendsList/>
     </Box>
   )
 }

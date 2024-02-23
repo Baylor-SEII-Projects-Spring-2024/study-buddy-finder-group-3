@@ -1,7 +1,29 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from 'react';
+import Button from '@mui/material/Button';
+import Drawer from '@mui/material/Drawer';
+import SearchBar from './SearchBar';
 
-function FriendsList() {
-  return <h1>Friends list comp</h1>
-}
+const FriendsList = () => {
+  const [open, setOpen] = useState(false);
 
-export default FriendsList
+  const toggleDrawer = (open) => (event) => {
+    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setOpen(open);
+  };
+
+  return (
+    <div>
+      <Button onClick={toggleDrawer(true)} fullWidth>
+        Friends
+      </Button>
+      <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
+        <SearchBar/>
+      </Drawer>
+    </div>
+  );
+};
+
+export default FriendsList;
