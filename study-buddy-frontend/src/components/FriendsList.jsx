@@ -6,6 +6,9 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { theme } from '@/utils/theme';
 import Button from "@mui/material/Button"
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import { styled } from '@mui/material/styles';
+
 
 export default function FriendsList() {
 
@@ -15,12 +18,25 @@ export default function FriendsList() {
     setActiveButton(button);
   };
 
+  const StyledButton = styled(Button)({
+    color: 'white',
+    background: 'lightgray',
+    variants: 'contained',
+    '&:hover': {
+      background: 'DimGray',
+      color: 'white'
+    },
+    fontSize: theme.typography.button.fontSize,
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`
+  });
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="" 
         style={{boxShadow: "none", borderBottom: "1px solid #ddd", borderTop: "1px solid #ddd"}}
       >
         <Toolbar>
+          <PeopleAltIcon style={{marginRight: theme.spacing(2)}}/>
         <div>
           <Typography variant="h6">
             Friends
@@ -29,12 +45,19 @@ export default function FriendsList() {
           <Divider orientation="vertical" variant="middle" flexItem 
             style={{marginRight: theme.spacing(2), marginLeft: theme.spacing(2)}}
           />
-            <Button onClick={() => handleButtonClick('all')} variant={activeButton === 'all' ? 'contained' : 'text'}>All</Button>
-            <Button onClick={() => handleButtonClick('pending')} variant={activeButton === 'pending' ? 'contained' : 'text'}>Pending</Button>
-            <Button onClick={() => handleButtonClick('blocked')} variant={activeButton === 'blocked' ? 'contained' : 'text'}>Blocked</Button>
+            <StyledButton onClick={() => handleButtonClick('all')} variant={activeButton === 'all' ? 'contained' : 'text'} 
+            sx={{ bgcolor: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit'}}>All</StyledButton>
+            <StyledButton onClick={() => handleButtonClick('pending')} variant={activeButton === 'pending' ? 'contained' : 'text'}
+            sx={{ bgcolor: activeButton === 'pending' ? 'gray' : 'inherit', color: activeButton === 'pending' ? 'white' : 'inherit'}}>Pending</StyledButton>
+            <StyledButton onClick={() => handleButtonClick('blocked')} variant={activeButton === 'blocked' ? 'contained' : 'text'}
+            sx={{ bgcolor: activeButton === 'blocked' ? 'gray' : 'inherit', color: activeButton === 'blocked' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Blocked</StyledButton>
         </Toolbar>
       </AppBar>
-      {activeButton === 'all' && <div>All Content Here</div>}
+      {activeButton === 'all' && <div>
+          <Typography variant="h3" padding={20} style={{textAlign: "center"}} paddingRight={120} color={"gray"}>
+            OH NO! You have no bitches!
+          </Typography>
+        </div>}
       {activeButton === 'pending' && <div>Pending Content Here</div>}
       {activeButton === 'blocked' && <div>Blocked Content Here</div>}
     </Box>
