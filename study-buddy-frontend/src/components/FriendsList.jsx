@@ -30,6 +30,24 @@ export default function FriendsList() {
     padding: `${theme.spacing(1)} ${theme.spacing(2)}`
   });
 
+  const AddFriendsButton = styled(Button)({
+    color: 'white',
+    background: 'linear-gradient(90deg, rgba(255,0,4,1) 36%, rgba(252,162,0,1) 79%)',
+    backgroundColor: 'red',
+    variants: 'contained',
+    '&:hover': {
+      background: 'white',
+      color: 'red'
+    },
+    '&.active': {
+      background: 'linear-gradient(90deg, rgba(255,0,4,1) 36%, rgba(252,162,0,1) 79%)',
+      color: 'white'
+    },
+    fontSize: theme.typography.button.fontSize,
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+    transition: 'none'
+  });
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="" 
@@ -46,20 +64,24 @@ export default function FriendsList() {
             style={{marginRight: theme.spacing(2), marginLeft: theme.spacing(2)}}
           />
             <StyledButton onClick={() => handleButtonClick('all')} variant={activeButton === 'all' ? 'contained' : 'text'} 
-            sx={{ bgcolor: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>All</StyledButton>
+            sx={{ background: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>All</StyledButton>
             <StyledButton onClick={() => handleButtonClick('pending')} variant={activeButton === 'pending' ? 'contained' : 'text'}
-            sx={{ bgcolor: activeButton === 'pending' ? 'gray' : 'inherit', color: activeButton === 'pending' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Pending</StyledButton>
+            sx={{ background: activeButton === 'pending' ? 'gray' : 'inherit', color: activeButton === 'pending' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Pending</StyledButton>
             <StyledButton onClick={() => handleButtonClick('blocked')} variant={activeButton === 'blocked' ? 'contained' : 'text'}
-            sx={{ bgcolor: activeButton === 'blocked' ? 'gray' : 'inherit', color: activeButton === 'blocked' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Blocked</StyledButton>
+            sx={{ background: activeButton === 'blocked' ? 'gray' : 'inherit', color: activeButton === 'blocked' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Blocked</StyledButton>
+            <AddFriendsButton onClick={() => handleButtonClick('add')}
+            sx={{ background: activeButton === 'add' ? 'white' : '', color: activeButton === 'add' ? 'red' : '', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}
+            >Add Friends</AddFriendsButton>
         </Toolbar>
       </AppBar>
       {activeButton === 'all' && <div>
           <Typography variant="h3" padding={20} style={{textAlign: "center"}} paddingRight={120} color={"gray"}>
-            OH NO! You have no bitches!
+            OH NO! You have no friends!
           </Typography>
         </div>}
       {activeButton === 'pending' && <div>Pending Content Here</div>}
       {activeButton === 'blocked' && <div>Blocked Content Here</div>}
+      {activeButton === 'add' && <div>Add Friends Content Here</div>}
     </Box>
   );
 }
