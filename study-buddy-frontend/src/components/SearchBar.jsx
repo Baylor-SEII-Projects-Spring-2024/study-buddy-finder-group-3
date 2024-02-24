@@ -13,9 +13,6 @@ const SearchBar = () => {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Search for Friends
-      </Typography>
       <TextField
         label="Search"
         variant="outlined"

@@ -11,6 +11,10 @@ function Sidebar() {
     router.push("/profile")
   }
 
+  const navigateFriends = () => {
+    router.push("/friends")
+  }
+
   const navigateHome = () => {
     router.push("/home")
   }
@@ -20,7 +24,7 @@ function Sidebar() {
     >
       <Button  onClick={navigateHome} fullWidth>Home</Button>
       <Button onClick={navigateToProfile} fullWidth>Profile</Button>
-      <FriendsList/>
+      <Button onClick={navigateFriends} fullWidth>Friends</Button>
     </Box>
   )
 }
