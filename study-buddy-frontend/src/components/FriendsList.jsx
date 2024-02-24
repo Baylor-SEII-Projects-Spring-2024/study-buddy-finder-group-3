@@ -46,9 +46,9 @@ export default function FriendsList() {
             style={{marginRight: theme.spacing(2), marginLeft: theme.spacing(2)}}
           />
             <StyledButton onClick={() => handleButtonClick('all')} variant={activeButton === 'all' ? 'contained' : 'text'} 
-            sx={{ bgcolor: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit'}}>All</StyledButton>
+            sx={{ bgcolor: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>All</StyledButton>
             <StyledButton onClick={() => handleButtonClick('pending')} variant={activeButton === 'pending' ? 'contained' : 'text'}
-            sx={{ bgcolor: activeButton === 'pending' ? 'gray' : 'inherit', color: activeButton === 'pending' ? 'white' : 'inherit'}}>Pending</StyledButton>
+            sx={{ bgcolor: activeButton === 'pending' ? 'gray' : 'inherit', color: activeButton === 'pending' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Pending</StyledButton>
             <StyledButton onClick={() => handleButtonClick('blocked')} variant={activeButton === 'blocked' ? 'contained' : 'text'}
             sx={{ bgcolor: activeButton === 'blocked' ? 'gray' : 'inherit', color: activeButton === 'blocked' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Blocked</StyledButton>
         </Toolbar>
