@@ -1,20 +1,14 @@
-import * as React from 'react';
+import React, { useState, useEffect } from "react"
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import { useSelector } from "react-redux"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { useRouter } from "next/router"
+import axios from "axios"
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 
 function generate(element) {
   return [0, 1, 2].map((value) =>
@@ -29,36 +23,51 @@ const Demo = styled('div')(({ theme }) => ({
 }));
 
 export default function FriendsList() {
+
+
+  const token = useSelector(selectToken)
+  const user = useSelector(selectUser)
+  const router = useRouter()
+  const [friends, setFriendsList] = useState([]);
+  const [userId, setUserid] = useState('')
+
+  useEffect(() => {
+    if (!token || !user) {
+      router.push('/');
+    }
+  }, [token, router]);
+
+  useEffect(() => {
+    if (user){
+      console.log('here')
+      setUserid(user.id)
+    }
+    fetchAllInfo()
+  }, [user])
+  
+  const fetchAllInfo = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/friends/${user.id}/all`);
+      setFriendsList(response.data);
+    } catch (error) {
+      console.error("Error fetching friends info:", error);
+    }
+  }
+
   const [dense, setDense] = React.useState(false);
   const [secondary, setSecondary] = React.useState(false);
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-            <List dense={dense}>
-              {generate(
-                <ListItem
-                  secondaryAction={
-                    <IconButton edge="end" aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FolderIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Single-line item"
-                    secondary={secondary ? 'Secondary text' : null}
-                  />
-                </ListItem>,
-              )}
-            </List>
-        </Grid>
-      </Grid>
+
+      <List>
+        {friends.map(user => (
+          <ListItem key={user.user_id}>
+            <ListItemText primary={user.username} />
+          </ListItem>
+        ))}
+      </List>
+
     </Box>
   );
 }
