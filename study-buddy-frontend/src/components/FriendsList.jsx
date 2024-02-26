@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { useSelector } from "react-redux"
 import { selectToken, selectUser } from "@/utils/authSlice.js"
@@ -8,19 +7,6 @@ import axios from "axios"
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-
-
-function generate(element) {
-  return [0, 1, 2].map((value) =>
-    React.cloneElement(element, {
-      key: value,
-    }),
-  );
-}
-
-const Demo = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-}));
 
 export default function FriendsList() {
 
@@ -53,9 +39,6 @@ export default function FriendsList() {
       console.error("Error fetching friends info:", error);
     }
   }
-
-  const [dense, setDense] = React.useState(false);
-  const [secondary, setSecondary] = React.useState(false);
 
   return (
     <Box sx={{ flexGrow: 1, maxWidth: 752 }}>

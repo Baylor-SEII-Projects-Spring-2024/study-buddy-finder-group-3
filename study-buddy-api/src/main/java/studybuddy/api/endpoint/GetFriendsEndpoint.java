@@ -1,18 +1,21 @@
 package studybuddy.api.endpoint;
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import studybuddy.api.utils.JwtUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,19 +23,16 @@ import java.util.Map;
 @RequestMapping("/friends")
 public class GetFriendsEndpoint {
 
-    private final UserService userService;
-
+    @Autowired
+    private JwtUtil jwtUtil;
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public GetFriendsEndpoint(UserService userService) {
-        this.userService = userService;
-    }
-
+    //Gets all friends with the given user
     @GetMapping("/{userId}/all")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<List<User>> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<List<User>> getUserProfile(@PathVariable Long userId)
+    {
 
         String sql = "SELECT u.* FROM users u " +
                 "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
@@ -53,4 +53,73 @@ public class GetFriendsEndpoint {
 
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
+
+    //Gets all users with the given string in the username
+    @GetMapping("/{username}/get")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<List<User>> getAddFriend(@PathVariable String username)
+    {
+
+        String sql = "SELECT * FROM users WHERE username LIKE ?";
+
+        String searchTerm = "%" + username + "%";
+
+        List<User> users = jdbcTemplate.query(sql, new Object[]{searchTerm}, (rs, rowNum) ->
+                new User(
+                        rs.getLong("user_id"),
+                        rs.getString("username"),
+                        rs.getString("email_address"),
+                        rs.getString("password"),
+                        rs.getBoolean("istutor"),
+                        rs.getString("namefirst"),
+                        rs.getString("namelast"),
+                        rs.getString("areaofstudy")
+                )
+        );
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    //Creates friend request
+    @GetMapping("/request/{idTo}/{idFrom}")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<Boolean> addFriendRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
+    {
+        List<Object[]> parameters = new ArrayList<>();
+
+        parameters.add(new Object[]{
+                idTo,
+                idFrom
+        });
+
+        jdbcTemplate.batchUpdate("INSERT INTO friends_request (userto_id, userfrom_id) VALUES(?, ?)", parameters);
+
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    //Get all users who sent a friend request to user
+    @GetMapping("/{userId}/getRequests")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<List<User>> getRequests(@PathVariable Long id)
+    {
+
+        String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id" +
+                "WHERE fr.userto_id = ?";
+
+        List<User> friends = jdbcTemplate.query(sql, new Object[]{id}, (rs, rowNum) ->
+                new User(
+                        rs.getLong("user_id"),
+                        rs.getString("username"),
+                        rs.getString("email_address"),
+                        rs.getString("password"),
+                        rs.getBoolean("istutor"),
+                        rs.getString("namefirst"),
+                        rs.getString("namelast"),
+                        rs.getString("areaofstudy")
+                )
+        );
+
+        return null;
+    }
+
 }

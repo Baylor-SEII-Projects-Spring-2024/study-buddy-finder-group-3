@@ -9,6 +9,7 @@ import Button from "@mui/material/Button"
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { styled } from '@mui/material/styles';
 import FriendsList from './FriendsList';
+import FriendsAdd from './FriendsAdd';
 
 
 export default function FriendsBar() {
@@ -97,9 +98,7 @@ export default function FriendsBar() {
         </div>}
       {activeButton === 'add' && 
         <div>
-          <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
-            Add friends here
-          </Typography>
+          <FriendsAdd/>
         </div>}
     </Box>
   );
