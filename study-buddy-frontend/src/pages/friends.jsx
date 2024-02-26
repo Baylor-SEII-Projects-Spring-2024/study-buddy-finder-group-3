@@ -5,7 +5,7 @@ import Header from "@/components/Header"
 import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
-import FriendsList from "@/components/FriendsList"
+import FriendsBar from "@/components/FriendsBar"
 
 function friends() {
   const token = useSelector(selectToken)
@@ -21,7 +21,7 @@ function friends() {
       <Header />
       <Box sx={{ display: "flex", flexGrow: 1 }}>
         <Sidebar/>
-        <FriendsList/>
+        <FriendsBar/>
       </Box>
     </Box>
   )
