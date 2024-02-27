@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from "react"
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -12,14 +12,43 @@ import FriendsList from './FriendsList';
 import FriendsAdd from './FriendsAdd';
 import FriendsRequests from './FriendsRequests';
 import Badge from '@mui/material/Badge';
+import axios from "axios"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { useSelector } from "react-redux"
 
 export default function FriendsBar() {
 
   const [activeButton, setActiveButton] = React.useState('all');
+  const [friends, setFriendsList] = useState([]);
+  const user = useSelector(selectUser)
+  const [userId, setUserid] = useState('')
+  const [message, setMessage] = useState('')
+
+  const handleMessageUpdate = () => {
+    setMessage('update')
+  }
 
   const handleButtonClick = (button) => {
     setActiveButton(button);
+    fetchRequests()
   };
+
+  const fetchRequests = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/friends/${user.id}/getRequests`);
+      setFriendsList(response.data);
+    } catch (error) {
+      console.error("Error fetching friends info:", error);
+    }
+  }
+
+  useEffect(() => {
+    if (user){
+      console.log('here')
+      setUserid(user.id)
+    }
+    fetchRequests()
+  }, [user, message])
 
   const StyledButton = styled(Button)({
     color: 'white',
@@ -70,10 +99,12 @@ export default function FriendsBar() {
           />
             <StyledButton onClick={() => handleButtonClick('all')} variant={activeButton === 'all' ? 'contained' : 'text'} 
             sx={{ background: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit', boxShadow: activeButton === 'all' ? 'none' : 'inherit'}}>All</StyledButton>
-            {/* <Badge badgeContent={4} color="primary"> */}
+            
+            <Badge badgeContent={friends.length} color="primary">
             <StyledButton onClick={() => handleButtonClick('requests')} variant={activeButton === 'requests' ? 'contained' : 'text'}
             sx={{ background: activeButton === 'requests' ? 'gray' : 'inherit', color: activeButton === 'requests' ? 'white' : 'inherit', boxShadow: activeButton === 'requests' ? 'none' : 'inherit'}}>Requests</StyledButton>
-            {/* </Badge> */}
+            </Badge>
+            
             <StyledButton onClick={() => handleButtonClick('blocked')} variant={activeButton === 'blocked' ? 'contained' : 'text'}
             sx={{ background: activeButton === 'blocked' ? 'gray' : 'inherit', color: activeButton === 'blocked' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Blocked</StyledButton>
             
@@ -88,7 +119,7 @@ export default function FriendsBar() {
         </div>}
       {activeButton === 'requests' && 
         <div>
-            <FriendsRequests/>
+            <FriendsRequests onUpdate={handleMessageUpdate}/>
         </div>}
       {activeButton === 'blocked' && 
         <div>

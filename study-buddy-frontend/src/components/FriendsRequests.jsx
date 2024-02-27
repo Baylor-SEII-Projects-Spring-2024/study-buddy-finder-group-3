@@ -10,7 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import Button from "@mui/material/Button";
 
-export default function FriendsRequest() {
+export default function FriendsRequest( {onUpdate}) {
 
 
   const token = useSelector(selectToken)
@@ -53,6 +53,7 @@ export default function FriendsRequest() {
     }
     const updatedFriends = friends.filter((user2) => user2.id !== user1.id);
     setFriendsList(updatedFriends);
+    onUpdate();
   }
 
   const handleListItemClick = (event, user2) => {
