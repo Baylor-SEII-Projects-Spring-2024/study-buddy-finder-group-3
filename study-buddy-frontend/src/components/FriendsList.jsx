@@ -8,6 +8,16 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import { ListItemButton } from "@mui/material";
+import PropTypes from 'prop-types';
+import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import styles from "@/styles/ProfileDisplay.module.css";
+import {TextField} from "@mui/material";
+import FriendProfile from "./FriendProfile";
+import Login from "./Login";
 
 export default function FriendsList() {
 
@@ -17,6 +27,11 @@ export default function FriendsList() {
   const router = useRouter()
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
+  const [open, setOpen] = React.useState(false);
+
+  const handleListItemClick = (event, user) => {
+    setOpen(true);
+  }
 
   useEffect(() => {
     if (!token || !user) {
@@ -41,6 +56,10 @@ export default function FriendsList() {
     }
   }
 
+  const handleClose = (value) => {
+    setOpen(false);
+  };
+
   return (
     <div>
       {friends.length === 0 ? (
@@ -52,7 +71,10 @@ export default function FriendsList() {
           <List>
             {friends.map(user => (
               <ListItem key={user.user_id}>
-                <ListItemText primary={user.username} />
+                <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
+                  <ListItemText primary={user.username} />
+                </ListItemButton>
+                <FriendProfile user={user} open={open} onClose={handleClose} />
               </ListItem>
             ))}
           </List>

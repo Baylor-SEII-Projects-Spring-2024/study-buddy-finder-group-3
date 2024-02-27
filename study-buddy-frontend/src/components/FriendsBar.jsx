@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import FriendsList from './FriendsList';
 import FriendsAdd from './FriendsAdd';
 import FriendsRequests from './FriendsRequests';
-
+import Badge from '@mui/material/Badge';
 
 export default function FriendsBar() {
 
@@ -70,10 +70,10 @@ export default function FriendsBar() {
           />
             <StyledButton onClick={() => handleButtonClick('all')} variant={activeButton === 'all' ? 'contained' : 'text'} 
             sx={{ background: activeButton === 'all' ? 'gray' : 'inherit', color: activeButton === 'all' ? 'white' : 'inherit', boxShadow: activeButton === 'all' ? 'none' : 'inherit'}}>All</StyledButton>
-
+            {/* <Badge badgeContent={4} color="primary"> */}
             <StyledButton onClick={() => handleButtonClick('requests')} variant={activeButton === 'requests' ? 'contained' : 'text'}
             sx={{ background: activeButton === 'requests' ? 'gray' : 'inherit', color: activeButton === 'requests' ? 'white' : 'inherit', boxShadow: activeButton === 'requests' ? 'none' : 'inherit'}}>Requests</StyledButton>
-
+            {/* </Badge> */}
             <StyledButton onClick={() => handleButtonClick('blocked')} variant={activeButton === 'blocked' ? 'contained' : 'text'}
             sx={{ background: activeButton === 'blocked' ? 'gray' : 'inherit', color: activeButton === 'blocked' ? 'white' : 'inherit', boxShadow: activeButton === 'blocked' ? 'none' : 'inherit'}}>Blocked</StyledButton>
             
@@ -88,7 +88,7 @@ export default function FriendsBar() {
         </div>}
       {activeButton === 'requests' && 
         <div>
-          <FriendsRequests/>
+            <FriendsRequests/>
         </div>}
       {activeButton === 'blocked' && 
         <div>
