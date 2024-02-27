@@ -5,11 +5,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { theme } from '@/utils/theme';
-import Button from "@mui/material/Button"
+import Button from "@mui/material/Button";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { styled } from '@mui/material/styles';
 import FriendsList from './FriendsList';
 import FriendsAdd from './FriendsAdd';
+import FriendsRequests from './FriendsRequests';
 
 
 export default function FriendsBar() {
@@ -87,9 +88,8 @@ export default function FriendsBar() {
         </div>}
       {activeButton === 'requests' && 
         <div>
-          <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
-            No requests friend requests
-          </Typography></div>}
+          <FriendsRequests/>
+        </div>}
       {activeButton === 'blocked' && 
         <div>
           <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>

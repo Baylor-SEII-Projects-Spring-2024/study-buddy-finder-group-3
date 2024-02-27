@@ -23,6 +23,8 @@ import java.util.Map;
 @RequestMapping("/friends")
 public class GetFriendsEndpoint {
 
+    //TODO: upgrade deprecated query functions to non deprecated versions
+
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -55,16 +57,26 @@ public class GetFriendsEndpoint {
     }
 
     //Gets all users with the given string in the username
-    @GetMapping("/{username}/get")
+    @GetMapping("/{userId}/get/{username}")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<List<User>> getAddFriend(@PathVariable String username)
+    public ResponseEntity<List<User>> getAddFriend(@PathVariable String username, @PathVariable Long userId)
     {
 
-        String sql = "SELECT * FROM users WHERE username LIKE ?";
+        String sql = "SELECT * FROM users WHERE username LIKE ? AND user_id != ? AND user_id NOT IN " +
+                //Gets all friends
+                "(SELECT u.user_id FROM users u " +
+                "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
+                "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?) " +
+
+                " AND user_id NOT IN (" +
+                //Gets all friend requests
+                "SELECT u.user_id FROM users u " +
+                "JOIN friends_request f ON u.user_id = f.userfrom_id OR u.user_id = f.userto_id " +
+                "WHERE (f.userto_id = ? OR f.userfrom_id = ?) AND u.user_id != ?)";
 
         String searchTerm = "%" + username + "%";
 
-        List<User> users = jdbcTemplate.query(sql, new Object[]{searchTerm}, (rs, rowNum) ->
+        List<User> users = jdbcTemplate.query(sql, new Object[]{searchTerm, userId, userId, userId, userId, userId, userId, userId}, (rs, rowNum) ->
                 new User(
                         rs.getLong("user_id"),
                         rs.getString("username"),
@@ -81,9 +93,9 @@ public class GetFriendsEndpoint {
     }
 
     //Creates friend request
-    @GetMapping("/request/{idTo}/{idFrom}")
+    @PostMapping("/{idFrom}/request/{idTo}")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<Boolean> addFriendRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
+    public boolean addFriendRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
     {
         List<Object[]> parameters = new ArrayList<>();
 
@@ -92,21 +104,23 @@ public class GetFriendsEndpoint {
                 idFrom
         });
 
+
+
         jdbcTemplate.batchUpdate("INSERT INTO friends_request (userto_id, userfrom_id) VALUES(?, ?)", parameters);
 
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        return true;
     }
 
     //Get all users who sent a friend request to user
     @GetMapping("/{userId}/getRequests")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<List<User>> getRequests(@PathVariable Long id)
+    public ResponseEntity<List<User>> getRequests(@PathVariable Long userId)
     {
 
-        String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id" +
+        String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
                 "WHERE fr.userto_id = ?";
 
-        List<User> friends = jdbcTemplate.query(sql, new Object[]{id}, (rs, rowNum) ->
+        List<User> friends = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
                 new User(
                         rs.getLong("user_id"),
                         rs.getString("username"),
@@ -119,7 +133,45 @@ public class GetFriendsEndpoint {
                 )
         );
 
-        return null;
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
+    //Add friend
+    @PostMapping("/{idFrom}/add/{idTo}")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public boolean addFriend(@PathVariable Long idTo, @PathVariable Long idFrom)
+    {
+        List<Object[]> parameters = new ArrayList<>();
+
+        parameters.add(new Object[]{
+                idTo,
+                idFrom
+        });
+
+
+
+        jdbcTemplate.batchUpdate("INSERT INTO friends (user1_id, user2_id) VALUES(?, ?)", parameters);
+
+        return true;
+    }
+
+    //Remove friend request
+    @PostMapping("/{idFrom}/delete/{idTo}")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public boolean removeRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
+    {
+        String sql = "DELETE FROM friends_request WHERE userto_id = ? AND userfrom_id = ?";
+
+        List<Object[]> parameters = new ArrayList<>();
+
+        parameters.add(new Object[]{
+                idTo,
+                idFrom
+        });
+
+        jdbcTemplate.batchUpdate(sql, parameters);
+
+        return true;
     }
 
 }
