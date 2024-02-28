@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton"
 import SearchIcon from "@mui/icons-material/Search"
 import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
-import { selectToken, setToken } from "@/utils/authSlice.js"
+import { selectToken, setToken, logout } from "@/utils/authSlice.js"
 import CreateMeeting from "./CreateMeeting"
 
 function Header() {
@@ -39,7 +39,8 @@ function Header() {
   }
 
   const handleLogout = async () => {
-    dispatch(setToken(null))
+    localStorage.removeItem("token")
+    dispatch(logout());
     router.push("/")
   }
 

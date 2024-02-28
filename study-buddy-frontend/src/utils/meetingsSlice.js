@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { logout } from './authSlice'
 import axios from 'axios';
 
 export const fetchMeetingsByUserId = createAsyncThunk(
@@ -30,6 +31,12 @@ const meetingsSlice = createSlice({
         .addCase(fetchMeetingsByUserId.rejected, (state, action) => {
           state.status = 'failed';
           state.error = action.error.message;
+        })
+        .addCase(logout, (state) => {
+          // clear meetings on logout
+          state.meetings = [];
+          state.status = 'idle';
+          state.error = null;
         });
     }
   });
