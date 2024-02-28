@@ -36,16 +36,16 @@ public class LoginEndpoint {
 
     @PostMapping("/login")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<?> login(@RequestBody LoginReq loginRequest) {
+    public ResponseEntity<?> login(@RequestBody UserReq loginRequest) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
         Optional<User> user = userService.findByUsername(loginRequest.getUsername());
 
         if (user.isPresent()) {
             log.info("User found for username: {}", loginRequest.getUsername());
             User foundUser = user.get();
-            if (user.get().getPassword().equals(loginRequest.getPassword())) {
+//            if (user.get().getPassword().equals(loginRequest.getPassword())) {
                 //*Uncomment once password hashing exits
-//            if (passwordEncoder.matches(loginRequest.getPassword(), foundUser.getPassword())) {
+            if (passwordEncoder.matches(loginRequest.getPassword(), foundUser.getPassword())) {
                 log.info("Password match for user: {}", loginRequest.getUsername());
                 String token = jwtUtil.generateToken(foundUser); //tokenize
                 return ResponseEntity.ok().body(Collections.singletonMap("token", token)); // pass token
@@ -60,15 +60,22 @@ public class LoginEndpoint {
     }
 
 
-    @RequestMapping(value = "/createAccount", method = RequestMethod.GET)
+    @PostMapping("/createAccount")
     @CrossOrigin(origins = "http://localhost:3000")
-    public boolean addUser(@RequestParam("username") String username, @RequestParam("password") String password,
-                           @RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName,
-                           @RequestParam("email") String email, @RequestParam("isTutor") String isTutor){
-        List<Object[]> parameters =  new ArrayList<>();
-        String hashedPassword = passwordEncoder.encode(password);
+    public boolean addUser(@RequestBody UserReq userRequest) {
+        List<Object[]> parameters = new ArrayList<>();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(userRequest.getPassword());
 
-        parameters.add(new Object[]{email, hashedPassword, "Computer Science", firstName, lastName, isTutor, username});
+        parameters.add(new Object[]{
+                userRequest.getEmail(),
+                hashedPassword,
+                "Computer Science",
+                userRequest.getFirstName(),
+                userRequest.getLastName(),
+                userRequest.getIsTutor(),
+                userRequest.getUsername()
+        });
 
         jdbcTemplate.batchUpdate("INSERT INTO users (email_address, password, areaofstudy, namefirst, " +
                 "namelast, istutor, username) VALUES(?,?,?,?,?,?,?)", parameters);
@@ -76,9 +83,13 @@ public class LoginEndpoint {
     }
 
 
-    static class LoginReq {
+    static class UserReq {
         private String username;
         private String password;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String isTutor;
 
         public String getUsername() {
             return username;
@@ -88,6 +99,21 @@ public class LoginEndpoint {
             return password;
         }
 
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getIsTutor() {
+            return isTutor;
+        }
 
     }
 
