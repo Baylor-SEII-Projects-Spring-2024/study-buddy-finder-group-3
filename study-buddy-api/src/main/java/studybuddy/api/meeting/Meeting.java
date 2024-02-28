@@ -1,7 +1,9 @@
-package studybuddy.api.user;
+package studybuddy.api.meeting;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 @Entity
@@ -14,9 +16,23 @@ public class Meeting {
     @Column(name = "MEETING_ID")
     Long id;
 
+    @Transient
+    private String creatorUsername;
+
     @Column(name = "DESCRIPTION")
     String description;
 
+    @Column(name = "MEETING_TITLE")
+    private String title;
+
+    @Column(name = "MEETING_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date;
+
+    @Column(name = "MEETING_LINK")
+    private String link;
+
     @Column(name = "MEETING_LOCATION")
-    String location;
+    private String location;
+
 }

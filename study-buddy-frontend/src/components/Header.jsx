@@ -109,19 +109,21 @@ function Header() {
           Create Account
         </Button>
       )}
-      <Button
-        variant="contained"
-        onClick={handleCreateMeetingOpen}
-        sx={{
-          ml: 1, 
-          backgroundColor: "#1d612a",
-          "&:hover": {
-            backgroundColor: "#0a3011",
-          },
-        }}
-      >
-        +
-      </Button>
+      {token && (
+        <Button
+          variant="contained"
+          onClick={handleCreateMeetingOpen}
+          sx={{
+            ml: 1,
+            backgroundColor: "#1d612a",
+            "&:hover": {
+              backgroundColor: "#0a3011",
+            },
+          }}
+        >
+          +
+        </Button>
+      )}
 
       <CreateMeeting
         open={createMeetingOpen}
