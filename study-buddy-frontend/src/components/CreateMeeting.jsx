@@ -8,11 +8,12 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import axios from "axios"
 import { toast } from "react-toastify"
-import { useRouter } from "next/router"
 import Checkbox from "@mui/material/Checkbox"
 import FormControlLabel from "@mui/material/FormControlLabel"
-import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { selectUser } from "@/utils/authSlice.js"
 import { useSelector } from "react-redux"
+import { useDispatch } from 'react-redux';
+import { fetchMeetingsByUserId } from '../utils/meetingsSlice.js'; 
 
 const style = {
   position: "absolute",
@@ -26,6 +27,7 @@ const style = {
 }
 
 function CreateMeeting({ open, onClose }) {
+  const dispatch = useDispatch();
   const user = useSelector(selectUser)
   const [meetingDate, setMeetingDate] = useState(new Date())
   const [meetingTitle, setMeetingTitle] = useState("")
@@ -83,6 +85,7 @@ function CreateMeeting({ open, onClose }) {
 
       if (response.status === 200) {
         toast.success("Meeting created successfully!")
+        dispatch(fetchMeetingsByUserId(user.id));
         onClose()
       } else {
         toast.error("Failed to create meeting")
