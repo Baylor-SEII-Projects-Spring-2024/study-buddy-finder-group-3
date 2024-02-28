@@ -12,8 +12,9 @@ import Checkbox from "@mui/material/Checkbox"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import { selectUser } from "@/utils/authSlice.js"
 import { useSelector } from "react-redux"
-import { useDispatch } from 'react-redux';
-import { fetchMeetingsByUserId } from '../utils/meetingsSlice.js'; 
+import { useDispatch } from "react-redux"
+import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
+import { List, ListItem, ListItemText, Typography } from "@mui/material"
 
 const style = {
   position: "absolute",
@@ -27,7 +28,7 @@ const style = {
 }
 
 function CreateMeeting({ open, onClose }) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const user = useSelector(selectUser)
   const [meetingDate, setMeetingDate] = useState(new Date())
   const [meetingTitle, setMeetingTitle] = useState("")
@@ -35,6 +36,27 @@ function CreateMeeting({ open, onClose }) {
   const [meetingLink, setMeetingLink] = useState("")
   const [isOnlineMeeting, setIsOnlineMeeting] = useState(false)
   const [meetingLocation, setMeetingLocation] = useState()
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchResults, setSearchResults] = useState([])
+  const [selectedInvites, setSelectedInvites] = useState([])
+
+  const handleSearchChange = async (event) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+  
+    if (newSearchTerm.length > 1) { 
+      try {
+        const response = await axios.get(`http://localhost:8080/friends/${user.id}/get/${newSearchTerm}`);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.error("Failed to search users", error);
+        setSearchResults([]); 
+      }
+    } else {
+      setSearchResults([]); // clear if too shirt
+    }
+  };
+  
 
   const handleOnlineMeetingChange = (event) => {
     setIsOnlineMeeting(event.target.checked)
@@ -66,37 +88,39 @@ function CreateMeeting({ open, onClose }) {
   }
   const handleSaveMeeting = async () => {
     if (!meetingTitle) {
-      toast.error("Title cannot be empty")
-      return
+        toast.error("Title cannot be empty")
+        return;
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:8080/meeting/createMeeting`,
-        {
-          title: meetingTitle,
-          description: meetingDescription,
-          date: meetingDate,
-          link: meetingLink,
-          location: meetingLocation,
-          creatorUsername: user.username,
+        const invitedUserIds = selectedInvites.map(invite => invite.id); 
+
+        const response = await axios.post(
+            `http://localhost:8080/meeting/createMeeting`,
+            {
+                title: meetingTitle,
+                description: meetingDescription,
+                date: meetingDate,
+                link: meetingLink,
+                location: meetingLocation,
+                creatorUsername: user.username,
+                invitedUserIds
+            }
+        );
+
+        if (response.status === 200) {
+            toast.success("Meeting created successfully!");
+            dispatch(fetchMeetingsByUserId(user.id));
+            onClose();
+        } else {
+            toast.error("Failed to create meeting");
+            console.error("Failed to create meeting", response);
         }
-      )
-
-      if (response.status === 200) {
-        toast.success("Meeting created successfully!")
-        dispatch(fetchMeetingsByUserId(user.id));
-        onClose()
-      } else {
-        toast.error("Failed to create meeting")
-        console.error("Failed to create meeting", response)
-      }
     } catch (error) {
-      toast.error("Failed to create meeting")
-      console.error("Error:", error)
+        toast.error("Failed to create meeting");
+        console.error("Error:", error);
     }
-  }
-
+};
   return (
     <Modal
       open={open}
@@ -174,6 +198,44 @@ function CreateMeeting({ open, onClose }) {
             )}
           />
         </LocalizationProvider>
+        <TextField
+          margin="dense"
+          label="Invite Users"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          sx={{ mt: 2 }}
+        />
+        <List dense>
+          {searchResults.map((user) => (
+            <ListItem
+              key={user.id}
+              button
+              onClick={() => setSelectedInvites([...selectedInvites, user])}
+            >
+              <ListItemText primary={user.username} />
+            </ListItem>
+          ))}
+        </List>
+        <Typography variant="subtitle1">Selected Invites:</Typography>
+        <List dense>
+          {selectedInvites.map((invite) => (
+            <ListItem key={invite.id}>
+              <ListItemText primary={invite.username} />
+              <Button
+                onClick={() =>
+                  setSelectedInvites(
+                    selectedInvites.filter((i) => i.id !== invite.id)
+                  )
+                }
+              >
+                Remove
+              </Button>
+            </ListItem>
+          ))}
+        </List>
 
         <Button
           variant="contained"
