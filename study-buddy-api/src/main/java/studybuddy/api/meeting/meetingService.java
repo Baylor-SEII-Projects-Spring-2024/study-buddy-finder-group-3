@@ -27,10 +27,22 @@ public class meetingService {
 
         Meeting newMeeting = meetingRepository.save(meeting);
 
-        UserMeeting userMeeting = new UserMeeting();
-        userMeeting.setUser(creator);
-        userMeeting.setMeeting(newMeeting);
-        userMeetingRepository.save(userMeeting);
+        // meeting creator entry
+        UserMeeting creatorMeeting = new UserMeeting();
+        creatorMeeting.setUser(creator);
+        creatorMeeting.setMeeting(newMeeting);
+        userMeetingRepository.save(creatorMeeting);
+
+        // create link for each invited
+        for (Long userId : meeting.getInvitedUserIds()) {
+            User invitedUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+            UserMeeting invitedUserMeeting = new UserMeeting();
+            invitedUserMeeting.setUser(invitedUser);
+            invitedUserMeeting.setMeeting(newMeeting);
+            userMeetingRepository.save(invitedUserMeeting);
+        }
     }
 
     public List<Meeting> getMeetingsByUserId(Long userId) {

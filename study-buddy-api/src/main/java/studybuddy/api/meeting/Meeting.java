@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -18,6 +19,9 @@ public class Meeting {
 
     @Transient
     private String creatorUsername;
+
+    @Transient
+    private List<Long> invitedUserIds;
 
     @Column(name = "DESCRIPTION")
     String description;
