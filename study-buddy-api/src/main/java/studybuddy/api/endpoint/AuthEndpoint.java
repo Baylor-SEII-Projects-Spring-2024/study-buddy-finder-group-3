@@ -84,8 +84,27 @@ public class AuthEndpoint {
     @GetMapping("/checkUsername/{username}")
     @CrossOrigin(origins = "http://localhost:3000")
     public boolean validateUsername(@PathVariable String username){
-        Optional<User> user = userService.findByUsername(username);
-        return user.isEmpty();
+        try{
+            Optional<User> user = userService.findByUsername(username);
+            return user.isEmpty();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+    }
+
+    @GetMapping("/checkEmail/{email}")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public boolean validateEmail(@PathVariable String email){
+        try{
+            Optional<User> user = userService.findByEmail(email);
+            return user.isEmpty();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
     }
 
 

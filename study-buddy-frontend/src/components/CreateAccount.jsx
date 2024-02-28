@@ -80,11 +80,18 @@ function CreateAccount({ open, onClose }) {
       toast.error("Invalid email address format");
       return;
     }
-
     try {
       const usernameCheckResponse = await axios.get(`http://localhost:8080/auth/checkUsername/${username}`);
       if (!usernameCheckResponse.data) {
-        toast.error("Username already belongs to another account");
+        console.log(username + " already in database");
+        toast.error(username + " already belongs to another account");
+        return;
+      }
+
+      const emailCheckResponse = await axios.get(`http://localhost:8080/auth/checkEmail/${email}`);
+      if (!emailCheckResponse.data) {
+        console.log(email + " already in database");
+        toast.error(email + " already belongs to another account");
         return;
       }
 
