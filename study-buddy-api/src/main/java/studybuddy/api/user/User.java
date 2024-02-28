@@ -7,6 +7,7 @@ import lombok.Data;
 @Entity
 @Table(name = User.TABLE_NAME)
 public class User {
+
     public static final String TABLE_NAME = "USERS";
 
     @Id
@@ -24,7 +25,7 @@ public class User {
     String password;
 
     @Column(name = "ISTUTOR")
-    String userType;
+    boolean userType;
 
     @Column(name = "NAMEFIRST")
     String nameFirst;
@@ -35,4 +36,19 @@ public class User {
     @Column(name = "AREAOFSTUDY")
     String areaOfStudy;
 
+    public User() {
+
+    }
+
+    public User(User other){
+        this.id = other.id;
+        this.username = other.username;
+        this.emailAddress = other.emailAddress;
+        this.password = other.password;
+        this.userType = other.userType;
+        this.nameFirst = other.nameFirst;
+        this.nameLast = other.nameLast;
+        this.areaOfStudy = other.areaOfStudy;
+
+    }
 }
