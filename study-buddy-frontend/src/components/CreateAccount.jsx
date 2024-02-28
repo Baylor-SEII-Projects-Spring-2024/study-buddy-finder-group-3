@@ -75,8 +75,19 @@ function CreateAccount({ open, onClose }) {
       toast.error("Password cannot be empty");
       return;
     }
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(!emailRegex.test(email)){
+      toast.error("Invalid email address format");
+      return;
+    }
 
     try {
+      const usernameCheckResponse = await axios.get(`http://localhost:8080/auth/checkUsername/${username}`);
+      if (!usernameCheckResponse.data) {
+        toast.error("Username already belongs to another account");
+        return;
+      }
+
       const response = await axios.post(`http://localhost:8080/auth/createAccount`, {
         username,
         password,

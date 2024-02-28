@@ -1,4 +1,4 @@
-package studybuddy.api.endpoint;
+/*package studybuddy.api.endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +82,13 @@ public class LoginEndpoint {
         return true;
     }
 
+    @PostMapping("/checkUsername")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public boolean checkUsername(@RequestBody UserReq usernameRequest){
+        Optional<User> user = userService.findByUsername(usernameRequest.getUsername());
+        return user.isEmpty();
+    }
+
 
     static class UserReq {
         private String username;
@@ -117,4 +124,4 @@ public class LoginEndpoint {
 
     }
 
-}
+}*/

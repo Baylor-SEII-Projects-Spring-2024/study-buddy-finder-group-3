@@ -81,6 +81,13 @@ public class AuthEndpoint {
         return true;
     }
 
+    @GetMapping("/checkUsername/{username}")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public boolean validateUsername(@PathVariable String username){
+        Optional<User> user = userService.findByUsername(username);
+        return user.isEmpty();
+    }
+
 
     static class UserReq {
         private String username;
