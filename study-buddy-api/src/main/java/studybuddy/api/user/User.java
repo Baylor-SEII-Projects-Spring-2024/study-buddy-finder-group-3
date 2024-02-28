@@ -10,6 +10,17 @@ public class User {
 
     public static final String TABLE_NAME = "USERS";
 
+    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy) {
+        this.id = id;
+        this.username = username;
+        this.emailAddress = emailAddress;
+        this.password = password;
+        this.userType = userType;
+        this.nameFirst = nameFirst;
+        this.nameLast = nameLast;
+        this.areaOfStudy = areaOfStudy;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
