@@ -8,6 +8,7 @@ import Avatar from "@mui/material/Avatar";
 import { useSelector } from "react-redux";
 import { selectToken, selectUser } from "@/utils/authSlice.js";
 import { useRouter } from "next/router";
+import {toast} from "react-toastify";
 
 function ProfileDisplay() {
     const token = useSelector(selectToken);
@@ -46,15 +47,42 @@ function ProfileDisplay() {
     const handleSaveClick = async () => {
         // Implement logic to save changes to the server
         try {
-            await axios.put(`http://localhost:8080/profile/${user.id}`, profile);
+            // Prepare the updated profile data
+            const updatedProfile = {
+                emailAddress: profile.emailAddress,
+                username: profile.username,
+                nameFirst: profile.nameFirst,
+                nameLast: profile.nameLast,
+                // Add other fields as needed
+            };
+            console.log("Saving profile: {}", updatedProfile);
+
+            // Make a PUT request to update the profile
+            const response = await axios.put(`http://localhost:8080/auth/updateProfile/${userId}`, updatedProfile, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token for authentication
+                },
+            });
+            console.log(response)
+            if (response.status === 200){
+                toast.success("Account updated successfully!")
+            } else {
+                toast.error("Failed to update account")
+                console.log("Failed to create Account")
+            }
+
+
+            // Set edit mode to false after successful update
             setEditMode(false);
         } catch (error) {
             console.error("Error saving profile changes:", error);
         }
     };
 
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        console.log(`Updating ${name} with value ${value}`);
         setProfile((prevProfile) => ({
             ...prevProfile,
             [name]: value,
@@ -72,7 +100,7 @@ function ProfileDisplay() {
             <TextField
                 margin="normal"
                 fullWidth
-                label=""
+                label="Email Address"
                 name="emailAddress"
                 value={profile.emailAddress || ''}
                 disabled={!editMode}
@@ -82,7 +110,7 @@ function ProfileDisplay() {
             <TextField
                 margin="normal"
                 fullWidth
-                label=""
+                label="Username"
                 name="username"
                 value={profile.username || ''}
                 disabled={!editMode}
@@ -92,7 +120,7 @@ function ProfileDisplay() {
             <TextField
                 margin="normal"
                 fullWidth
-                label=""
+                label="First Name"
                 name="nameFirst"
                 value={profile.nameFirst || ''}
                 disabled={!editMode}
@@ -102,7 +130,7 @@ function ProfileDisplay() {
             <TextField
                 margin="normal"
                 fullWidth
-                label=""
+                label="Last Name"
                 name="nameLast"
                 value={profile.nameLast || ''}
                 disabled={!editMode}
