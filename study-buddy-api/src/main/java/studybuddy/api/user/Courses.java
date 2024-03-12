@@ -23,7 +23,4 @@ public class Courses {
     @Column(name = "SUBJECT_AREA")
     String subjectArea;
 
-    @Column(name = "ISTUTORED")
-    boolean isTutored;
-
 }

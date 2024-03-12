@@ -1,0 +1,11 @@
+.profile-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-field {
+    background-color: #94909b; /* Light gray background */
+    border: 1px solid #3d3d3d; /* Gray border */
+    padding: 10px; /* Padding for content inside the box */
+    margin-bottom: 10px; /* Margin between boxes */
+}

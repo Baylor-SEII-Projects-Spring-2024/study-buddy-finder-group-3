@@ -1,7 +1,8 @@
-package studybuddy.api.user;
+package studybuddy.api.meeting;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import studybuddy.api.user.User;
 
 @Data
 @Entity
@@ -12,13 +13,13 @@ public class UserMeeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_MEETING_ID")
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_MEETING_USER_ID"))
-    User user_id;
+    private User user;
 
-    @ManyToOne //User in the chat
+    @ManyToOne
     @JoinColumn(name = "MEETING_ID", referencedColumnName = "MEETING_ID", foreignKey = @ForeignKey(name = "FK_MEETING_ID"))
-    Meeting meeting_id;
+    private Meeting meeting;
 }

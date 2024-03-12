@@ -7,7 +7,19 @@ import lombok.Data;
 @Entity
 @Table(name = User.TABLE_NAME)
 public class User {
+
     public static final String TABLE_NAME = "USERS";
+
+    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy) {
+        this.id = id;
+        this.username = username;
+        this.emailAddress = emailAddress;
+        this.password = password;
+        this.userType = userType;
+        this.nameFirst = nameFirst;
+        this.nameLast = nameLast;
+        this.areaOfStudy = areaOfStudy;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +36,7 @@ public class User {
     String password;
 
     @Column(name = "ISTUTOR")
-    String userType;
+    boolean userType;
 
     @Column(name = "NAMEFIRST")
     String nameFirst;
@@ -35,4 +47,19 @@ public class User {
     @Column(name = "AREAOFSTUDY")
     String areaOfStudy;
 
+    public User() {
+
+    }
+
+    public User(User other){
+        this.id = other.id;
+        this.username = other.username;
+        this.emailAddress = other.emailAddress;
+        this.password = other.password;
+        this.userType = other.userType;
+        this.nameFirst = other.nameFirst;
+        this.nameLast = other.nameLast;
+        this.areaOfStudy = other.areaOfStudy;
+
+    }
 }

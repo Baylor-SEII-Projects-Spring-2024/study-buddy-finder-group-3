@@ -1,21 +1,30 @@
 import React from "react"
 import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
 import Box from "@mui/material/Box"
-import IconButton from "@mui/material/IconButton"
-import SearchIcon from "@mui/icons-material/Search"
+import { useRouter } from "next/router"
+import FriendsList from "./FriendsBar";
+
 
 function Sidebar() {
+  const router = useRouter();
+  const navigateToProfile = () => {
+    router.push("/profile")
+  }
+
+  const navigateFriends = () => {
+    router.push("/friends")
+  }
+
+  const navigateHome = () => {
+    router.push("/home")
+  }
   return (
     <Box
       sx={{ width: "250px", minHeight: "100vh", borderRight: "1px solid #ddd" }}
     >
-      <Button fullWidth>Home</Button>
-      <Button fullWidth>Profile</Button>
-      <Button fullWidth>Friends</Button>
-      <Button fullWidth>Settings</Button>
-
-
+      <Button  onClick={navigateHome} fullWidth>Home</Button>
+      <Button onClick={navigateToProfile} fullWidth>Profile</Button>
+      <Button onClick={navigateFriends} fullWidth>Friends</Button>
     </Box>
   )
 }
