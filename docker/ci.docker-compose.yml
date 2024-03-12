@@ -8,8 +8,6 @@ services:
     restart: always
     ports:
       - '3000:3000'
-    environment:
-      - NEXT_PUBLIC_API_URL=http://34.16.138.129:8080
 
   api:
     image: study-buddy-api
