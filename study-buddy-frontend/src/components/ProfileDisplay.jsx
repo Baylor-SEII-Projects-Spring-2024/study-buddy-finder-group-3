@@ -3,20 +3,21 @@ import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import styles from "@/styles/ProfileDisplay.module.css";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import { useSelector } from "react-redux";
 import { selectToken, selectUser } from "@/utils/authSlice.js";
 import { useRouter } from "next/router";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 function ProfileDisplay() {
     const token = useSelector(selectToken);
     const user = useSelector(selectUser);
     const router = useRouter();
     const [profile, setProfile] = useState('');
-    const [userId, setUserid] = useState('');
+    const [userId, setUserId] = useState('');
     const [editMode, setEditMode] = useState(false);
+    const [selectedCourses, setSelectedCourses] = useState([]);
 
     useEffect(() => {
         if (!token || !user) {
@@ -26,15 +27,35 @@ function ProfileDisplay() {
 
     useEffect(() => {
         if (user) {
-            setUserid(user.id);
+            setUserId(user.id);
+            fetchProfileInfo(user.id);
         }
-        fetchProfileInfo();
     }, [user]);
 
-    const fetchProfileInfo = async () => {
+    const fetchProfileInfo = async (userId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/profile/${user.id}`);
+            const response = await axios.get(`http://localhost:8080/profile/${userId}`);
+
+            // Log the entire response data object
+            console.log("Response data:", response.data);
+
             setProfile(response.data);
+
+            // Extract courses from the areaOfStudy field
+            let coursesArray = [];
+            if (response.data.areaOfStudy) {
+                if (typeof response.data.areaOfStudy === 'string') {
+                    // If areaOfStudy is a string, split it into an array
+                    coursesArray = response.data.areaOfStudy.split(',').map(course => course.trim());
+                } else if (Array.isArray(response.data.areaOfStudy)) {
+                    // If areaOfStudy is already an array, use it directly
+                    coursesArray = response.data.areaOfStudy;
+                }
+            }
+
+            setSelectedCourses(coursesArray);
+            console.log("User's initial courses are: ", response.data.areaOfStudy);
+            console.log(`Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
         } catch (error) {
             console.error("Error fetching profile info:", error);
         }
@@ -42,51 +63,55 @@ function ProfileDisplay() {
 
     const handleEditClick = () => {
         setEditMode(!editMode);
+        console.log(`Fetched user profile with userId=${userId}, areaofstudy=${selectedCourses}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
+
     };
 
     const handleSaveClick = async () => {
-        // Implement logic to save changes to the server
         try {
+            console.log("Save click selected courses:", selectedCourses);
+
             // Prepare the updated profile data
             const updatedProfile = {
                 email: profile.emailAddress,
                 username: profile.username,
                 firstName: profile.nameFirst,
                 lastName: profile.nameLast,
-                // Add other fields as needed
+                courses: selectedCourses.join(', '),
             };
-            console.log("Saving profile: {}", updatedProfile);
 
             // Make a PUT request to update the profile
             const response = await axios.put(`http://localhost:8080/auth/updateProfile/${userId}`, updatedProfile, {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Include the token for authentication
+                    Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response)
-            if (response.status === 200){
+            if (response.status === 200) {
                 toast.success("Account updated successfully!")
             } else {
                 toast.error("Failed to update account")
-                console.log("Failed to create Account")
             }
-
-
-            // Set edit mode to false after successful update
             setEditMode(false);
         } catch (error) {
             console.error("Error saving profile changes:", error);
         }
     };
 
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        console.log(`Updating ${name} with value ${value}`);
         setProfile((prevProfile) => ({
             ...prevProfile,
             [name]: value,
         }));
+    };
+
+    const handleCourseChange = (event) => {
+        const { name, checked } = event.target;
+        if (checked) {
+            setSelectedCourses((prevSelectedCourses) => [...prevSelectedCourses, name]);
+        } else {
+            setSelectedCourses((prevSelectedCourses) => prevSelectedCourses.filter((course) => course !== name));
+        }
     };
 
     return (
@@ -137,6 +162,35 @@ function ProfileDisplay() {
                 sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
                 onChange={handleInputChange}
             />
+            {/* Checkboxes for courses */}
+            <>
+                <FormControlLabel
+                    control={<Checkbox checked={selectedCourses.includes("Computer Science")} onChange={handleCourseChange} name="Computer Science" />}
+                    label="Computer Science"
+                    disabled={!editMode}
+                />
+                <FormControlLabel
+                    control={<Checkbox checked={selectedCourses.includes("Biology")} onChange={handleCourseChange} name="Biology" />}
+                    label="Biology"
+                    disabled={!editMode}
+                />
+                <FormControlLabel
+                    control={<Checkbox checked={selectedCourses.includes("Physics")} onChange={handleCourseChange} name="Physics" />}
+                    label="Physics"
+                    disabled={!editMode}
+                />
+                <FormControlLabel
+                    control={<Checkbox checked={selectedCourses.includes("Mathematics")} onChange={handleCourseChange} name="Mathematics" />}
+                    label="Mathematics"
+                    disabled={!editMode}
+                />
+                <FormControlLabel
+                    control={<Checkbox checked={selectedCourses.includes("Chemistry")} onChange={handleCourseChange} name="Chemistry" />}
+                    label="Chemistry"
+                    disabled={!editMode}
+                />
+                {/* Add more courses as needed */}
+            </>
             <Button onClick={editMode ? handleSaveClick : handleEditClick} variant="contained" color="primary">
                 {editMode ? 'Save Changes' : 'Edit Profile'}
             </Button>

@@ -89,8 +89,8 @@ public class AuthEndpoint {
         //String hashedPassword = encoder.encode(userRequest.getPassword());
 
         log.info("Update user using: {}", userRequest);
-        log.info("Updating user profile with userId={}, email={}, firstName={}, lastName={}, username={}",
-                userId, userRequest.getEmail(), userRequest.getFirstName(),
+        log.info("Updating user profile with userId={}, areaofstudy={}, email={}, firstName={}, lastName={}, username={}",
+                userId, userRequest.getCourses(), userRequest.getEmail(), userRequest.getFirstName(),
                 userRequest.getLastName(), userRequest.getUsername());
 
 
@@ -98,7 +98,7 @@ public class AuthEndpoint {
         jdbcTemplate.update("UPDATE users SET " +
                         "email_address = ?, " +
                         //"password = ?, " +
-                        //"areaofstudy = ?, " +
+                        "areaofstudy = ?, " +
                         "namefirst = ?, " +
                         "namelast = ?, " +
                         //"istutor = ?, " +
@@ -106,7 +106,7 @@ public class AuthEndpoint {
                         "WHERE user_id = ?",
                 userRequest.getEmail(),
                 //hashedPassword,
-                //"Computer Science",
+                userRequest.getCourses(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 //userRequest.getIsTutor(),
@@ -125,6 +125,7 @@ public class AuthEndpoint {
         private String lastName;
         private String email;
         private Boolean isTutor;
+        private String courses;
 
         public String getUsername() {
             return username;
@@ -149,6 +150,8 @@ public class AuthEndpoint {
         public Boolean getIsTutor() {
             return isTutor;
         }
+
+        public String getCourses() { return courses; }
 
     }
 }
