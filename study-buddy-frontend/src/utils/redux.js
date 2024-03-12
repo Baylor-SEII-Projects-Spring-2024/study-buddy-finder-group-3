@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { thunk } from 'redux-thunk';
 import authReducer from './authSlice'
+import meetingsReducer from './meetingsSlice';
 
 const reducers = combineReducers({
-    auth: authReducer
+    auth: authReducer,
+    meetings: meetingsReducer
     // Add your reducers here
 });
 

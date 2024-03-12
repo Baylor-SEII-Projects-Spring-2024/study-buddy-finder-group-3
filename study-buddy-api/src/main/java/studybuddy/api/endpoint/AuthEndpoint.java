@@ -26,7 +26,6 @@ public class AuthEndpoint {
     JdbcTemplate jdbcTemplate;
 
     @PostMapping("/login")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> login(@RequestBody UserReq loginRequest) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
         Optional<User> user = userService.findByUsername(loginRequest.getUsername());
@@ -60,7 +59,6 @@ public class AuthEndpoint {
 
 
     @PostMapping("/createAccount")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean addUser(@RequestBody UserReq userRequest) {
         List<Object[]> parameters = new ArrayList<>();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -82,7 +80,6 @@ public class AuthEndpoint {
     }
 
     @GetMapping("/checkUsername/{username}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean validateUsername(@PathVariable String username){
         try{
             Optional<User> user = userService.findByUsername(username);
@@ -95,7 +92,6 @@ public class AuthEndpoint {
     }
 
     @GetMapping("/checkEmail/{email}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean validateEmail(@PathVariable String email){
         try{
             Optional<User> user = userService.findByEmail(email);

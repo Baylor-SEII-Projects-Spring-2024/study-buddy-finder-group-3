@@ -10,7 +10,7 @@ import { useRouter } from "next/router"
 import axios from "axios"
 import Checkbox from "@mui/material/Checkbox"
 import {FormControlLabel, FormGroup} from "@mui/material";
-
+import { API_URL } from "@/utils/config";
 
 function CreateAccount({ open, onClose }) {
   const [firstName, setFirstName] = useState("");
@@ -81,21 +81,21 @@ function CreateAccount({ open, onClose }) {
       return;
     }
     try {
-      const usernameCheckResponse = await axios.get(`http://localhost:8080/auth/checkUsername/${username}`);
+      const usernameCheckResponse = await axios.get(`${API_URL}/auth/checkUsername/${username}`);
       if (!usernameCheckResponse.data) {
         console.log(username + " already in database");
         toast.error(username + " already belongs to another account");
         return;
       }
 
-      const emailCheckResponse = await axios.get(`http://localhost:8080/auth/checkEmail/${email}`);
+      const emailCheckResponse = await axios.get(`${API_URL}/auth/checkEmail/${email}`);
       if (!emailCheckResponse.data) {
         console.log(email + " already in database");
         toast.error(email + " already belongs to another account");
         return;
       }
 
-      const response = await axios.post(`http://localhost:8080/auth/createAccount`, {
+      const response = await axios.post(`${API_URL}/auth/createAccount`, {
         username,
         password,
         firstName,

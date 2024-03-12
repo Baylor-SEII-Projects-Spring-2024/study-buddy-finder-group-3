@@ -17,7 +17,6 @@ public class GetProfileEndpoint {
     }
 
     @GetMapping("/{userId}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<User> getUserProfile(@PathVariable Long userId) {
         return userService.findUser(userId)
                 .map(ResponseEntity::ok)
