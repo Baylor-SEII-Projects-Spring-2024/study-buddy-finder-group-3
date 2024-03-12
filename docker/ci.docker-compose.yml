@@ -3,7 +3,6 @@ services:
   frontend:
     image: study-buddy-frontend
     build:
-      NEXT_PUBLIC_API_URL: http://34.16.138.129:8080
       context: ../study-buddy-frontend
       dockerfile: ../docker/study-buddy-frontend.Dockerfile
     restart: always
