@@ -79,6 +79,30 @@ public class AuthEndpoint {
         return true;
     }
 
+    @GetMapping("/checkUsername/{username}")
+    public boolean validateUsername(@PathVariable String username){
+        try{
+            Optional<User> user = userService.findByUsername(username);
+            return user.isEmpty();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+    }
+
+    @GetMapping("/checkEmail/{email}")
+    public boolean validateEmail(@PathVariable String email){
+        try{
+            Optional<User> user = userService.findByEmail(email);
+            return user.isEmpty();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+    }
+
 
     static class UserReq {
         private String username;

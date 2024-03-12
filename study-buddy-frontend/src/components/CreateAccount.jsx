@@ -75,8 +75,26 @@ function CreateAccount({ open, onClose }) {
       toast.error("Password cannot be empty");
       return;
     }
-
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if(!emailRegex.test(email)){
+      toast.error("Invalid email address format");
+      return;
+    }
     try {
+      const usernameCheckResponse = await axios.get(`${API_URL}/auth/checkUsername/${username}`);
+      if (!usernameCheckResponse.data) {
+        console.log(username + " already in database");
+        toast.error(username + " already belongs to another account");
+        return;
+      }
+
+      const emailCheckResponse = await axios.get(`${API_URL}/auth/checkEmail/${email}`);
+      if (!emailCheckResponse.data) {
+        console.log(email + " already in database");
+        toast.error(email + " already belongs to another account");
+        return;
+      }
+
       const response = await axios.post(`${API_URL}/auth/createAccount`, {
         username,
         password,
@@ -198,5 +216,4 @@ function CreateAccount({ open, onClose }) {
       </Modal>
   );
 }
-
 export default CreateAccount;
