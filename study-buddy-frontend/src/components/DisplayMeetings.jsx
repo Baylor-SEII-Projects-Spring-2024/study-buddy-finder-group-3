@@ -1,22 +1,32 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import {
   List,
   ListItem,
-  ListItemText,
+  Card,
+  CardContent,
   Typography,
-  Paper,
   Grid,
   Link,
+  Container,
+  Box,
+  CircularProgress,
 } from "@mui/material"
+import LocationOnIcon from "@mui/icons-material/LocationOn"
+import AccessTimeIcon from "@mui/icons-material/AccessTime"
+import VideocamIcon from "@mui/icons-material/Videocam"
+import axios from "axios";
+import MeetingModal from "./MeetingModal.jsx"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
   const user = useSelector(selectUser)
   const meetings = useSelector((state) => state.meetings.meetings)
   const meetingsStatus = useSelector((state) => state.meetings.status)
+  const [selectedMeeting, setSelectedMeeting] = useState(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (user && user.id && meetingsStatus === "idle") {
@@ -24,40 +34,79 @@ function DisplayMeetings() {
     }
   }, [dispatch, user, meetingsStatus])
 
+  const handleOpenModal = async (meeting) => {
+    const attendeeProfiles = await Promise.all(
+      meeting.attendeeUserIds
+        .filter(id => id !== user.id) 
+        .map(async (userId) => {
+          try {
+            const response = await axios.get(`http://localhost:8080/profile/${userId}`);
+            console.log("profile res", response)
+            return response.data; 
+          } catch (error) {
+            console.error("Error fetching attendee info:", error);
+            return null;
+          }
+        })
+    );
+  
+    setSelectedMeeting({
+      ...meeting,
+      attendeeProfiles: attendeeProfiles.filter(profile => profile !== null), 
+    });
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false)
+  }
+
   if (meetingsStatus === "loading") {
     return (
-      <Typography variant="h6" gutterBottom>
-        Loading meetings...
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <CircularProgress />
+      </Box>
     )
   }
 
   if (meetingsStatus === "failed") {
     return (
-      <Typography variant="h6" gutterBottom>
-        Error loading meetings.
-      </Typography>
+      <Container>
+        <Typography variant="h6" gutterBottom>
+          Error loading meetings.
+        </Typography>
+      </Container>
     )
   }
 
   return (
-    <div style={{ margin: "20px" }}>
+    <Container>
       <Typography variant="h4" gutterBottom>
         My Meetings
       </Typography>
       <List>
         {meetings.map((meeting) => (
-          <ListItem key={meeting.id} divider>
-            <Paper style={{ padding: "20px", width: "100%" }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Typography variant="h5">{meeting.title}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">{meeting.description}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body2" color="textSecondary">
+          <ListItem
+            key={meeting.id}
+            divider
+            onClick={() => handleOpenModal(meeting)}
+            sx={{ cursor: "pointer" }}
+          >
+            <Card variant="outlined" sx={{ width: "100%" }}>
+              <CardContent>
+                <Typography variant="h5" gutterBottom>
+                  {meeting.title}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  {meeting.description}
+                </Typography>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
                     {meeting.link ? (
                       <Link
                         href={
@@ -68,25 +117,44 @@ function DisplayMeetings() {
                         }
                         target="_blank"
                         rel="noopener noreferrer"
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
                       >
+                        <VideocamIcon />
                         Join Online Meeting
                       </Link>
                     ) : (
-                      `Location: ${meeting.location || "Not specified"}`
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <LocationOnIcon />
+                        <Typography variant="body2">
+                          Location: {meeting.location || "Not specified"}
+                        </Typography>
+                      </Box>
                     )}
-                  </Typography>
+                  </Grid>
+                  <Grid item ml="auto">
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <AccessTimeIcon />
+                      <Typography variant="body2">
+                        Date: {new Date(meeting.date).toLocaleString()}
+                      </Typography>
+                    </Box>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="overline">
-                    Date: {new Date(meeting.date).toLocaleString()}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Paper>
+              </CardContent>
+            </Card>
           </ListItem>
         ))}
       </List>
-    </div>
+      {selectedMeeting && (
+        <MeetingModal
+          meeting={selectedMeeting}
+          open={modalOpen}
+          handleClose={handleCloseModal}
+        />
+      )}
+    </Container>
   )
 }
 

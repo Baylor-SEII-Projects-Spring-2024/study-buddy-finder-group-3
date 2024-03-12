@@ -23,6 +23,10 @@ public class Meeting {
     @Transient
     private List<Long> invitedUserIds;
 
+
+    @Transient
+    private List<Long> attendeeUserIds;
+
     @Column(name = "DESCRIPTION")
     String description;
 

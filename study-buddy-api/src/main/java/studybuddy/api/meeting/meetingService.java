@@ -1,12 +1,16 @@
 package studybuddy.api.meeting;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import studybuddy.api.endpoint.AuthEndpoint;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class meetingService {
@@ -19,6 +23,7 @@ public class meetingService {
 
     @Autowired
     public UserRepository userRepository;
+    private static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
 
     @Transactional
     public void createMeeting(Meeting meeting, String creatorUsername) {
@@ -46,7 +51,16 @@ public class meetingService {
     }
 
     public List<Meeting> getMeetingsByUserId(Long userId) {
-        return meetingRepository.findMeetingsByUserId(userId);
+        List<Meeting> meetings = meetingRepository.findMeetingsByUserId(userId);
+        meetings.forEach(meeting -> {
+            List<UserMeeting> userMeetings = userMeetingRepository.findByMeetingId(meeting.getId());
+
+            List<Long> attendeeUserIds = userMeetings.stream()
+                    .map(um -> um.getUser().getId())
+                    .collect(Collectors.toList());
+            meeting.setAttendeeUserIds(attendeeUserIds);
+        });
+        return meetings;
     }
 
 }
