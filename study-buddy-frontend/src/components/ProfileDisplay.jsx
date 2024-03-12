@@ -49,10 +49,10 @@ function ProfileDisplay() {
         try {
             // Prepare the updated profile data
             const updatedProfile = {
-                emailAddress: profile.emailAddress,
+                email: profile.emailAddress,
                 username: profile.username,
-                nameFirst: profile.nameFirst,
-                nameLast: profile.nameLast,
+                firstName: profile.nameFirst,
+                lastName: profile.nameLast,
                 // Add other fields as needed
             };
             console.log("Saving profile: {}", updatedProfile);
