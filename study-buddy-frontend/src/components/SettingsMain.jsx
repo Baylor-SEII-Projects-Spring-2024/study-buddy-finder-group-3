@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-/*import AccountSettings from "./AccountSettings";
-import CourseSettings from "./CourseSettings";
-import HelpSettings from "./HelpSettings";*/
 
 function SettingsMain() {
     const [selectedSetting, setSelectedSetting] = useState("Account");
