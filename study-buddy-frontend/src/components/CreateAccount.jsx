@@ -10,7 +10,7 @@ import { useRouter } from "next/router"
 import axios from "axios"
 import Checkbox from "@mui/material/Checkbox"
 import {FormControlLabel, FormGroup} from "@mui/material";
-
+import { API_URL } from "@/utils/config";
 
 function CreateAccount({ open, onClose }) {
   const [firstName, setFirstName] = useState("");
@@ -77,7 +77,7 @@ function CreateAccount({ open, onClose }) {
     }
 
     try {
-      const response = await axios.post(`http://localhost:8080/auth/createAccount`, {
+      const response = await axios.post(`${API_URL}/auth/createAccount`, {
         username,
         password,
         firstName,

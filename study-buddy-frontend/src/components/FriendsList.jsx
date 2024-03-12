@@ -18,6 +18,7 @@ import styles from "@/styles/ProfileDisplay.module.css";
 import {TextField} from "@mui/material";
 import FriendProfile from "./FriendProfile";
 import Login from "./Login";
+import { API_URL } from "@/utils/config";
 
 export default function FriendsList() {
 
@@ -49,7 +50,7 @@ export default function FriendsList() {
   
   const fetchAllInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/friends/${user.id}/all`);
+      const response = await axios.get(`${API_URL}/friends/${user.id}/all`);
       setFriendsList(response.data);
     } catch (error) {
       console.error("Error fetching friends info:", error);
