@@ -3,6 +3,11 @@ FROM node:20 AS build
 WORKDIR /build
 COPY . .
 
+# Use ARG to pass the environment variable into the build stage
+ARG NEXT_PUBLIC_API_URL
+# Make it available as an environment variable during the build
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 RUN yarn install
 RUN yarn run build
 
