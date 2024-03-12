@@ -9,6 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import Button from "@mui/material/Button";
+import { API_URL } from "@/utils/config";
 
 export default function FriendsRequest( {onUpdate}) {
 
@@ -35,7 +36,7 @@ export default function FriendsRequest( {onUpdate}) {
   
   const fetchAllInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/friends/${user.id}/getRequests`);
+      const response = await axios.get(`${API_URL}/friends/${user.id}/getRequests`);
       setFriendsList(response.data);
     } catch (error) {
       console.error("Error fetching friends info:", error);
@@ -44,7 +45,7 @@ export default function FriendsRequest( {onUpdate}) {
 
   const removeRequest = (user1) => {
     try {
-      axios.post(`http://localhost:8080/friends/${user1.id}/delete/${user.id}`)
+      axios.post(`${API_URL}/friends/${user1.id}/delete/${user.id}`)
        .then(response => {
          console.log(response);
       })
@@ -58,7 +59,7 @@ export default function FriendsRequest( {onUpdate}) {
 
   const handleListItemClick = (event, user2) => {
     try {
-      axios.post(`http://localhost:8080/friends/${user.id}/add/${user2.id}`)
+      axios.post(`${API_URL}/friends/${user.id}/add/${user2.id}`)
        .then(response => {
          console.log(response);
       })
