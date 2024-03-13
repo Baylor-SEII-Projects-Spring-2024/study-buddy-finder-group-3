@@ -76,7 +76,7 @@ function DisplayMeetings() {
         .map(async (userId) => {
           try {
             const response = await axios.get(
-              `http://localhost:8080/profile/${userId}`
+              `${API_URL}/profile/${userId}`
             )
             console.log("profile res", response)
             return response.data

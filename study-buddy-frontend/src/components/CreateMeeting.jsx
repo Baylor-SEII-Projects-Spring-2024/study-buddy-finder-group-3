@@ -96,7 +96,7 @@ function CreateMeeting({ open, onClose }) {
         const invitedUserIds = selectedInvites.map(invite => invite.id); 
 
         const response = await axios.post(
-            `http://localhost:8080/meeting/createMeeting`,
+            `${API_URL}/meeting/createMeeting`,
             {
                 title: meetingTitle,
                 description: meetingDescription,
