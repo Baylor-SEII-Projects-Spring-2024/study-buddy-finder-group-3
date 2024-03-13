@@ -10,7 +10,7 @@ import { useRouter } from "next/router"
 import axios from "axios"
 import { useDispatch } from 'react-redux';
 import { setToken, setUser } from '@/utils/authSlice.js';
-
+import { API_URL } from "@/utils/config";
 
 function Login({ open, onClose }) {
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ function Login({ open, onClose }) {
     }
 
     try {
-      const response = await axios.post(`http://localhost:8080/auth/login`, {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         username,
         password
       })

@@ -15,6 +15,7 @@ import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
+import { API_URL } from "@/utils/config";
 
 const style = {
   position: "absolute",
@@ -45,7 +46,7 @@ function CreateMeeting({ open, onClose }) {
     setSearchTerm(newSearchTerm);
     if (newSearchTerm.length > 1) { 
       try {
-        const response = await axios.get(`http://localhost:8080/friends/${user.id}/get/${newSearchTerm}`);
+        const response = await axios.get(`${API_URL}/friends/${user.id}/get/${newSearchTerm}`);
         setSearchResults(response.data);
       } catch (error) {
         console.error("Failed to search users", error);

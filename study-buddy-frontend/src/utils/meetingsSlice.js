@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { logout } from './authSlice'
 import axios from 'axios';
+import { API_URL } from './config';
 
 export const fetchMeetingsByUserId = createAsyncThunk(
   'meetings/fetchByUserId',
   async (userId) => {
-    const response = await axios.get(`http://localhost:8080/meeting/user/${userId}/meetings`);
+    const response = await axios.get(`${API_URL}/meeting/user/${userId}/meetings`);
     return response.data; 
   }
 );

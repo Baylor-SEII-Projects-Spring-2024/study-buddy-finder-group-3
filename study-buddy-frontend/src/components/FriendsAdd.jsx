@@ -12,6 +12,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { ListItemButton } from "@mui/material"
 import { toast } from "react-toastify"
+import { API_URL } from "@/utils/config";
 
 function FriendsAdd() {
   const user = useSelector(selectUser)
@@ -35,7 +36,7 @@ function FriendsAdd() {
 
   const fetchAddInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/friends/${user.id}/get/${searchTerm}`);
+      const response = await axios.get(`${API_URL}/friends/${user.id}/get/${searchTerm}`);
       setFriendsList(response.data);
     } catch (error) {
       console.error("Error fetching friends info:", error);
@@ -52,7 +53,7 @@ function FriendsAdd() {
 
   const handleListItemClick = (event, user2) => {
     try {
-      axios.post(`http://localhost:8080/friends/${user.id}/request/${user2.id}`)
+      axios.post(`${API_URL}/friends/${user.id}/request/${user2.id}`)
        .then(response => {
          console.log(response);
       })

@@ -10,6 +10,7 @@ import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectToken, setToken, logout } from "@/utils/authSlice.js"
 import CreateMeeting from "./CreateMeeting"
+import { API_URL } from "@/utils/config";
 
 function Header() {
   const router = useRouter()
