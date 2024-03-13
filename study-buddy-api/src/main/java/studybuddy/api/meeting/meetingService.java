@@ -63,4 +63,35 @@ public class meetingService {
         return meetings;
     }
 
+    @Transactional
+    public Meeting updateMeeting(Long meetingId, Meeting updatedMeetingDetails) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found: " + meetingId));
+
+        if (updatedMeetingDetails.getTitle() != null) {
+            meeting.setTitle(updatedMeetingDetails.getTitle());
+        }
+        if (updatedMeetingDetails.getDescription() != null) {
+            meeting.setDescription(updatedMeetingDetails.getDescription());
+        }
+        if (updatedMeetingDetails.getDate() != null) {
+            meeting.setDate(updatedMeetingDetails.getDate());
+        }
+        if (updatedMeetingDetails.getLocation() != null) {
+            meeting.setLocation(updatedMeetingDetails.getLocation());
+        }
+
+        return meetingRepository.save(meeting);
+    }
+
+    @Transactional
+    public void deleteMeeting(Long meetingId) {
+        List<UserMeeting> userMeetings = userMeetingRepository.findByMeetingId(meetingId);
+        userMeetingRepository.deleteAll(userMeetings);
+
+        meetingRepository.deleteById(meetingId);
+    }
+
+
+
 }

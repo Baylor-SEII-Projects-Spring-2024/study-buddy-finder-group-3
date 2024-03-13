@@ -13,12 +13,22 @@ import {
   Container,
   Box,
   CircularProgress,
+  IconButton,
 } from "@mui/material"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
 import VideocamIcon from "@mui/icons-material/Videocam"
-import axios from "axios";
+import axios from "axios"
 import MeetingModal from "./MeetingModal.jsx"
+import DeleteIcon from "@mui/icons-material/Delete"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
+import Button from "@mui/material/Button"
+import { toast } from "react-toastify"
+import { API_URL } from "@/utils/config"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -27,6 +37,31 @@ function DisplayMeetings() {
   const meetingsStatus = useSelector((state) => state.meetings.status)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [meetingToDelete, setMeetingToDelete] = useState(null)
+  const [showDeleteIcon, setShowDeleteIcon] = useState(false)
+
+  const handleOpenDeleteDialog = (meeting) => {
+    setMeetingToDelete(meeting)
+    setOpenDeleteDialog(true)
+  }
+
+  const updateMeetingInState = () => {
+    dispatch(fetchMeetingsByUserId(user.id))
+  }
+
+  const handleDeleteMeeting = async () => {
+    try {
+      await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}`)
+      setOpenDeleteDialog(false)
+      dispatch(fetchMeetingsByUserId(user.id))
+      toast.success("Meeting successfully deleted")
+    } catch (error) {
+      console.error("Failed to delete meeting:", error)
+    }
+
+    setOpenDeleteDialog(false) 
+  }
 
   useEffect(() => {
     if (user && user.id && meetingsStatus === "idle") {
@@ -37,28 +72,31 @@ function DisplayMeetings() {
   const handleOpenModal = async (meeting) => {
     const attendeeProfiles = await Promise.all(
       meeting.attendeeUserIds
-        .filter(id => id !== user.id) 
+        .filter((id) => id !== user.id)
         .map(async (userId) => {
           try {
-            const response = await axios.get(`http://localhost:8080/profile/${userId}`);
+            const response = await axios.get(
+              `http://localhost:8080/profile/${userId}`
+            )
             console.log("profile res", response)
-            return response.data; 
+            return response.data
           } catch (error) {
-            console.error("Error fetching attendee info:", error);
-            return null;
+            console.error("Error fetching attendee info:", error)
+            return null
           }
         })
-    );
-  
+    )
+
     setSelectedMeeting({
       ...meeting,
-      attendeeProfiles: attendeeProfiles.filter(profile => profile !== null), 
-    });
-    setModalOpen(true);
-  };
+      attendeeProfiles: attendeeProfiles.filter((profile) => profile !== null),
+    })
+    setModalOpen(true)
+  }
 
   const handleCloseModal = () => {
     setModalOpen(false)
+    setSelectedMeeting(null)
   }
 
   if (meetingsStatus === "loading") {
@@ -93,9 +131,10 @@ function DisplayMeetings() {
         {meetings.map((meeting) => (
           <ListItem
             key={meeting.id}
-            divider
             onClick={() => handleOpenModal(meeting)}
             sx={{ cursor: "pointer" }}
+            onMouseEnter={() => setShowDeleteIcon(true)}
+            onMouseLeave={() => setShowDeleteIcon(false)}
           >
             <Card variant="outlined" sx={{ width: "100%" }}>
               <CardContent>
@@ -144,6 +183,19 @@ function DisplayMeetings() {
                 </Grid>
               </CardContent>
             </Card>
+            {showDeleteIcon && (
+              <IconButton
+                aria-label="delete"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  handleOpenDeleteDialog(meeting)
+                  setSelectedMeeting(null)
+                }}
+                sx={{ position: "absolute", right: -4, top: -8 }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </ListItem>
         ))}
       </List>
@@ -152,8 +204,29 @@ function DisplayMeetings() {
           meeting={selectedMeeting}
           open={modalOpen}
           handleClose={handleCloseModal}
+          updateMeetingInParent={updateMeetingInState}
         />
       )}
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this meeting?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+          <Button onClick={handleDeleteMeeting} autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 }
