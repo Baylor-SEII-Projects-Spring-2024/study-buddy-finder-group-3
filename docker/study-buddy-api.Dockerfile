@@ -3,6 +3,9 @@ FROM gradle:8.5.0-jdk17 AS build
 WORKDIR /build
 COPY . .
 
+# Run tests
+RUN ./gradlew test --no-daemon
+
 RUN ./gradlew build --no-daemon -p .
 
 # Copy the build artifacts
