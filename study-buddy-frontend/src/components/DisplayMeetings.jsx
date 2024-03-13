@@ -60,7 +60,7 @@ function DisplayMeetings() {
       console.error("Failed to delete meeting:", error)
     }
 
-    setOpenDeleteDialog(false) 
+    setOpenDeleteDialog(false)
   }
 
   useEffect(() => {
@@ -75,9 +75,7 @@ function DisplayMeetings() {
         .filter((id) => id !== user.id)
         .map(async (userId) => {
           try {
-            const response = await axios.get(
-              `${API_URL}/profile/${userId}`
-            )
+            const response = await axios.get(`${API_URL}/profile/${userId}`)
             console.log("profile res", response)
             return response.data
           } catch (error) {
@@ -159,6 +157,11 @@ function DisplayMeetings() {
                         display="flex"
                         alignItems="center"
                         gap={1}
+                        onClick={(event) => {
+                          console.log("click")
+                          event.stopPropagation()
+                          setSelectedMeeting(null)
+                        }}
                       >
                         <VideocamIcon />
                         Join Online Meeting

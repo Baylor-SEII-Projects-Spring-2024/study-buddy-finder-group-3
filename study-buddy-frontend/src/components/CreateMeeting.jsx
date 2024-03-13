@@ -185,18 +185,6 @@ function CreateMeeting({ open, onClose }) {
               <TextField {...params} sx={{ width: "200%", mt: 2, mr: 2 }} />
             )}
           />
-          {/* <DateTimePicker
-            sx={{ mt: 2, ml: 5 }}
-            label="End Time"
-            value={meetingDate}
-            onChange={handleDateChange}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                sx={{ ...datePickerStyle, mt: 2, ml: 2 }}
-              />
-            )}
-          /> */}
         </LocalizationProvider>
         <TextField
           margin="dense"

@@ -16,9 +16,14 @@ import {
 import { API_URL } from "@/utils/config"
 import axios from "axios"
 import { toast } from "react-toastify"
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import isValid from "date-fns/isValid"
+import VideocamIcon from "@mui/icons-material/Videocam"
 
 function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
-  const [friendProfileOpen, setFriendProfileOfpen] = useState(false)
+  const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [editMode, setEditMode] = useState(false)
   const [editedTitle, setEditedTitle] = useState(meeting.title)
@@ -26,7 +31,10 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
     meeting.description
   )
   const [editedLocation, setEditedLocation] = useState(meeting.location)
-  const [editedDate, setEditedDate] = useState(meeting.date)
+  const [editedDate, setEditedDate] = useState(
+    isValid(new Date(meeting.date)) ? new Date(meeting.date) : new Date()
+  )
+  const [editedLink, setEditedLink] = useState(meeting.link)
 
   useEffect(() => {
     if (!open) {
@@ -37,6 +45,10 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
       setEditedDate(meeting.date)
     }
   }, [open, meeting])
+
+  const handleDateChange = (newDate) => {
+    setEditedDate(newDate)
+  }
 
   const handleOpenFriendProfile = (user) => {
     setSelectedUser(user)
@@ -52,8 +64,13 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
       const updatedMeeting = {
         title: editedTitle,
         description: editedDescription,
-        location: editedLocation,
         date: editedDate,
+      }
+
+      if (editedLink) {
+        updatedMeeting.link = editedLink
+      } else {
+        updatedMeeting.location = editedLocation
       }
 
       try {
@@ -73,10 +90,12 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         setEditedTitle(savedMeeting.title)
         setEditedDescription(savedMeeting.description)
         setEditedLocation(savedMeeting.location)
+        setEditedLink(savedMeeting.link)
         setEditedDate(savedMeeting.date)
 
         toast.success("Meeting updated successfully")
         handleClose()
+
         console.log("Meeting updated successfully:", savedMeeting)
       } catch (error) {
         handleClose()
@@ -117,7 +136,7 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
               variant="outlined"
               value={editedTitle}
               onChange={(e) => setEditedTitle(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, mt: 2 }}
             />
             <TextField
               fullWidth
@@ -129,25 +148,34 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
               onChange={(e) => setEditedDescription(e.target.value)}
               sx={{ mb: 2 }}
             />
-            <TextField
-              fullWidth
-              label="Location"
-              variant="outlined"
-              value={editedLocation}
-              onChange={(e) => setEditedLocation(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              fullWidth
-              type="datetime-local"
-              variant="outlined"
-              value={editedDate}
-              onChange={(e) => setEditedDate(e.target.value)}
-              sx={{ mb: 2 }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+            {editedLink ? (
+              <TextField
+                fullWidth
+                label="Link"
+                variant="outlined"
+                value={editedLink}
+                onChange={(e) => setEditedLink(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+            ) : (
+              <TextField
+                fullWidth
+                label="Location"
+                variant="outlined"
+                value={editedLocation}
+                onChange={(e) => setEditedLocation(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+            )}
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                label="Start Time"
+                value={editedDate}
+                onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} />}
+                sx={{ width: "100%", mt: 2 }}
+              />
+            </LocalizationProvider>
           </>
         ) : (
           <>
@@ -156,7 +184,26 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
             </Typography>
             <Typography sx={{ mt: 2 }}>{meeting.description}</Typography>
             <Typography sx={{ mt: 2 }}>
-              Location/Link: {meeting.location || meeting.link}
+              {meeting.link ? (
+                <Link
+                  href={
+                    meeting.link.startsWith("http://") ||
+                    meeting.link.startsWith("https://")
+                      ? meeting.link
+                      : `https://${meeting.link}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                >
+                  <VideocamIcon />
+                  Join Online Meeting
+                </Link>
+              ) : (
+                `Location: ${meeting.location}`
+              )}
             </Typography>
             <Typography sx={{ mt: 2 }}>
               Date: {new Date(meeting.date).toLocaleString()}
@@ -165,11 +212,11 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         )}
 
         <IconButton
-          aria-label="edit"
+          aria-label={editMode ? "save" : "edit"}
           onClick={handleEdit}
           sx={{ position: "absolute", right: 48, top: 8 }}
         >
-          <EditIcon />
+          {editMode ? <SaveIcon /> : <EditIcon />}
         </IconButton>
 
         <List sx={{ maxHeight: 200, overflow: "auto" }}>
