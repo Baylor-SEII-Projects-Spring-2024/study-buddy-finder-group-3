@@ -80,6 +80,9 @@ public class meetingService {
         if (updatedMeetingDetails.getLocation() != null) {
             meeting.setLocation(updatedMeetingDetails.getLocation());
         }
+        if (updatedMeetingDetails.getLink() != null) {
+            meeting.setLink(updatedMeetingDetails.getLink());
+        }
 
         return meetingRepository.save(meeting);
     }
