@@ -43,4 +43,5 @@ jobs:
         run: |
           docker compose -f docker/ci.docker-compose.yml down
           docker compose -f docker/ci.docker-compose.yml up -d --build
+          docker system prune -f
           docker image prune -af
