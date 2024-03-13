@@ -4,10 +4,11 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import styles from "@/styles/ProfileDisplay.module.css";
 import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import { useSelector } from "react-redux";
-import { selectToken, selectUser } from "@/utils/authSlice.js";
-import { useRouter } from "next/router";
+import Avatar from '@mui/material/Avatar';
+import { useSelector } from "react-redux"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { useRouter } from "next/router"
+import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
 
 function ProfileDisplay() {
@@ -34,7 +35,7 @@ function ProfileDisplay() {
 
     const fetchProfileInfo = async (userId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/profile/${userId}`);
+            const response = await axios.get(`${API_URL}/profile/${userId}`);
 
             // Log the entire response data object
             console.log("Response data:", response.data);
@@ -81,7 +82,7 @@ function ProfileDisplay() {
             };
 
             // Make a PUT request to update the profile
-            const response = await axios.put(`http://localhost:8080/auth/updateProfile/${userId}`, updatedProfile, {
+            const response = await axios.put(`${API_URL}/auth/updateProfile/${userId}`, updatedProfile, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

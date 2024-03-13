@@ -15,6 +15,7 @@ import Badge from '@mui/material/Badge';
 import axios from "axios"
 import { selectToken, selectUser } from "@/utils/authSlice.js"
 import { useSelector } from "react-redux"
+import { API_URL } from "@/utils/config";
 
 export default function FriendsBar() {
 
@@ -35,7 +36,7 @@ export default function FriendsBar() {
 
   const fetchRequests = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/friends/${user.id}/getRequests`);
+      const response = await axios.get(`${API_URL}/friends/${user.id}/getRequests`);
       setFriendsList(response.data);
     } catch (error) {
       console.error("Error fetching friends info:", error);
