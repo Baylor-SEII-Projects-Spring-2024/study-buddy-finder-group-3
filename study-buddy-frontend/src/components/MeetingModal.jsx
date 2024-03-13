@@ -117,7 +117,7 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
               variant="outlined"
               value={editedTitle}
               onChange={(e) => setEditedTitle(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, mt: 2 }}
             />
             <TextField
               fullWidth
@@ -165,11 +165,11 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         )}
 
         <IconButton
-          aria-label="edit"
+          aria-label={editMode ? "save" : "edit"}
           onClick={handleEdit}
           sx={{ position: "absolute", right: 48, top: 8 }}
         >
-          <EditIcon />
+          {editMode ? <SaveIcon /> : <EditIcon />}
         </IconButton>
 
         <List sx={{ maxHeight: 200, overflow: "auto" }}>
