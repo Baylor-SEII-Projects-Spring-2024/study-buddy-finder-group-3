@@ -52,13 +52,15 @@ function LandingPage() {
             >
               Login
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenCreateAccount}
-            >
-              Join Now
-            </Button>
+            <ScrollLink to="join" smooth={true} offset={0} duration={500}>
+              <Button
+                variant="contained"
+                color="primary"
+                // onClick={handleOpenCreateAccount}
+              >
+                Join Now
+              </Button>
+            </ScrollLink>
           </Box>
         </Toolbar>
       </AppBar>
@@ -78,7 +80,7 @@ function LandingPage() {
           <Typography variant="h4" gutterBottom>
             Our Mission
           </Typography>
-          <Typography textAlign="center">stuff go here </Typography>
+          <Typography textAlign="center">to get 3js to not be the most annoying library to work with </Typography>
         </Box>
 
         <Box
