@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { selectToken, selectUser } from "@/utils/authSlice.js";
 import { useRouter } from "next/router";
 import {toast} from "react-toastify";
+import { API_URL } from "@/utils/config";
 
 function ProfileDisplay() {
     const token = useSelector(selectToken);
@@ -33,7 +34,7 @@ function ProfileDisplay() {
 
     const fetchProfileInfo = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/profile/${user.id}`);
+            const response = await axios.get(`${API_URL}/profile/${user.id}`);
             setProfile(response.data);
         } catch (error) {
             console.error("Error fetching profile info:", error);
@@ -58,7 +59,7 @@ function ProfileDisplay() {
             console.log("Saving profile: {}", updatedProfile);
 
             // Make a PUT request to update the profile
-            const response = await axios.put(`http://localhost:8080/auth/updateProfile/${userId}`, updatedProfile, {
+            const response = await axios.put(`${API_URL}/auth/updateProfile/${userId}`, updatedProfile, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include the token for authentication
                 },

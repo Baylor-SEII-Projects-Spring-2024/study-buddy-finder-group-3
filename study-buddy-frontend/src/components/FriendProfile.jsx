@@ -7,6 +7,7 @@ import {TextField} from "@mui/material";
 import Avatar from '@mui/material/Avatar';
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
+import { API_URL } from "@/utils/config";
 
 
 function FriendProfile({ open, onClose, user }) {
@@ -27,7 +28,7 @@ function FriendProfile({ open, onClose, user }) {
   
   const fetchProfileInfo = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/profile/${user.id}`);
+      const response = await axios.get(`${API_URL}/profile/${user.id}`);
       setProfile(response.data);
     } catch (error) {
       console.error("Error fetching profile info:", error);

@@ -32,7 +32,6 @@ public class GetFriendsEndpoint {
 
     //Gets all friends with the given user
     @GetMapping("/{userId}/all")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<List<User>> getUserProfile(@PathVariable Long userId)
     {
 
@@ -58,7 +57,6 @@ public class GetFriendsEndpoint {
 
     //Gets all users with the given string in the username
     @GetMapping("/{userId}/get/{username}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<List<User>> getAddFriend(@PathVariable String username, @PathVariable Long userId)
     {
 
@@ -94,7 +92,6 @@ public class GetFriendsEndpoint {
 
     //Creates friend request
     @PostMapping("/{idFrom}/request/{idTo}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean addFriendRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
     {
         List<Object[]> parameters = new ArrayList<>();
@@ -113,7 +110,6 @@ public class GetFriendsEndpoint {
 
     //Get all users who sent a friend request to user
     @GetMapping("/{userId}/getRequests")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<List<User>> getRequests(@PathVariable Long userId)
     {
 
@@ -138,7 +134,6 @@ public class GetFriendsEndpoint {
 
     //Add friend
     @PostMapping("/{idFrom}/add/{idTo}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean addFriend(@PathVariable Long idTo, @PathVariable Long idFrom)
     {
         List<Object[]> parameters = new ArrayList<>();
@@ -157,7 +152,6 @@ public class GetFriendsEndpoint {
 
     //Remove friend request
     @PostMapping("/{idFrom}/delete/{idTo}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean removeRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
     {
         String sql = "DELETE FROM friends_request WHERE userto_id = ? AND userfrom_id = ?";
