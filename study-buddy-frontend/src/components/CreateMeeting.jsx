@@ -44,7 +44,6 @@ function CreateMeeting({ open, onClose }) {
   const handleSearchChange = async (event) => {
     const newSearchTerm = event.target.value;
     setSearchTerm(newSearchTerm);
-  
     if (newSearchTerm.length > 1) { 
       try {
         const response = await axios.get(`${API_URL}/friends/${user.id}/get/${newSearchTerm}`);
@@ -68,8 +67,8 @@ function CreateMeeting({ open, onClose }) {
     }
   }
 
-  const handleDateChange = (event) => {
-    setMeetingDate(event.target.value)
+  const handleDateChange = (newValue) => {
+    setMeetingDate(newValue)
   }
 
   const handleTitleChange = (event) => {
@@ -97,7 +96,7 @@ function CreateMeeting({ open, onClose }) {
         const invitedUserIds = selectedInvites.map(invite => invite.id); 
 
         const response = await axios.post(
-            `http://localhost:8080/meeting/createMeeting`,
+            `${API_URL}/meeting/createMeeting`,
             {
                 title: meetingTitle,
                 description: meetingDescription,
@@ -186,7 +185,7 @@ function CreateMeeting({ open, onClose }) {
               <TextField {...params} sx={{ width: "200%", mt: 2, mr: 2 }} />
             )}
           />
-          <DateTimePicker
+          {/* <DateTimePicker
             sx={{ mt: 2, ml: 5 }}
             label="End Time"
             value={meetingDate}
@@ -197,7 +196,7 @@ function CreateMeeting({ open, onClose }) {
                 sx={{ ...datePickerStyle, mt: 2, ml: 2 }}
               />
             )}
-          />
+          /> */}
         </LocalizationProvider>
         <TextField
           margin="dense"

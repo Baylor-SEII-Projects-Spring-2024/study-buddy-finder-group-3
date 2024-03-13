@@ -74,9 +74,9 @@ function Header() {
           variant="contained"
           onClick={handleOpen}
           sx={{
-            backgroundColor: "#1d612a",
+            backgroundColor: "bluegrey",
             "&:hover": {
-              backgroundColor: "#0a3011",
+              backgroundColor: "bluegrey",
             },
           }}
         >
@@ -88,9 +88,9 @@ function Header() {
           variant="contained"
           onClick={handleLogout}
           sx={{
-            backgroundColor: "#1d612a",
+            backgroundColor: "bluegrey",
             "&:hover": {
-              backgroundColor: "#0a3011",
+              backgroundColor: "bluegrey",
             },
           }}
         >
@@ -102,9 +102,9 @@ function Header() {
           variant="contained"
           onClick={handleCreateAccount}
           sx={{
-            backgroundColor: "#1d612a",
+            backgroundColor: "bluegrey",
             "&:hover": {
-              backgroundColor: "#0a3011",
+              backgroundColor: "bluegrey",
             },
           }}
         >
@@ -117,13 +117,13 @@ function Header() {
           onClick={handleCreateMeetingOpen}
           sx={{
             ml: 1,
-            backgroundColor: "#1d612a",
+            backgroundColor: "bluegrey",
             "&:hover": {
-              backgroundColor: "#0a3011",
+              backgroundColor: "#bluegrey",
             },
           }}
         >
-          +
+          Create Meeting
         </Button>
       )}
 

@@ -108,9 +108,9 @@ function Login({ open, onClose }) {
             sx={{
               mt: 3,
               mb: 2,
-              backgroundColor: "green",
+              backgroundColor: "bluegrey",
               "&:hover": {
-                backgroundColor: "darkgreen",
+                backgroundColor: "bluegrey",
               },
             }}
           >

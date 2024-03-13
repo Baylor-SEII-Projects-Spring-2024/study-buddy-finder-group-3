@@ -139,7 +139,7 @@ public class AuthEndpoint {
 
 
 
-    static class UserReq {
+    public static class UserReq {
         private String username;
         private String password;
         private String firstName;
@@ -147,6 +147,15 @@ public class AuthEndpoint {
         private String email;
         private Boolean isTutor;
         private String courses;
+
+        public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
+            this.username = username;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.isTutor = isTutor;
+        }
 
         public String getUsername() {
             return username;

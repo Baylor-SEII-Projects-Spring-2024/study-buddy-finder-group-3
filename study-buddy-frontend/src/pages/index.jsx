@@ -20,10 +20,10 @@ function landing() {
       <Head>
         <title>StudyBuddy | Your Go-To Study Site</title>
       </Head>
-      <Header />
+      {/* <Header /> */}
 
       <main>
-        <h1 className={landingstyles.testingCss}>Landing page</h1>
+        {/* <h1 className={landingstyles.testingCss}>Landing page</h1> */}
         <LandingPage />
       </main>
     </>

@@ -39,5 +39,23 @@ public class MeetingEndpoint {
         }
     }
 
+    @PatchMapping("/{meetingId}")
+    public ResponseEntity<Meeting> updateMeeting(@PathVariable Long meetingId, @RequestBody Meeting meetingDetails) {
+        Meeting updatedMeeting = meetingService.updateMeeting(meetingId, meetingDetails);
+        return ResponseEntity.ok(updatedMeeting);
+    }
+
+    @DeleteMapping("/{meetingId}")
+    public ResponseEntity<?> deleteMeeting(@PathVariable Long meetingId) {
+        try {
+            meetingService.deleteMeeting(meetingId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete meeting");
+        }
+    }
+
+
+
 }
 
