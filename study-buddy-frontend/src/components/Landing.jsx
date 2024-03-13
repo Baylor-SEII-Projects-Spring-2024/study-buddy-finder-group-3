@@ -28,7 +28,7 @@ function LandingPage() {
       <AppBar position="fixed" color="default" elevation={0}>
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap>
-            Study Buddy
+            LOOK THIS CHANGES
           </Typography>
           <Box flexGrow={1} display="flex" justifyContent="flex-end">
             <ScrollLink to="mission" smooth={true} offset={0} duration={500}>
