@@ -8,26 +8,26 @@ import DisplayMeetings from "@/components/DisplayMeetings"
 import Box from "@mui/material/Box"
 
 function home() {
-  const router = useRouter()
-  const token = useSelector(selectToken)
+    const router = useRouter()
+    const token = useSelector(selectToken)
 
-  useEffect(() => {
-    if (!token) {
-      router.push("/")
-    }
-  }, [token, router])
+    useEffect(() => {
+        if (!token) {
+            router.push("/")
+        }
+    }, [token, router])
 
-  return (
-    <>
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <Header />
-        <Box sx={{ display: "flex", flexGrow: 1 }}>
-          <Sidebar />
-          <DisplayMeetings />
-        </Box>
-      </Box>
-    </>
-  )
+    return (
+        <>
+            <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                <Header />
+                <Box sx={{ display: "flex", flexGrow: 1 }}>
+                    <Sidebar />
+                    <DisplayMeetings />
+                </Box>
+            </Box>
+        </>
+    )
 }
 
 export default home
