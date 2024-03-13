@@ -105,7 +105,6 @@ public class AuthEndpoint {
 
 
     @PutMapping("/updateProfile/{userId}")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean updateProfile(@PathVariable Long userId, @RequestBody UserReq userRequest) {
         //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         //String hashedPassword = encoder.encode(userRequest.getPassword());
