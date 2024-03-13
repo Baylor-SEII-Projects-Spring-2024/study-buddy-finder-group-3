@@ -14,7 +14,6 @@ function SettingsMain() {
             <SettingsSidebar onSettingClick={handleSettingClick} />
             {selectedSetting === "Account" && <AccountSettings />}
             {selectedSetting === "Courses" && <CourseSettings />}
-            {selectedSetting === "Privacy" && <PrivacySettings />}
             {selectedSetting === "Help" && <HelpSettings />}
         </div>
     );
@@ -30,7 +29,6 @@ function SettingsSidebar({ onSettingClick }) {
             </div>
             <Button fullWidth onClick={() => onSettingClick("Account")}>Account</Button>
             <Button fullWidth onClick={() => onSettingClick("Courses")}>Courses</Button>
-            <Button fullWidth onClick={() => onSettingClick("Privacy")}>Privacy</Button>
             <Button fullWidth onClick={() => onSettingClick("Help")}>Help</Button>
         </Box>
     );
@@ -47,8 +45,9 @@ function AccountSettings() {
                 <h3> Account Information</h3>
             </div>
             <div>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Username</Button>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Password</Button>
+                <Button
+                    fullWidth style={{justifyContent: 'left', paddingLeft: "5vw" }}
+                >Change Password</Button>
             </div>
         </Box>
     )
@@ -64,7 +63,6 @@ function CourseSettings() {
             </div>
             <div>
                 <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Courses</Button>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Major</Button>
                 <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Interests</Button>
             </div>
         </Box>
