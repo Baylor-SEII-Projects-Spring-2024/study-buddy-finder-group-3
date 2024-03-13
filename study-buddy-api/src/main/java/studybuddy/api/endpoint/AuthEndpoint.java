@@ -104,6 +104,41 @@ public class AuthEndpoint {
     }
 
 
+    @PutMapping("/updateProfile/{userId}")
+    public boolean updateProfile(@PathVariable Long userId, @RequestBody UserReq userRequest) {
+        //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //String hashedPassword = encoder.encode(userRequest.getPassword());
+
+        log.info("Update user using: {}", userRequest);
+        log.info("Updating user profile with userId={}, email={}, firstName={}, lastName={}, username={}",
+                userId, userRequest.getEmail(), userRequest.getFirstName(),
+                userRequest.getLastName(), userRequest.getUsername());
+
+
+
+        jdbcTemplate.update("UPDATE users SET " +
+                        "email_address = ?, " +
+                        //"password = ?, " +
+                        //"areaofstudy = ?, " +
+                        "namefirst = ?, " +
+                        "namelast = ?, " +
+                        //"istutor = ?, " +
+                        "username = ? " +
+                        "WHERE user_id = ?",
+                userRequest.getEmail(),
+                //hashedPassword,
+                //"Computer Science",
+                userRequest.getFirstName(),
+                userRequest.getLastName(),
+                //userRequest.getIsTutor(),
+                userRequest.getUsername(),
+                userId);
+
+        return true;
+    }
+
+
+
     static class UserReq {
         private String username;
         private String password;
