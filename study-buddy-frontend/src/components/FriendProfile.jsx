@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import { API_URL } from "@/utils/config";
+import BlockIcon from '@mui/icons-material/Block';
 
 
 function FriendProfile({ open, onClose, user }) {
@@ -88,9 +89,17 @@ function FriendProfile({ open, onClose, user }) {
                     disabled
                     sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
                 />
-                <Button fullWidth variant="text" onClick={handleClose}>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button variant="text" onClick={handleClose}>
                     Close
                 </Button>
+                <Button variant="text"> {/*does not necessarily need to exist I just feel like it make sense*/}
+                    Invite to meeting
+                </Button>
+                <Button variant="text" startIcon={<BlockIcon />} style={{ color: 'red' }}>
+                    Block
+                </Button>
+                </Box>
             </Box>
         </Box>
     </Modal>
