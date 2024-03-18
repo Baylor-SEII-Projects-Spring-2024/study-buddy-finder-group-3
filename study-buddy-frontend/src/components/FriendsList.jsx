@@ -8,16 +8,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ListItemButton } from "@mui/material";
-import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import styles from "@/styles/ProfileDisplay.module.css";
-import {TextField} from "@mui/material";
+import { ListItemButton, CircularProgress } from "@mui/material";
 import FriendProfile from "./FriendProfile";
-import Login from "./Login";
 import { API_URL } from "@/utils/config";
 
 export default function FriendsList() {
@@ -29,6 +21,7 @@ export default function FriendsList() {
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = useState(true); 
 
   const handleListItemClick = (event, user) => {
     setOpen(true);
@@ -54,12 +47,23 @@ export default function FriendsList() {
       setFriendsList(response.data);
     } catch (error) {
       console.error("Error fetching friends info:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   const handleClose = (value) => {
     setOpen(false);
   };
+
+  if (loading) {
+    
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <div>
