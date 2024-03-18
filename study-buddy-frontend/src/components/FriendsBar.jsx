@@ -26,7 +26,12 @@ export default function FriendsBar() {
   const [message, setMessage] = useState('')
 
   const handleMessageUpdate = () => {
-    setMessage('update')
+    if (message === 'update') {
+      setMessage('')
+    }
+    else {
+      setMessage('update')
+    }
   }
 
   const handleButtonClick = (button) => {
