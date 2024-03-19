@@ -1,9 +1,8 @@
 import React from "react"
 import Box from "@mui/material/Box"
 import FriendsHeader from "./FriendsHeader"
-import { Drawer, IconButton, ListItemIcon, Typography } from "@mui/material"
+import { IconButton, ListItemIcon, Typography } from "@mui/material"
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import { Button } from "react-scroll";
 import PeopleIcon from '@mui/icons-material/People';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
@@ -16,7 +15,7 @@ import { ListItemButton, ListItemText, List } from "@mui/material";
 
 export default function FriendsSidebar2() {
     const [activePage, setActivePage] = React.useState('list');
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
     const containerRef = React.useRef(null);
     const [checked, setChecked] = React.useState(false);
 
