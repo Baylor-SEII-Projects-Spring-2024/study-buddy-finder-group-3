@@ -21,10 +21,6 @@ function friends() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
-        <Box sx={{ width: "25px", minHeight: "50", borderRight: "1px solid #000"}}></Box>
-        <FriendsHeader />
-      </Box>
       <FriendsSidebar2/>
     </Box>
   )
