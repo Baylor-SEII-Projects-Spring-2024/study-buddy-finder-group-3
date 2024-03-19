@@ -1,7 +1,21 @@
 import React from "react"
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import CreateAccount from "@/components/CreateAccount";
+import { useRouter } from "next/router"
 
-function dashboard() {
-  return <h1>Chat Page</h1>
+
+function chat() {
+  const router = useRouter()
+   const handleCancel = () => {
+    router.push('/')
+  }
+  
+  return (
+      <>
+        <ChatComp/> {}
+      </>
+  );
 }
 
-export default dashboard
+export default chat
