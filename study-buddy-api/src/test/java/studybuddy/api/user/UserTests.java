@@ -19,21 +19,20 @@ public class UserTests {
 
     @Test
     void testUserCreate() {
-//        User newUser = new User();
-//        newUser.userType = "STUDENT";
-//        newUser.emailAddress = "example@example.com";
-//        newUser.password = "password";
-//
-//        User savedUser = userService.saveUser(newUser);
-//        assertNotNull(savedUser.id);
-//
-//        Optional<User> foundUserOpt = userService.findUser(savedUser.id);
-//        assertTrue(foundUserOpt.isPresent());
-//        User foundUser = foundUserOpt.get();
-//
-//        assertEquals(newUser.userType, foundUser.userType);
-//        assertEquals(newUser.emailAddress, foundUser.emailAddress);
-//        assertEquals(newUser.password, foundUser.password);
+        User newUser = new User();
+        newUser.emailAddress = "example@example.com";
+        newUser.password = "password";
+
+        User savedUser = userService.saveUser(newUser);
+        assertNotNull(savedUser.id);
+
+        Optional<User> foundUserOpt = userService.findUser(savedUser.id);
+        assertTrue(foundUserOpt.isPresent());
+        User foundUser = foundUserOpt.get();
+
+        assertEquals(newUser.userType, foundUser.userType);
+        assertEquals(newUser.emailAddress, foundUser.emailAddress);
+        assertEquals(newUser.password, foundUser.password);
     }
 
     @Test

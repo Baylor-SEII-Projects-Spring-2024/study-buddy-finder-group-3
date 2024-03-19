@@ -26,7 +26,6 @@ public class AuthEndpoint {
     JdbcTemplate jdbcTemplate;
 
     @PostMapping("/login")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> login(@RequestBody UserReq loginRequest) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
         Optional<User> user = userService.findByUsername(loginRequest.getUsername());
@@ -60,7 +59,6 @@ public class AuthEndpoint {
 
 
     @PostMapping("/createAccount")
-    @CrossOrigin(origins = "http://localhost:3000")
     public boolean addUser(@RequestBody UserReq userRequest) {
         List<Object[]> parameters = new ArrayList<>();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -81,14 +79,83 @@ public class AuthEndpoint {
         return true;
     }
 
+    @GetMapping("/checkUsername/{username}")
+    public boolean validateUsername(@PathVariable String username){
+        try{
+            Optional<User> user = userService.findByUsername(username);
+            return user.isEmpty();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
 
-    static class UserReq {
+    }
+
+    @GetMapping("/checkEmail/{email}")
+    public boolean validateEmail(@PathVariable String email){
+        try{
+            Optional<User> user = userService.findByEmail(email);
+            return user.isEmpty();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+    }
+
+
+    @PutMapping("/updateProfile/{userId}")
+    public boolean updateProfile(@PathVariable Long userId, @RequestBody UserReq userRequest) {
+        //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        //String hashedPassword = encoder.encode(userRequest.getPassword());
+
+        log.info("Update user using: {}", userRequest);
+        log.info("Updating user profile with userId={}, areaofstudy={}, email={}, firstName={}, lastName={}, username={}",
+                userId, userRequest.getCourses(), userRequest.getEmail(), userRequest.getFirstName(),
+                userRequest.getLastName(), userRequest.getUsername());
+
+
+
+        jdbcTemplate.update("UPDATE users SET " +
+                        "email_address = ?, " +
+                        //"password = ?, " +
+                        "areaofstudy = ?, " +
+                        "namefirst = ?, " +
+                        "namelast = ?, " +
+                        //"istutor = ?, " +
+                        "username = ? " +
+                        "WHERE user_id = ?",
+                userRequest.getEmail(),
+                //hashedPassword,
+                userRequest.getCourses(),
+                userRequest.getFirstName(),
+                userRequest.getLastName(),
+                //userRequest.getIsTutor(),
+                userRequest.getUsername(),
+                userId);
+
+        return true;
+    }
+
+
+
+    public static class UserReq {
         private String username;
         private String password;
         private String firstName;
         private String lastName;
         private String email;
         private Boolean isTutor;
+        private String courses;
+
+        public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
+            this.username = username;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.isTutor = isTutor;
+        }
 
         public String getUsername() {
             return username;
@@ -113,6 +180,8 @@ public class AuthEndpoint {
         public Boolean getIsTutor() {
             return isTutor;
         }
+
+        public String getCourses() { return courses; }
 
     }
 }

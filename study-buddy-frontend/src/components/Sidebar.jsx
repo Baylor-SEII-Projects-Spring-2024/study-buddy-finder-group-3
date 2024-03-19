@@ -2,6 +2,7 @@ import React from "react"
 import Button from "@mui/material/Button"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
+import FriendsList from "./FriendsBar";
 
 
 function Sidebar() {
@@ -10,8 +11,16 @@ function Sidebar() {
     router.push("/profile")
   }
 
+  const navigateFriends = () => {
+    router.push("/friends")
+  }
+
   const navigateHome = () => {
     router.push("/home")
+  }
+
+  const navigateSettings = () => {
+    router.push("/settings")
   }
   return (
     <Box
@@ -19,7 +28,8 @@ function Sidebar() {
     >
       <Button  onClick={navigateHome} fullWidth>Home</Button>
       <Button onClick={navigateToProfile} fullWidth>Profile</Button>
-      <Button fullWidth>Friends</Button>
+      <Button onClick={navigateFriends} fullWidth>Friends</Button>
+      <Button onClick={navigateSettings} fullWidth>Settings</Button>
     </Box>
   )
 }
