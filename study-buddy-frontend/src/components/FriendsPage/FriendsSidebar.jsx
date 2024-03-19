@@ -19,7 +19,8 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useTheme } from '@emotion/react';
 import { Padding } from '@mui/icons-material';
-
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import Grid from '@mui/material/Grid';
 
 const drawerWidth = 240;
 
@@ -116,16 +117,16 @@ export default function FriendsSidebar() {
       PaperProps={{
         sx: {
             borderRight: open ? 1 : 'none',
+            
         }
       }
         }
       >
-        <DrawerHeader>
+        <DrawerHeader> {/*This exists to space the components since drawer ignores containers for some reason*/}
         </DrawerHeader>
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItem
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
@@ -139,12 +140,15 @@ export default function FriendsSidebar() {
                     justifyContent: 'center',
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    <InboxIcon />
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
+                <ListItemText sx={{ opacity: open ? 1 : 0 }} >
+                    <Typography variant="h6">
+                        Friends
+                    </Typography>
+                </ListItemText>
+              </ListItem>
             </ListItem>
-          ))}
         </List>
       </StyledDrawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
