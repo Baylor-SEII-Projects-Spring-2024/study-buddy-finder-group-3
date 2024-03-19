@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
 import FriendsBar from "@/components/FriendsBar"
+import FriendsSidebar from "@/components/FriendsPage/FriendsSidebar"
 
 function friends() {
   const token = useSelector(selectToken)
@@ -18,11 +19,7 @@ function friends() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <Header />
-      <Box sx={{ display: "flex", flexGrow: 1 }}>
-        <Sidebar/>
-        <FriendsBar/>
-      </Box>
+      <FriendsSidebar />
     </Box>
   )
 }
