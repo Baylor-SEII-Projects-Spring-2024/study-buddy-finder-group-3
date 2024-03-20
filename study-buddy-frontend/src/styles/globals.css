@@ -20,23 +20,3 @@ a {
     color-scheme: dark;
   }
 }
-
-[data-scroll] {
-  opacity: 0;
-  transform: translateY(60px);
-  transition: opacity 1.6s, transform 1.6s;
-}
-
-.is-reveal {
-  opacity: 1;
-  transform: translateY(0px);
-}
-
-.scroll-section {
-  transition: opacity 0.6s ease;
-  opacity: 0.5; /* Start sections as semi-transparent */
-}
-
-.scroll-section.is-inview {
-  opacity: 1; /* Fully visible when in view */
-}
