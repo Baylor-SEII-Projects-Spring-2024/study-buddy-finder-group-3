@@ -8,51 +8,17 @@ import {
   Container,
   Grid,
   Paper,
-  CssBaseline,
-  ThemeProvider,
-  createTheme,
 } from "@mui/material"
 import { Image as ImageIcon } from "@mui/icons-material"
 import {
   Star as StarIcon,
   AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material"
-import dynamic from "next/dynamic"
-import "locomotive-scroll/dist/locomotive-scroll.css"
-// import "@/styles/LocomotiveScroll.module.css"
-const DynamicLocomotiveScroll = dynamic(
-  () => import("locomotive-scroll").then((ls) => ls.default || ls),
-  { ssr: false }
-)
-
-// theme instance
-const theme = createTheme({
-  palette: {
-    background: {
-      default: "#f7f0fa",
-    },
-    primary: {
-      main: "#5813d6",
-      // Dark purple
-    },
-    secondary: {
-      main: "#c3f0c8",
-    },
-    fontColor: {
-      main: "#00000",
-    },
-  },
-})
-
-theme.components = {
-  MuiButton: {
-    styleOverrides: {
-      root: {
-        margin: theme.spacing(1),
-      },
-    },
-  },
-}
+import AOS from "aos"
+import "aos/dist/aos.css"
+import { useTheme } from "@mui/material/styles"
+import Login from "./Login"
+import CreateAccount from "./CreateAccount"
 
 const sections = [
   { title: "Home", id: "home-section" },
@@ -65,66 +31,55 @@ const testimonials = [
   {
     review:
       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
-    name: "Wesley Anastasi",
+    name: "Name Name",
     role: "Student, Baylor University",
   },
   {
     review:
       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
-    name: "Alex Baratta",
+    name: "Name Name",
     role: "Student, Baylor University",
   },
   {
     review:
       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
-    name: "Dr. Song",
+    name: "Name Name",
     role: "Professor, Baylor University",
   },
 ]
 
 const LandingPage = () => {
-  const containerRef = useRef(null)
-  const [locoScroll, setLocoScroll] = useState(null)
+  const theme = useTheme()
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [createAccountOpen, setCreateAccountOpen] = useState(false)
+
+  const handleOpenLogin = () => setLoginOpen(true)
+  const handleCloseLogin = () => setLoginOpen(false)
+
+  const handleOpenCreateAccount = () => setCreateAccountOpen(true)
+  const handleCloseCreateAccount = () => setCreateAccountOpen(false)
 
   useEffect(() => {
-    let locomotiveScroll
-
-    if (containerRef.current) {
-      // Ensure DynamicLocomotiveScroll is loaded before usage
-      import("locomotive-scroll").then((LocomotiveScrollModule) => {
-        const LocomotiveScroll = LocomotiveScrollModule.default
-        locomotiveScroll = new LocomotiveScroll({
-          el: containerRef.current,
-          smooth: true,
-          lerp: 0.1,
-          multiplier: 1, //  speed of the scrolling
-          class: "is-reveal", // the class to add when element is in view
-        })
-        setLocoScroll(locomotiveScroll)
-      })
-    }
-
-    return () => {
-      if (locomotiveScroll) locomotiveScroll.destroy()
-    }
+    AOS.init({})
+    // AOS.refresh()
   }, [])
+
   const scrollToSection = (sectionId) => {
-    locoScroll?.scrollTo(`#${sectionId}`, {
-      offset: -100,
-      duration: 1000, // Duration of the scroll animation in milliseconds
-      easing: [0.25, 0.0, 0.35, 1.0], //  easing 
-      disableLerp: true, // disable the lerp effect (smoothing) for this scroll
-    })
+    // const section = document.getElementById(sectionId);
+    // if (section) {
+    //   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //   // Trigger AOS to recalculate positions after scroll
+    //   AOS.refresh();
+    // }
   }
 
   return (
-    <div data-scroll-container ref={containerRef}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppBar position="sticky" color="primary">
-          <Toolbar>
-            <Typography variant="h6">Logo</Typography>
-            <Box sx={{ flexGrow: 1 }} />
+    <>
+      <AppBar position="fixed" color="primary">
+        <Toolbar style={{ justifyContent: "space-between" }}>
+          {/* Sections on the left */}
+          <Box style={{ display: "flex", flexGrow: 1 }}>
+            {/* map sections to appbar */}
             {sections.map((section) => (
               <Button
                 key={section.title}
@@ -134,63 +89,70 @@ const LandingPage = () => {
                 {section.title}
               </Button>
             ))}
-          </Toolbar>
-        </AppBar>
-
-        {/* Home section */}
-        <Box
-          data-scroll-section
-          id="home-section"
-          sx={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: theme.palette.background.default,
-            color: theme.palette.fontColor.main,
-            textAlign: "center",
-            p: 4,
-          }}
-        >
-          <Typography
-            data-scroll
-            variant="h2"
-            component="h1"
-            gutterBottom
-            sx={{ fontWeight: "bold" }}
-          >
-            Connect and study with Study Buddy
-          </Typography>
-          <Typography data-scroll variant="h6" sx={{ mb: 4 }}>
-            Study Buddy is the perfect platform to find study partners, schedule
-            meetings, and ace your exams.
-          </Typography>
-          <Box>
-            <Button
-              data-scroll
-              variant="contained"
-              sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
-            >
-              Get Started
-            </Button>
-            <Button
-              data-scroll
-              variant="outlined"
-              sx={{
-                color: "black",
-                borderColor: "black",
-                "&:hover": { borderColor: "grey.900" },
-              }}
-            >
-              Learn More
-            </Button>
           </Box>
-        </Box>
+          <Box>
+            <Button color="inherit" onClick={handleOpenCreateAccount}>Create Account</Button>
+            <Button color="inherit" onClick={handleOpenLogin}>Login</Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-        {/* About Us section */}
+      {/* Home section */}
+      <div data-aos="zoom-out-left">
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <Box
+            id="home-section"
+            sx={{
+              height: "100vh", //100% of view height
+              display: "flex", // flexbox
+              flexDirection: "column",
+              justifyContent: "center", // center to parent, verticle
+              alignItems: "center",  // horizontal center
+              backgroundColor: theme.palette.background.default, //fetch from themes
+              color: theme.palette.fontColor.main, //fetch frome themes
+              textAlign: "center", // allign center to parent
+              p: 4, //padding
+            }}
+          >
+            <Typography
+              variant="h2"
+              component="h1"
+              gutterBottom
+              sx={{ fontWeight: "bold" }}
+            >
+              Connect and study with Study Buddy
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 4 }}>
+              Study Buddy is the perfect platform to find study partners,
+              schedule meetings, and ace your exams.
+            </Typography>
+            <Box>
+              <Button
+                variant="contained"
+                sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
+              >
+                Get Started
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  color: "black",
+                  borderColor: "black",
+                  "&:hover": { borderColor: "grey.900" },
+                }}
+              >
+                Learn More
+              </Button>
+            </Box>
+          </Box>
+        </div>
+      </div>
+
+      {/* About Us section */}
+      <div
+        data-aos-duration="1000" //  duration in milliseconds
+      >
         <Box
-          data-scroll-section
           id="about-us-section"
           sx={{
             height: "100vh",
@@ -215,14 +177,11 @@ const LandingPage = () => {
                   variant="h3"
                   component="h2"
                   gutterBottom
-                  data-scroll
+                  data-aos="fade-up"
                 >
                   Effortlessly schedule meetings and connect with study buddies
                 </Typography>
-                <Typography
-                  variant="subtitle1"
-                  data-scroll
-                >
+                <Typography variant="subtitle1" data-aos="zoom-out-left">
                   With Study Buddy, you can easily set up meetings with fellow
                   students, making it convenient to collaborate and learn
                   together. Join study sessions, exchange ideas, and boost your
@@ -231,7 +190,6 @@ const LandingPage = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Paper
-                  data-scroll
                   elevation={0}
                   sx={{
                     height: 300,
@@ -252,8 +210,14 @@ const LandingPage = () => {
             </Grid>
           </Container>
         </Box>
+      </div>
+
+      <div
+        data-aos="fade-up" //  fade-up animation
+        data-aos-delay="100" //  delay in milliseconds
+        data-aos-duration="1000" //  duration in milliseconds
+      >
         <Box
-          data-scroll-section
           id="unlock-potential-section"
           sx={{
             height: "100vh",
@@ -266,54 +230,46 @@ const LandingPage = () => {
             p: 4,
           }}
         >
-          <Container maxWidth="lg">
+          <Container maxWidth="lg" sx={{ overflowY: "auto" }}>
             <Grid
-          
               container
               spacing={8}
               alignItems="center"
               justifyContent="center"
             >
               <Grid item xs={12} md={6}>
-                <Typography
-                  variant="h4"
-                  component="h3"
-                  gutterBottom
-                  data-scroll
-                >
+                <Typography variant="h4" component="h3" gutterBottom>
                   Unlock Your Potential with Study Buddy
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom data-scroll
->
+                <Typography variant="subtitle1" gutterBottom>
                   Study Buddy is the ultimate tool for effective learning and
                   networking. With Study Buddy, you can easily set up meetings,
                   join study sessions, and connect with like-minded individuals.
                 </Typography>
                 <Box sx={{ my: 4 }}>
-                  <Typography variant="h6" component="h4" gutterBottom data-scroll> 
+                  <Typography variant="h6" component="h4" gutterBottom>
                     Efficient Learning
                   </Typography>
-                  <Typography variant="body1" gutterBottom data-scroll>
+                  <Typography variant="body1" gutterBottom>
                     Collaborate with peers, exchange knowledge, and enhance your
                     understanding of subjects.
                   </Typography>
-                  <Typography variant="h6" component="h4" gutterBottom data-scroll>
+                  <Typography variant="h6" component="h4" gutterBottom>
                     Network Building
                   </Typography>
-                  <Typography variant="body1" gutterBottom data-scroll>
+                  <Typography variant="body1" gutterBottom>
                     Expand your network, make valuable connections, and create
                     lifelong study buddies.
                   </Typography>
-                  <Button data-scroll variant="contained" sx={{ mr: 2 }}>
+                  <Button variant="contained" sx={{ mr: 2 }}>
                     Learn More
                   </Button>
-                  <Button data-scroll variant="outlined">Sign Up</Button>
+                  <Button variant="outlined">Sign Up</Button>
                 </Box>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Paper
                   elevation={0}
-                  data-scroll
                   sx={{
                     height: 300,
                     width: "100%",
@@ -333,36 +289,36 @@ const LandingPage = () => {
             </Grid>
           </Container>
         </Box>
+      </div>
 
+      <div
+        data-aos="fade-up" //  fade-up animation
+        data-aos-delay="100" //  delay in milliseconds
+        data-aos-duration="1000" //  duration in milliseconds
+      >
         <Box
-          data-scroll-section
           id="customers-section"
           sx={{
-            height: "100vh",
+            minHeight: "100vh", 
             display: "flex",
-            flexDirection: "row",
+            flexDirection: "column", //  vertical layout.
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: theme.palette.background.default,
             color: theme.palette.fontColor.main,
             p: 4,
+            overflow: "hidden", //  hides overflow
           }}
         >
           <Container maxWidth="lg">
-            <Typography
-              variant="h4"
-              component="h2"
-              gutterBottom
-              align="center"
-              data-scroll
-            >
+            <Typography variant="h4" component="h2" gutterBottom align="center">
               Happy Customers
             </Typography>
             <Typography variant="subtitle1" align="center" sx={{ mb: 4 }}>
               Read what our satisfied users have to say about Study Buddy.
             </Typography>
+
             <Grid container spacing={4} justifyContent="center">
-              {/* Map this Grid item for each testimonial */}
               {testimonials.map((testimonial, index) => (
                 <Grid item xs={12} sm={4} key={index}>
                   <Box sx={{ textAlign: "center" }}>
@@ -378,7 +334,7 @@ const LandingPage = () => {
                         <StarIcon
                           key={i}
                           sx={{ color: theme.palette.secondary.main }}
-                        /> 
+                        />
                       ))}
                     </Box>
                     <Typography variant="body1" sx={{ mb: 2 }}>
@@ -399,10 +355,14 @@ const LandingPage = () => {
             </Grid>
           </Container>
         </Box>
-
-        {/* footer */}
-      </ThemeProvider>
-    </div>
+      </div>
+      <Login open={loginOpen} onClose={handleCloseLogin} />
+      <CreateAccount
+        open={createAccountOpen}
+        onClose={handleCloseCreateAccount}
+      />
+      {/* footer */}
+    </>
   )
 }
 
