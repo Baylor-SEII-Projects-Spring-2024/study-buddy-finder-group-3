@@ -29,6 +29,7 @@
     "react-scroll": "^1.9.0",
     "react-toastify": "^10.0.4",
     "redux-thunk": "^3.1.0",
+    "sass": "^1.72.0",
     "smooth-scroll": "^16.1.3"
   }
 }

@@ -1,21 +1,17 @@
-import React from "react"
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import CreateAccount from "@/components/CreateAccount";
-import { useRouter } from "next/router"
+import React from 'react';
+import ChatSidebar from "@/components/ChatSidebar";
+import ChatComp from "@/components/ChatComp";
+import styles from "@/styles/login-create.module.css";
 
-
-function chat() {
-  const router = useRouter()
-   const handleCancel = () => {
-    router.push('/')
-  }
-  
-  return (
-      <>
-        <ChatComp/> {}
-      </>
+const Chat = () => {
+  return(
+    <div className={styles.chat}>
+      <div className={styles.container}>
+        <ChatSidebar />
+        <ChatComp />
+      </div>
+    </div>
   );
-}
+};
 
-export default chat
+export default Chat;

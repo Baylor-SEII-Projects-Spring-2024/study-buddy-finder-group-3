@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import '@/styles/globals.css'
 
+
 // Initialize Redux
 let initialState = {};
 let reduxStore = buildStore(initialState);
