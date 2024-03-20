@@ -17,7 +17,6 @@ function Login({ open, onClose }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter()
-  let customId = "";
 
 
   const handleUsernameChange = (event) => {
@@ -37,28 +36,15 @@ function Login({ open, onClose }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!username) {
-      customId="user-is-empty"
-      toast.error("Username cannot be empty", {
-        position: "bottom-right",
-        toastId: customId
-      });
+      toast.error("Username cannot be empty");
       return;
     }
     if (!password) {
-      customId="password-is-empty"
-      toast.error("Password cannot be empty", {
-        position: "bottom-right",
-        toastId: customId
-      });
+      toast.error("Password cannot be empty");
       return;
     }
 
     try {
-      customId="logging-in"
-      toast.loading("Logging in...", {
-        position: "bottom-right",
-        toastId: customId
-      })
       const response = await axios.post(`${API_URL}/auth/login`, {
         username,
         password
@@ -71,25 +57,15 @@ function Login({ open, onClose }) {
         //authenticate token
 
         router.push('/home')
-        toast.dismiss();
+
       } else {
-        toast.dismiss();
-        customId="invalid-user-or-pass"
-        toast.error("Invalid username or password",{
-          position: "bottom-right",
-          toastId: customId
-        })
+        toast.error("Invalid username or password")
         console.log("Invalid username or password")
       }
 
     } catch (error){
-      toast.dismiss();
-      customId="invalid-user-or-pass"
-      toast.error("Invalid username or password",{
-        position: "bottom-right",
-        toastId: customId
-      })
-    console.error(error)
+      toast.error("Invalid username or password")
+      console.error(error)
     }
 
   };
