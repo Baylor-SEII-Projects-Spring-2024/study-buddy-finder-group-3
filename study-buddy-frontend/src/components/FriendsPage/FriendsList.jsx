@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { ListItemButton, CircularProgress } from "@mui/material";
 import FriendProfile from "./FriendProfile";
 import { API_URL } from "@/utils/config";
+import { Grid } from "@mui/material";
 
 export default function FriendsList() {
 
@@ -74,14 +75,19 @@ export default function FriendsList() {
       ) : (
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}> 
           <List>
-            {friends.map(user => (
-              <ListItem key={user.user_id}>
-                <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
-                  <ListItemText primary={user.username} />
-                </ListItemButton>
-                <FriendProfile user={user} open={open} onClose={handleClose} />
-              </ListItem>
-            ))}
+            <Grid container spacing={2}>
+              {friends.map(user => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={user.user_id}>
+                  <ListItem>
+                    
+                    <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
+                      <ListItemText primary={user.username} />
+                    </ListItemButton>
+                    <FriendProfile user={user} open={open} onClose={handleClose} />
+                  </ListItem>
+                </Grid>
+              ))}
+            </Grid>
           </List>
         </Box>
       )}
