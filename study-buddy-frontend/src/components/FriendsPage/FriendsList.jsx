@@ -12,6 +12,15 @@ import { ListItemButton, CircularProgress } from "@mui/material";
 import FriendProfile from "./FriendProfile";
 import { API_URL } from "@/utils/config";
 import { Grid } from "@mui/material";
+import Card from '@mui/material/Card';
+import Avatar from '@mui/material/Avatar';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Button from '@mui/material/Button';
+
+
 
 export default function FriendsList() {
 
@@ -73,18 +82,39 @@ export default function FriendsList() {
           OH NO! You have no friends!
         </Typography>
       ) : (
-        <Box sx={{ flexGrow: 1, maxWidth: 752 }}> 
+        <Box sx={{ flexGrow: 1 }}> 
+        <Typography variant="h3" padding={5} style={{textAlign: "center"}} color={"gray"}>
+          Friends
+        </Typography>
           <List>
-            <Grid container spacing={2}>
+            <Grid container spacing={1}>
               {friends.map(user => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={user.user_id}>
-                  <ListItem>
-                    
-                    <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
-                      <ListItemText primary={user.username} />
-                    </ListItemButton>
-                    <FriendProfile user={user} open={open} onClose={handleClose} />
-                  </ListItem>
+                <Grid item key={user.user_id}>
+                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa" }}>
+                    <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
+                    <CardActionArea>
+                      <CardMedia
+                        component="img"
+                        image="/green_iguana.jpg"
+                        alt="green iguana"
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          Lizard
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Lizards are a widespread group of squamate reptiles, with over 6,000
+                          species, ranging across all continents except Antarctica
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                      <CardActions>
+                        <Button size="small" color="primary">
+                          Share
+                        </Button>
+                      </CardActions>
+                    </ListItem>
+                  </Card>
                 </Grid>
               ))}
             </Grid>

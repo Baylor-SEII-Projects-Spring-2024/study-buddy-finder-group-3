@@ -26,6 +26,7 @@ import { Button } from '@mui/material';
 import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectToken, setToken, logout } from "@/utils/authSlice.js"
+import FriendsList from './FriendsList';
 
 const drawerWidth = 240;
 
@@ -219,7 +220,7 @@ export default function FriendsSidebar() {
       </StyledDrawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <FriendsAdd/>
+        <FriendsList/>
       </Box>
     </Box>
   );
