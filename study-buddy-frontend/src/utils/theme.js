@@ -1,24 +1,34 @@
 import React from "react"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 
-// Theme configuration that was previously in the LandingPage component
+/*
+ * //! Important
+ * in order to use these global fonts add this import:
+ * import { useTheme } from "@mui/material/styles"
+ * and then call:
+ *   const theme = useTheme()
+ * in the function
+ * 
+ * to access anything from here call like this:
+ * backgroundColor: theme.palette.background.default
+ */
 const themeOptions = {
   typography: {
-    fontFamily: 'Roboto, Noto Sans, sans-serif',
+    fontFamily: "Roboto, Noto Sans, sans-serif",
     fontSize: 14,
     body2: {
-        fontSize: 14
-    }
-},
+      fontSize: 14,
+    },
+  },
   palette: {
     background: {
-      default: "#f7f0fa",
+      default: "#f7f0fa", // off white
     },
     primary: {
       main: "#5813d6", //  purple
     },
     secondary: {
-      main: "#c3f0c8",
+      main: "#c3f0c8", // mint
     },
     fontColor: {
       main: "#00000",
@@ -46,7 +56,7 @@ const themeOptions = {
         },
         body: {
           overflowX: "hidden",
-          overflowY: "hidden"
+          overflowY: "hidden",
         },
       },
     },
