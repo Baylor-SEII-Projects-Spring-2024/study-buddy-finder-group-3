@@ -7,21 +7,25 @@ import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import FriendsList from './FriendsList';
 import AppBar from '@mui/material/AppBar';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { KeyboardArrowLeft } from '@mui/icons-material';
+import FriendsAdd from './FriendsAdd';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import PeopleIcon from '@mui/icons-material/People';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import ForumIcon from '@mui/icons-material/Forum';
+import { Button } from '@mui/material';
+import { useRouter } from "next/router"
+import { useSelector, useDispatch } from "react-redux"
+import { selectToken, setToken, logout } from "@/utils/authSlice.js"
 
 const drawerWidth = 240;
 
@@ -108,6 +112,26 @@ const StyledDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== '
 export default function FriendsSidebar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
+    const dispatch = useDispatch()
+
+    const navigateToProfile = () => {
+        router.push("/profile")
+      }
+    
+      const navigateFriends = () => {
+        router.push("/friends")
+      }
+    
+      const navigateHome = () => {
+        router.push("/home")
+      }
+
+      const handleLogout = async () => {
+        localStorage.removeItem("token")
+        dispatch(logout());
+        router.push("/")
+      }
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -125,57 +149,77 @@ export default function FriendsSidebar() {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open} style={{boxShadow: "none", borderBottom: "1px solid black", backgroundColor: '#f7f0fa'}} sx={{zIndex: theme.zIndex.drawer + 1,}}>
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" color={'black'}>
-            Mini variant drawer
-          </Typography>
-        </Toolbar>
+      <Toolbar>
+                    <Button onClick={navigateHome}>Home</Button>
+
+                    <Button>Meetings</Button>
+
+                    <Button>Settings</Button>
+
+                    <Typography sx={{ flexGrow: 1, color: 'black', textAlign: 'center' }}>
+                      Logo
+                    </Typography>
+
+                    <Button onClick={handleLogout} variant='contained'>Menu</Button>
+
+                </Toolbar>
       </AppBar>
       <StyledDrawer variant="permanent" open={open}>
         {open ? (
-            <Box sx={{display: 'flex', justifyContent: 'initial', marginTop: '65px'}}>
-                <Typography variant="h4" fontWeight="bold" sx={{marginTop: "4px", marginLeft: "10px"}}>
+            <Box sx={{display: 'flex', justifyContent: 'initial',  marginTop: '80px', marginLeft: '12px'}}>
+                <Typography variant="h5" fontWeight="bold" sx={{marginTop: "4px", marginLeft: "10px"}}>
                     Friends
                 </Typography>
-                <IconButton onClick={toggleDrawer} >
-                    <KeyboardArrowLeft />
+                <IconButton onClick={toggleDrawer}>
+                    <KeyboardArrowLeft style={{color: 'black'}}/>
                 </IconButton>
             </Box>
         ) : (
-            <Box sx={{display: 'flex', justifyContent: 'initial', marginTop: '65px'}}>
-                <IconButton onClick={toggleDrawer} sx={{}}>
-                    <KeyboardArrowRightIcon />
+            <Box sx={{display: 'flex', justifyContent: 'initial', marginTop: '80px', marginLeft: '12px'}}>
+                <IconButton onClick={toggleDrawer}>
+                    <KeyboardArrowRightIcon style={{color: 'black'}}/>
                 </IconButton>
             </Box>
         )
         }
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
+                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                    <PeopleIcon />
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={"All"} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
-          ))}
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
+                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                    <PersonAddIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Requests"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
+                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                    <PersonOffIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Blocked"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
+                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                    <ForumIcon />
+                </ListItemIcon>
+                <ListItemText primary={"Chat"} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
         </List>
       </StyledDrawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <FriendsList/>
+        <DrawerHeader />
+        <FriendsAdd/>
       </Box>
     </Box>
   );
