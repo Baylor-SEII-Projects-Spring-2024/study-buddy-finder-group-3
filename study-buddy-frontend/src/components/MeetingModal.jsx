@@ -1,4 +1,4 @@
-import FriendProfile from "./FriendProfile"
+import FriendProfile from "./FriendsPage/FriendProfile"
 import CloseIcon from "@mui/icons-material/Close"
 import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"

@@ -8,19 +8,11 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ListItemButton } from "@mui/material";
-import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import styles from "@/styles/ProfileDisplay.module.css";
-import {TextField} from "@mui/material";
+import { ListItemButton, CircularProgress } from "@mui/material";
 import FriendProfile from "./FriendProfile";
-import Login from "./Login";
 import { API_URL } from "@/utils/config";
 
-export default function FriendsList() {
+export default function FriendsBlocked() {
 
 
   const token = useSelector(selectToken)
@@ -29,6 +21,7 @@ export default function FriendsList() {
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = useState(true); 
 
   const handleListItemClick = (event, user) => {
     setOpen(true);
@@ -50,10 +43,12 @@ export default function FriendsList() {
   
   const fetchAllInfo = async () => {
     try {
-      const response = await axios.get(`${API_URL}/friends/${user.id}/all`);
+      const response = await axios.get(`${API_URL}/friends/${user.id}/getBlocked`);
       setFriendsList(response.data);
     } catch (error) {
-      console.error("Error fetching friends info:", error);
+      console.error("Error fetching blocked users info:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -61,11 +56,20 @@ export default function FriendsList() {
     setOpen(false);
   };
 
+  if (loading) {
+    
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <div>
       {friends.length === 0 ? (
         <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
-          OH NO! You have no friends!
+          No blocked friends
         </Typography>
       ) : (
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}> 

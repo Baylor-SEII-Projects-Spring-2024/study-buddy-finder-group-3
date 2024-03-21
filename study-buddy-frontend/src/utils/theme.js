@@ -1,5 +1,5 @@
-import React from 'react';
-import { ThemeProvider, createTheme } from '@mui/material';
+import React from "react"
+import { createTheme, ThemeProvider } from "@mui/material/styles"
 
 /*
  * //! Important
@@ -63,12 +63,8 @@ const themeOptions = {
   },
 }
 
-export const theme = createTheme(themeOptions);
+const theme = createTheme(themeOptions)
 
-export const StudyBuddyThemeProvider = ({children}) => {
-    return (
-        <ThemeProvider theme={theme}>
-            {children}
-        </ThemeProvider>
-    );
-};
+export const StudyBuddyThemeProvider = ({ children }) => {
+  return <ThemeProvider theme={theme}>{children}</ThemeProvider>
+}
