@@ -11,7 +11,6 @@ import Slide from "@mui/material/Slide";
 import FastRewindOutlinedIcon from '@mui/icons-material/FastRewindOutlined';
 import { ListItemButton, ListItemText, List } from "@mui/material";
 import FriendsList from "./FriendsList";
-import zIndex from "@mui/material/styles/zIndex";
 import Paper from "@mui/material";
 import FriendsRequest from "./FriendsRequests";
 import FriendsBlocked from "./FriendsBlocked";
