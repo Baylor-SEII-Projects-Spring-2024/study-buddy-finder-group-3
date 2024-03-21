@@ -16,6 +16,7 @@ import axios from "axios"
 import { selectToken, selectUser } from "@/utils/authSlice.js"
 import { useSelector } from "react-redux"
 import { API_URL } from "@/utils/config";
+import FriendsBlocked from "./FriendsBlocked";
 
 export default function FriendsBar() {
 
@@ -26,7 +27,12 @@ export default function FriendsBar() {
   const [message, setMessage] = useState('')
 
   const handleMessageUpdate = () => {
-    setMessage('update')
+    if (message === 'update') {
+      setMessage('')
+    }
+    else {
+      setMessage('update')
+    }
   }
 
   const handleButtonClick = (button) => {
@@ -124,9 +130,7 @@ export default function FriendsBar() {
         </div>}
       {activeButton === 'blocked' && 
         <div>
-          <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
-            No blocked friends
-          </Typography>
+          <FriendsBlocked/>
         </div>}
       {activeButton === 'add' && 
         <div>
