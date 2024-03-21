@@ -1,9 +1,11 @@
 import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { selectToken } from "@/utils/authSlice.js"
+import Header from "@/components/Header"
+import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
-import FriendsSidebar2 from "@/components/FriendsPage/FriendsSidebar2"
+import FriendsBar from "@/components/FriendsBar"
 
 function friends() {
   const token = useSelector(selectToken)
@@ -16,7 +18,11 @@ function friends() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <FriendsSidebar2/>
+      <Header />
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
+        <Sidebar/>
+        <FriendsBar/>
+      </Box>
     </Box>
   )
 }
