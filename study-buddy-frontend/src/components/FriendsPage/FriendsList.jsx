@@ -76,7 +76,7 @@ export default function FriendsList() {
   }
 
   return (
-    <div>
+    <div style={{backgroundColor: ''}}>
       {friends.length === 0 ? (
         <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
           OH NO! You have no friends!
@@ -84,7 +84,7 @@ export default function FriendsList() {
       ) : (
         <Box sx={{ flexGrow: 1 }}> 
         <Typography variant="h3" padding={5} style={{textAlign: "center"}} color={"gray"}>
-          Friends
+          Your Friends
         </Typography>
           <List>
             <Grid container spacing={1}>
@@ -100,7 +100,10 @@ export default function FriendsList() {
                       />
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
-                          Lizard
+                          {user.nameFirst} {user.nameLast} ({user.username})
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {user.areaOfStudy}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Lizards are a widespread group of squamate reptiles, with over 6,000

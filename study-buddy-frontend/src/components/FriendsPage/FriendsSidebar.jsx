@@ -114,25 +114,26 @@ export default function FriendsSidebar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
-    const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  const [activePage, setActivePage] = React.useState('list');
 
-    const navigateToProfile = () => {
-        router.push("/profile")
-      }
-    
-      const navigateFriends = () => {
-        router.push("/friends")
-      }
-    
-      const navigateHome = () => {
-        router.push("/home")
-      }
+  const navigateToProfile = () => {
+      router.push("/profile")
+    }
+  
+    const navigateFriends = () => {
+      router.push("/friends")
+    }
+  
+    const navigateHome = () => {
+      router.push("/home")
+    }
 
-      const handleLogout = async () => {
-        localStorage.removeItem("token")
-        dispatch(logout());
-        router.push("/")
-      }
+    const handleLogout = async () => {
+      localStorage.removeItem("token")
+      dispatch(logout());
+      router.push("/")
+    }
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -145,6 +146,24 @@ export default function FriendsSidebar() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const fetchRequests = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/friends/${user.id}/getRequests`);
+      setFriendsList(response.data);
+    } catch (error) {
+      console.error("Error fetching friends info:", error);
+    }
+  }
+
+  const handleMessageUpdate = () => {
+    if (message === 'update') {
+      setMessage('')
+    }
+    else {
+      setMessage('update')
+    }
+}
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -185,7 +204,7 @@ export default function FriendsSidebar() {
         }
         <List>
             <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
+              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePage("list")}>
                 <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
                     <PeopleIcon />
                 </ListItemIcon>
@@ -194,14 +213,16 @@ export default function FriendsSidebar() {
             </ListItem>
             <ListItem disablePadding sx={{ display: 'block' }}>
               <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
-                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
-                    <PersonAddIcon />
+                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}} onClick={setActivePage("add")}>
+                  <Badge badgeContent={friends.length} color="primary">
+                      <PersonAddIcon />
+                  </Badge>
                 </ListItemIcon>
                 <ListItemText primary={"Requests"} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
+              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePage("block")}>
                 <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
                     <PersonOffIcon />
                 </ListItemIcon>
@@ -220,7 +241,14 @@ export default function FriendsSidebar() {
       </StyledDrawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <FriendsList/>
+        {activePage === 'list' ? <FriendsList/> : null}
+        {activePage === 'requests' ? 
+        <Box> 
+            <FriendsAdd/>
+            <FriendsRequest onUpdate={handleMessageUpdate}/>
+        </Box> : null}
+        {activePage === 'blocked' ? <FriendsBlocked/> : null}
+        {activePage === 'chat' ? <div>Chat</div> : null}
       </Box>
     </Box>
   );
