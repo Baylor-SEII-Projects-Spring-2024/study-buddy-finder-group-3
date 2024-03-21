@@ -9,6 +9,7 @@ import {
   TextField,
 } from "@mui/material"
 import styles from "@/styles/Home.module.css"
+import landingstyles from "@/styles/landing.module.css"
 import Header from "@/components/Header.jsx"
 import LandingPage from "@/components/Landing"
 import Sidebar from "@/components/Sidebar.jsx"
