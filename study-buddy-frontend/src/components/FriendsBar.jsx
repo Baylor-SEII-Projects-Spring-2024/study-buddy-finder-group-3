@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import { useTheme } from "@mui/material/styles"
+import { theme } from '@/utils/theme';
 import Button from "@mui/material/Button";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { styled } from '@mui/material/styles';
@@ -18,7 +18,6 @@ import { useSelector } from "react-redux"
 import { API_URL } from "@/utils/config";
 
 export default function FriendsBar() {
-  const theme = useTheme()
 
   const [activeButton, setActiveButton] = React.useState('all');
   const [friends, setFriendsList] = useState([]);
