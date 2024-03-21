@@ -1,40 +1,67 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material';
 
-// This file lets you modify the global theme of your project. Any changes here will affect all
-// Material UI components throughout your website. Correspondingly, this is where you would set
-// up your color palette, standard spacings, etc.
+/*
+ * //! Important
+ * in order to use these global fonts add this import:
+ * import { useTheme } from "@mui/material/styles"
+ * and then call:
+ *   const theme = useTheme()
+ * in the function
+ * 
+ * to access anything from here call like this:
+ * backgroundColor: theme.palette.background.default
+ */
 const themeOptions = {
-    typography: {
-        fontFamily: 'Roboto, Noto Sans, sans-serif',
-        fontSize: 14,
-        body2: {
-            fontSize: 14
-        }
+  typography: {
+    fontFamily: "Roboto, Noto Sans, sans-serif",
+    fontSize: 14,
+    body2: {
+      fontSize: 14,
     },
-    shape: {
-        borderRadius: 5,
+  },
+  palette: {
+    background: {
+      default: "#f7f0fa", // off white
     },
-    components: {
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                    marginLeft: 4,
-                    marginRight: 4,
-                    marginTop: 4,
-                    marginBottom: 4,
-                },
-                outlinedPrimary: {
-                    border: '2px solid'
-                },
-                outlinedSecondary: {
-                    border: '2px solid'
-                },
-            },
+    primary: {
+      main: "#5813d6", //  purple
+    },
+    secondary: {
+      main: "#c3f0c8", // mint
+    },
+    fontColor: {
+      main: "#00000",
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          margin: 8,
+          textTransform: "none", // Preserve text case
         },
-    }
-};
+        outlinedPrimary: {
+          border: "2px solid",
+        },
+        outlinedSecondary: {
+          border: "2px solid",
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        "*": {
+          boxSizing: "border-box", //  padding and borders in the element's total width and height
+        },
+        body: {
+          overflowX: "hidden",
+          overflowY: "hidden",
+        },
+      },
+    },
+  },
+}
 
 export const theme = createTheme(themeOptions);
 
