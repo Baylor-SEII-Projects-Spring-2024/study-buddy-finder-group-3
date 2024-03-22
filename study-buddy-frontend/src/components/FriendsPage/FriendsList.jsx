@@ -32,8 +32,10 @@ export default function FriendsList() {
   const [userId, setUserid] = useState('')
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState({});
 
   const handleListItemClick = (event, user) => {
+    setSelectedUser(user);
     setOpen(true);
   }
 
@@ -49,7 +51,7 @@ export default function FriendsList() {
       setUserid(user.id)
     }
     fetchAllInfo()
-  }, [user])
+  }, [user, selectedUser])
   
   const fetchAllInfo = async () => {
     try {
@@ -71,8 +73,8 @@ export default function FriendsList() {
     }
   }
 
-  const vibeCheck = () => {
-    console.log('vibe check')
+  const vibeCheck = (user) => {
+    console.log(user)
   }
 
   const handleClose = (value) => {
@@ -138,6 +140,7 @@ export default function FriendsList() {
                       </CardContent>
                       
                     </CardActionArea>
+                    
                       <CardActions>
                         <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)}>
                           Remove Friend
@@ -147,7 +150,7 @@ export default function FriendsList() {
                     </ListItem>
                     
                   </Card>
-                  
+                  <FriendProfile open={open} onClose={handleClose} user={selectedUser}/>
                 </Grid>
                 
               ))}
