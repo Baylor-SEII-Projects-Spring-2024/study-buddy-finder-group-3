@@ -30,8 +30,8 @@ export default function FriendsList() {
   const router = useRouter()
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
-  const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleListItemClick = (event, user) => {
     setOpen(true);
@@ -62,8 +62,29 @@ export default function FriendsList() {
     }
   }
 
+  const removeFriend = async (friendId) => {
+    try {
+      await axios.post(`${API_URL}/friends/${user.id}/deleteFriend/${friendId}`);
+      fetchAllInfo();
+    } catch (error) {
+      console.error("Error removing friend:", error);
+    }
+  }
+
+  const vibeCheck = () => {
+    console.log('vibe check')
+  }
+
   const handleClose = (value) => {
     setOpen(false);
+  };
+
+  const textStyle = {
+    whiteSpace: 'nowrap',
+    animation: 'scroll 10s linear infinite', // Adjust animation duration as needed
+    position: 'absolute',
+    top: 0,
+    left: 0,
   };
 
   if (loading) {
@@ -87,22 +108,27 @@ export default function FriendsList() {
           Your Friends
         </Typography>
           <List>
-            <Grid container spacing={1}>
+            <Grid container spacing={3} justifyContent={'center'}>
               {friends.map(user => (
-                <Grid item key={user.user_id}>
+                <Grid item key={user.id}>
+                  
                   <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa" }}>
                     <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
-                    <CardActionArea>
+                    <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       <CardMedia
                         component="img"
                         image="/green_iguana.jpg"
                         alt="green iguana"
                       />
+                      
                       <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {user.nameFirst} {user.nameLast} ({user.username})
+                        <Typography gutterBottom variant="h5" component="div" whiteSpace={'nowrap'}>
+                          {user.nameFirst} {user.nameLast}
                         </Typography>
-                        <Typography variant="h6" color="text.secondary">
+                        <Typography gutterBottom variant="h5" component="div" whiteSpace={'nowrap'}>
+                          {user.userType ? "Tutor" : "Student"}
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary" whiteSpace={'nowrap'}>
                           {user.areaOfStudy}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -110,15 +136,20 @@ export default function FriendsList() {
                           species, ranging across all continents except Antarctica
                         </Typography>
                       </CardContent>
+                      
                     </CardActionArea>
                       <CardActions>
-                        <Button size="small" color="primary">
-                          Share
+                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)}>
+                          Remove Friend
                         </Button>
                       </CardActions>
+                      
                     </ListItem>
+                    
                   </Card>
+                  
                 </Grid>
+                
               ))}
             </Grid>
           </List>

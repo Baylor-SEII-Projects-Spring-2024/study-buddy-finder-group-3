@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from "react"
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -27,6 +27,13 @@ import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectToken, setToken, logout } from "@/utils/authSlice.js"
 import FriendsList from './FriendsList';
+import axios from "axios";
+import { API_URL } from "@/utils/config";
+import { selectUser } from "@/utils/authSlice";
+import FriendsRequest from "./FriendsRequests";
+import FriendsBlocked from "./FriendsBlocked";
+import { Badge } from "@mui/material";
+
 
 const drawerWidth = 240;
 
@@ -116,38 +123,42 @@ export default function FriendsSidebar() {
   const router = useRouter();
   const dispatch = useDispatch()
   const [activePage, setActivePage] = React.useState('list');
+  const [friends, setFriendsList] = useState([]);
+  const [message, setMessage] = useState('');
+  const user = useSelector(selectUser)
+  const [userId, setUserid] = useState('')
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const navigateToProfile = () => {
-      router.push("/profile")
-    }
-  
-    const navigateFriends = () => {
-      router.push("/friends")
-    }
-  
-    const navigateHome = () => {
-      router.push("/home")
-    }
+    router.push("/profile")
+  }
 
-    const handleLogout = async () => {
-      localStorage.removeItem("token")
-      dispatch(logout());
-      router.push("/")
-    }
+  const navigateFriends = () => {
+    router.push("/friends")
+  }
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+  const navigateHome = () => {
+    router.push("/home")
+  }
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    localStorage.removeItem("token")
+    dispatch(logout());
+    router.push("/")
+  }
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
+  const handleButtonClick = () => {
+    setLoggingOut(true);
+    handleLogout();
+  }
+
   const fetchRequests = async () => {
+    if (loggingOut) return;
     try {
       const response = await axios.get(`${API_URL}/friends/${user.id}/getRequests`);
       setFriendsList(response.data);
@@ -156,6 +167,16 @@ export default function FriendsSidebar() {
     }
   }
 
+  useEffect(() => {
+    console.log('vibe check')
+    if (user){
+        console.log('here')
+        setUserid(user.id)
+      }
+
+    fetchRequests();
+}, [user, message]);
+
   const handleMessageUpdate = () => {
     if (message === 'update') {
       setMessage('')
@@ -163,93 +184,111 @@ export default function FriendsSidebar() {
     else {
       setMessage('update')
     }
-}
+  }
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open} style={{boxShadow: "none", borderBottom: "1px solid black", backgroundColor: '#f7f0fa'}} sx={{zIndex: theme.zIndex.drawer + 1,}}>
-      <Toolbar>
-                    <Button onClick={navigateHome}>Home</Button>
+  const setActivePageList = () => {
+    setActivePage('list')
+  }
 
-                    <Button>Meetings</Button>
+  const setActivePageRequests = () => {
+    setActivePage('requests')
+  }
 
-                    <Button>Settings</Button>
+  const setActivePageBlocked = () => {
+    setActivePage('blocked')
+  }
 
-                    <Typography sx={{ flexGrow: 1, color: 'black', textAlign: 'center' }}>
-                      Logo
-                    </Typography>
+  const setActivePageChat = () => {
+    setActivePage('chat')
+  }
 
-                    <Button onClick={handleLogout} variant='contained'>Menu</Button>
 
-                </Toolbar>
-      </AppBar>
-      <StyledDrawer variant="permanent" open={open}>
-        {open ? (
-            <Box sx={{display: 'flex', justifyContent: 'initial',  marginTop: '80px', marginLeft: '12px'}}>
-                <Typography variant="h5" fontWeight="bold" sx={{marginTop: "4px", marginLeft: "10px"}}>
-                    Friends
-                </Typography>
-                <IconButton onClick={toggleDrawer}>
-                    <KeyboardArrowLeft style={{color: 'black'}}/>
-                </IconButton>
-            </Box>
-        ) : (
-            <Box sx={{display: 'flex', justifyContent: 'initial', marginTop: '80px', marginLeft: '12px'}}>
-                <IconButton onClick={toggleDrawer}>
-                    <KeyboardArrowRightIcon style={{color: 'black'}}/>
-                </IconButton>
-            </Box>
-        )
-        }
-        <List>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePage("list")}>
-                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
-                    <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary={"All"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
-                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}} onClick={setActivePage("add")}>
-                  <Badge badgeContent={friends.length} color="primary">
-                      <PersonAddIcon />
-                  </Badge>
-                </ListItemIcon>
-                <ListItemText primary={"Requests"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePage("block")}>
-                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
-                    <PersonOffIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Blocked"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}}>
-                <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
-                    <ForumIcon />
-                </ListItemIcon>
-                <ListItemText primary={"Chat"} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-        </List>
-      </StyledDrawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        {activePage === 'list' ? <FriendsList/> : null}
-        {activePage === 'requests' ? 
-        <Box> 
-            <FriendsAdd/>
-            <FriendsRequest onUpdate={handleMessageUpdate}/>
-        </Box> : null}
-        {activePage === 'blocked' ? <FriendsBlocked/> : null}
-        {activePage === 'chat' ? <div>Chat</div> : null}
-      </Box>
+
+return (
+  <Box sx={{ display: 'flex' }}>
+    <CssBaseline />
+    <AppBar position="fixed" open={open} style={{boxShadow: "none", borderBottom: "1px solid black", backgroundColor: '#f7f0fa'}} sx={{zIndex: theme.zIndex.drawer + 1,}}>
+    <Toolbar>
+                  <Button onClick={navigateHome}>Home</Button>
+
+                  <Button>Meetings</Button>
+
+                  <Button>Settings</Button>
+
+                  <Typography sx={{ flexGrow: 1, color: 'black', textAlign: 'center' }}>
+                    Logo
+                  </Typography>
+
+                  <Button onClick={handleButtonClick} variant='contained'>Menu</Button>
+
+              </Toolbar>
+    </AppBar>
+    <StyledDrawer variant="permanent" open={open}>
+      {open ? (
+          <Box sx={{display: 'flex', justifyContent: 'initial',  marginTop: '80px', marginLeft: '12px'}}>
+              <Typography variant="h5" fontWeight="bold" sx={{marginTop: "4px", marginLeft: "10px"}}>
+                  Friends
+              </Typography>
+              <IconButton onClick={toggleDrawer}>
+                  <KeyboardArrowLeft style={{color: 'black'}}/>
+              </IconButton>
+          </Box>
+      ) : (
+          <Box sx={{display: 'flex', justifyContent: 'initial', marginTop: '80px', marginLeft: '12px'}}>
+              <IconButton onClick={toggleDrawer}>
+                  <KeyboardArrowRightIcon style={{color: 'black'}}/>
+              </IconButton>
+          </Box>
+      )
+      }
+      <List>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePageList}>
+              <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                  <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary={"All"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePageRequests}>
+              <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                <Badge badgeContent={friends.length} color="primary">
+                    <PersonAddIcon />
+                </Badge>
+              </ListItemIcon>
+              <ListItemText primary={"Requests"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePageBlocked}>
+              <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                  <PersonOffIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Blocked"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePageChat}>
+              <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                  <ForumIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Chat"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+      </List>
+    </StyledDrawer>
+    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <DrawerHeader />
+      {activePage === 'list' ? <FriendsList/> : null}
+      {activePage === 'requests' ? 
+      <Box> 
+          <FriendsAdd/>
+          <FriendsRequest onUpdate={handleMessageUpdate}/>
+      </Box> : null}
+      {activePage === 'blocked' ? <FriendsBlocked/> : null}
+      {activePage === 'chat' ? <div>Chat</div> : null}
     </Box>
-  );
+  </Box>
+);
 }
