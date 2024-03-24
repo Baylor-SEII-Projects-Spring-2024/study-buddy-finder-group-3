@@ -4,6 +4,7 @@ import { selectToken } from "@/utils/authSlice.js"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
 import FriendsSidebar2 from "@/components/FriendsPage/FriendsSidebar2"
+import FriendsSidebar from "@/components/FriendsPage/FriendsSidebar"
 
 function friends() {
   const token = useSelector(selectToken)
@@ -16,7 +17,7 @@ function friends() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <FriendsSidebar2/>
+      <FriendsSidebar/>
     </Box>
   )
 }

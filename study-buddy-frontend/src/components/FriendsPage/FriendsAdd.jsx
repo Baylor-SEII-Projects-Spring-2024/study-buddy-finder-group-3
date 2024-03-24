@@ -92,7 +92,7 @@ function FriendsAdd() {
         </Box>
         <List>
             {friends.map(user => (
-            <ListItem key={user.user_id}>
+            <ListItem key={user.id}>
                 <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
                     <ListItemText primary={user.username} />
                 </ListItemButton>

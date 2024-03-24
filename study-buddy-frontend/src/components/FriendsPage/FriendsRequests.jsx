@@ -35,6 +35,7 @@ export default function FriendsRequest( {onUpdate}) {
   }, [user])
   
   const fetchAllInfo = async () => {
+    console.log("vibe check")
     try {
       const response = await axios.get(`${API_URL}/friends/${user.id}/getRequests`);
       setFriendsList(response.data);
@@ -81,7 +82,7 @@ export default function FriendsRequest( {onUpdate}) {
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}> 
           <List>
             {friends.map(user => (
-              <ListItem key={user.user_id}>
+              <ListItem key={user.id}>
                     <ListItemText primary={user.username} />
                     <Button onClick={(event) => handleListItemClick(event, user)}>Accept</Button>
                     <Button onClick={(event) => removeRequest(user)}>Decline</Button>
