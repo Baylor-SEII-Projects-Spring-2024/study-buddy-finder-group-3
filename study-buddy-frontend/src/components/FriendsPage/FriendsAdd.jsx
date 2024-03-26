@@ -20,6 +20,7 @@ function FriendsAdd() {
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
   const [searchTerm, setSearchTerm] = useState("")
+  const [open, setOpen] = React.useState(false);
 
   const token = useSelector(selectToken);
 

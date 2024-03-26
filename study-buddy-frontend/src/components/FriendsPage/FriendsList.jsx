@@ -110,7 +110,7 @@ export default function FriendsList() {
           Your Friends
         </Typography>
           <List>
-            <Grid container spacing={3} justifyContent={'center'}>
+            <Grid container spacing={5} justifyContent={'center'}>
               {friends.map(user => (
                 <Grid item key={user.id}>
                   
@@ -123,14 +123,14 @@ export default function FriendsList() {
                         alt="green iguana"
                       />
                       
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div" whiteSpace={'nowrap'}>
+                      <CardContent sx={{width: 345, height: 204, overflow: 'auto'}}>
+                        <Typography gutterBottom variant="h5" component="div">
                           {user.nameFirst} {user.nameLast}
                         </Typography>
-                        <Typography gutterBottom variant="h5" component="div" whiteSpace={'nowrap'}>
+                        <Typography gutterBottom variant="h5" component="div">
                           {user.userType ? "Tutor" : "Student"}
                         </Typography>
-                        <Typography variant="h6" color="text.secondary" whiteSpace={'nowrap'}>
+                        <Typography variant="h6" color="text.secondary">
                           {user.areaOfStudy}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -150,7 +150,7 @@ export default function FriendsList() {
                     </ListItem>
                     
                   </Card>
-                  <FriendProfile open={open} onClose={handleClose} user={selectedUser}/>
+                  {/* <FriendProfile open={open} onClose={handleClose} user={selectedUser}/> */}
                 </Grid>
                 
               ))}
