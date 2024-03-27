@@ -1,15 +1,20 @@
+// ProfileDisplay.jsx
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import styles from "@/styles/ProfileDisplay.module.css";
-import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
-import Avatar from '@mui/material/Avatar';
-import { useSelector } from "react-redux"
-import { selectToken, selectUser } from "@/utils/authSlice.js"
-import { useRouter } from "next/router"
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Avatar from "@mui/material/Avatar";
+import { useSelector } from "react-redux";
+import { selectToken, selectUser } from "@/utils/authSlice.js";
+import { useRouter } from "next/router";
 import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
+import styles from "@/styles/ProfileDisplay.module.css";
 
 function ProfileDisplay() {
     const token = useSelector(selectToken);
@@ -36,27 +41,18 @@ function ProfileDisplay() {
     const fetchProfileInfo = async (userId) => {
         try {
             const response = await axios.get(`${API_URL}/profile/${userId}`);
-
-            // Log the entire response data object
-            console.log("Response data:", response.data);
-
             setProfile(response.data);
 
-            // Extract courses from the areaOfStudy field
             let coursesArray = [];
             if (response.data.areaOfStudy) {
                 if (typeof response.data.areaOfStudy === 'string') {
-                    // If areaOfStudy is a string, split it into an array
                     coursesArray = response.data.areaOfStudy.split(',').map(course => course.trim());
                 } else if (Array.isArray(response.data.areaOfStudy)) {
-                    // If areaOfStudy is already an array, use it directly
                     coursesArray = response.data.areaOfStudy;
                 }
             }
 
             setSelectedCourses(coursesArray);
-            console.log("User's initial courses are: ", response.data.areaOfStudy);
-            console.log(`Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
         } catch (error) {
             console.error("Error fetching profile info:", error);
         }
@@ -64,15 +60,10 @@ function ProfileDisplay() {
 
     const handleEditClick = () => {
         setEditMode(!editMode);
-        console.log(`Fetched user profile with userId=${userId}, areaofstudy=${selectedCourses}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
-
     };
 
     const handleSaveClick = async () => {
         try {
-            console.log("Save click selected courses:", selectedCourses);
-
-            // Prepare the updated profile data
             const updatedProfile = {
                 email: profile.emailAddress,
                 username: profile.username,
@@ -81,7 +72,6 @@ function ProfileDisplay() {
                 courses: selectedCourses.join(', '),
             };
 
-            // Make a PUT request to update the profile
             const response = await axios.put(`${API_URL}/auth/updateProfile/${userId}`, updatedProfile, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -116,55 +106,62 @@ function ProfileDisplay() {
     };
 
     return (
-        <Box className={styles.profileCreate} sx={{ marginLeft: '20px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <Avatar alt="Profile Picture" src={profile.profilePictureUrl} style={{ marginTop: '10px', marginBot: '10px', marginRight: '10px' }} />
-                <Typography id="profile-container-title" variant="h6" component={"h2"}>
+        <Box className={styles.profileContainer}>
+            <div className={styles.profileHeader}>
+                <Avatar alt="Profile Picture" src={profile.profilePictureUrl} className={styles.avatar} />
+                <Typography variant="h6" component="h2">
                     {profile.nameFirst} {profile.nameLast}
                 </Typography>
             </div>
-            <TextField
-                margin="normal"
-                fullWidth
-                label="Email Address"
-                name="emailAddress"
-                value={profile.emailAddress || ''}
-                disabled={!editMode}
-                sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
-                onChange={handleInputChange}
-            />
-            <TextField
-                margin="normal"
-                fullWidth
-                label="Username"
-                name="username"
-                value={profile.username || ''}
-                disabled={!editMode}
-                sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
-                onChange={handleInputChange}
-            />
-            <TextField
-                margin="normal"
-                fullWidth
-                label="First Name"
-                name="nameFirst"
-                value={profile.nameFirst || ''}
-                disabled={!editMode}
-                sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
-                onChange={handleInputChange}
-            />
-            <TextField
-                margin="normal"
-                fullWidth
-                label="Last Name"
-                name="nameLast"
-                value={profile.nameLast || ''}
-                disabled={!editMode}
-                sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
-                onChange={handleInputChange}
-            />
-            {/* Checkboxes for courses */}
-            <>
+            <Box
+                sx={{
+                    marginLeft: "10px",
+                    marginTop: "15px",
+                    marginBottom: "15px",
+                    padding: "20px",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                    width: "20vw"
+                }} >
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="Email Address"
+                    name="emailAddress"
+                    value={profile.emailAddress || ''}
+                    disabled={!editMode}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="Username"
+                    name="username"
+                    value={profile.username || ''}
+                    disabled={!editMode}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="First Name"
+                    name="nameFirst"
+                    value={profile.nameFirst || ''}
+                    disabled={!editMode}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="Last Name"
+                    name="nameLast"
+                    value={profile.nameLast || ''}
+                    disabled={!editMode}
+                    onChange={handleInputChange}
+                />
+            </Box>
+            <div className={styles.coursesContainer}>
+                <Typography variant="subtitle1">Courses:</Typography>
                 <FormControlLabel
                     control={<Checkbox checked={selectedCourses.includes("Computer Science")} onChange={handleCourseChange} name="Computer Science" />}
                     label="Computer Science"
@@ -190,8 +187,7 @@ function ProfileDisplay() {
                     label="Chemistry"
                     disabled={!editMode}
                 />
-                {/* Add more courses as needed */}
-            </>
+            </div>
             <Button onClick={editMode ? handleSaveClick : handleEditClick} variant="contained" color="primary">
                 {editMode ? 'Save Changes' : 'Edit Profile'}
             </Button>
@@ -200,3 +196,4 @@ function ProfileDisplay() {
 }
 
 export default ProfileDisplay;
+
