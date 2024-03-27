@@ -47,6 +47,12 @@ public class User {
     @Column(name = "AREAOFSTUDY")
     String areaOfStudy;
 
+    @Column(name = "PREF_TIME")
+    String prefTime;
+
+    @Column(name = "PREF_MEETING_TYPE")
+    String prefMeetingType;
+
     public User() {
 
     }

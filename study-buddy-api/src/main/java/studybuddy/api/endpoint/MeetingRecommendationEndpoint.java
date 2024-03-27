@@ -46,10 +46,10 @@ public class MeetingRecommendationEndpoint {
                 )
         );
 
-        // Get friends list and see if their friend is participating in the meeting
         for(MeetingReccomendations mr : recList){
             Long meetingId = mr.getMeeting().getId();
-            //Should get the friend ids that are involved in this meeting
+            // Get friends list and see if their friend is participating in the meeting
+            // Should get the friend ids that are involved in this meeting
             sql = "SELECT user_id FROM user_meeting " +
                     "WHERE meeting_id = ? AND user_id = " +
                     "(SELECT u.user_id FROM users u " +
@@ -59,6 +59,8 @@ public class MeetingRecommendationEndpoint {
             List<Long> friendIds = jdbcTemplate.query(sql, new Object[]{meetingId, userId, userId, userId}, (rs, rowNum) ->
                     rs.getLong("user_id")
             );
+
+            sql = "";
 
             if(!friendIds.isEmpty()){
                 mr.addFriendPts();
