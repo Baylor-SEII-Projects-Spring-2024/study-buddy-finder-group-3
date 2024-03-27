@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import ProfileDisplay from "@/components/ProfileDisplay";
 
 function SettingsMain() {
     const [selectedSetting, setSelectedSetting] = useState("Account");
@@ -44,6 +45,17 @@ function AccountSettings() {
             <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
                 <h3> Account Information</h3>
             </div>
+            <Box
+                sx={{
+                    marginLeft: "80px",
+                    padding: "20px",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                    width: "30vw"
+                }}
+            >
+                <ProfileDisplay />
+            </Box>
             <div>
                 <Button
                     fullWidth style={{justifyContent: 'left', paddingLeft: "5vw" }}
