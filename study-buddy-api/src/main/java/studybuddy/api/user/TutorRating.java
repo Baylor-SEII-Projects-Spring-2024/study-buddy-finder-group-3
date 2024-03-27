@@ -7,7 +7,7 @@ import studybuddy.api.user.User;
 
 @Data
 @Entity
-@Table(name = studybuddy.api.user.TutorRating.TABLE_NAME)
+@Table(name = TutorRating.TABLE_NAME)
 public class TutorRating {
     public static final String TABLE_NAME = "TUTOR_RATING";
 
@@ -17,7 +17,7 @@ public class TutorRating {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_MEETING_USER_ID"))
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_RATING_USER_ID"))
     private User user;
 
     @Column(name = "RATING")

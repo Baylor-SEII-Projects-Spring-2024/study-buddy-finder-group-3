@@ -60,7 +60,32 @@ public class MeetingRecommendationEndpoint {
                     rs.getLong("user_id")
             );
 
-            sql = "";
+            // Get tutor rating
+            sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
+                    "WHERE user_id = ? GROUP BY user_id";
+
+            Double rating = jdbcTemplate.query(sql, new Object[]{userId}, (rs) -> {
+                if (rs.next()) {
+                    long count = rs.getLong("count");
+                    int ratingSum = rs.getInt("ratingSum");
+
+                    //Checks to see if there are ratings
+                    if (count != 0) {
+                        return (double) ratingSum / count;
+                    } else {
+                        return 0.0;
+                    }
+                } else {
+                    return 0.0;
+                }
+            });
+
+            // Checks to see if rating exists
+            if(rating == null){
+                rating = 0.0;
+            }
+            mr.addTutorRatingPts(rating);
+
 
             if(!friendIds.isEmpty()){
                 mr.addFriendPts();
