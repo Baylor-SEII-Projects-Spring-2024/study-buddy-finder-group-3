@@ -1,11 +1,24 @@
 .profile-container {
     display: flex;
     flex-direction: column;
-    marginLeft: "80px";
-    /* padding: "20px";
-    border: "1px solid #ddd"; */
-    borderRadius: "5px";
-    /* width: "30vw"; */
+    /*marginLeft: 80px;*/
+    /*padding: "20px";*/
+    /*border: "1px solid #ddd";*/
+    borderRadius: 5px;
+    /* width: "30vw";*/
+    align-items: center;
+    flex: 1 0 auto;
+}
+
+.childBox {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 20vw;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
 }
 
 .profile-field {

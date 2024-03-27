@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
 import styles from "@/styles/ProfileDisplay.module.css";
+import { useTheme } from "@mui/material/styles"
 
 function ProfileDisplay() {
     const token = useSelector(selectToken);
@@ -24,6 +25,7 @@ function ProfileDisplay() {
     const [userId, setUserId] = useState('');
     const [editMode, setEditMode] = useState(false);
     const [selectedCourses, setSelectedCourses] = useState([]);
+    const theme = useTheme()
 
     useEffect(() => {
         if (!token || !user) {
@@ -40,6 +42,7 @@ function ProfileDisplay() {
 
     const fetchProfileInfo = async (userId) => {
         try {
+            console.log("API_URL: ", API_URL);
             const response = await axios.get(`${API_URL}/profile/${userId}`);
             setProfile(response.data);
 
@@ -106,16 +109,54 @@ function ProfileDisplay() {
     };
 
     return (
-        <Box className={styles.profileContainer}>
+        <Box className={styles.profileContainer}
+             display="flex" flexDirection="column"
+        >
             <div className={styles.profileHeader}>
-                <Avatar alt="Profile Picture" src={profile.profilePictureUrl} className={styles.avatar} />
-                <Typography variant="h6" component="h2">
+                <Avatar alt="Profile Picture"
+                        src={profile.profilePictureUrl}
+                        className={styles.avatar}
+                        sx={{
+                            width: "100px",
+                            height: "100px"
+                        }}
+                />
+                <Typography variant="h6" component="h2"
+                    sx={{
+                        display: "inline",
+                        flexGrow: 0, // Allow the Typography to grow and shrink as needed
+                        overflow: 'hidden', // Hide any overflowing text
+                        textOverflow: 'ellipsis', // Add ellipsis for text overflow
+                        whiteSpace: 'nowrap', // Prevent text from wrapping
+                        marginLeft: "15px", // Add some space between Avatar and Typography
+                        marginRight: "15px"
+                    }}
+                >
                     {profile.nameFirst} {profile.nameLast}
                 </Typography>
+                <Button
+                    variant="contained" color="primary"
+                    sx={{
+                        // marginLeft: "auto",
+                        // marginRight: "auto",
+                        marginTop: "15px",
+                        marginBottom: "15px",
+                        padding: "20px",
+                        width: "200px",
+                        // flexGrow: 1,
+                        flexShrink: 0,
+                        height: "30px"
+                    }}
+                >
+                    Change Photo
+                </Button>
             </div>
             <Box
                 sx={{
-                    marginLeft: "10px",
+                    //marginLeft: "10px",
+                    // flexGrow: 0,
+                    marginLeft: "auto",
+                    marginRight: "auto",
                     marginTop: "15px",
                     marginBottom: "15px",
                     padding: "20px",
@@ -160,35 +201,62 @@ function ProfileDisplay() {
                     onChange={handleInputChange}
                 />
             </Box>
-            <div className={styles.coursesContainer}>
-                <Typography variant="subtitle1">Courses:</Typography>
-                <FormControlLabel
-                    control={<Checkbox checked={selectedCourses.includes("Computer Science")} onChange={handleCourseChange} name="Computer Science" />}
-                    label="Computer Science"
-                    disabled={!editMode}
-                />
-                <FormControlLabel
-                    control={<Checkbox checked={selectedCourses.includes("Biology")} onChange={handleCourseChange} name="Biology" />}
-                    label="Biology"
-                    disabled={!editMode}
-                />
-                <FormControlLabel
-                    control={<Checkbox checked={selectedCourses.includes("Physics")} onChange={handleCourseChange} name="Physics" />}
-                    label="Physics"
-                    disabled={!editMode}
-                />
-                <FormControlLabel
-                    control={<Checkbox checked={selectedCourses.includes("Mathematics")} onChange={handleCourseChange} name="Mathematics" />}
-                    label="Mathematics"
-                    disabled={!editMode}
-                />
-                <FormControlLabel
-                    control={<Checkbox checked={selectedCourses.includes("Chemistry")} onChange={handleCourseChange} name="Chemistry" />}
-                    label="Chemistry"
-                    disabled={!editMode}
-                />
-            </div>
-            <Button onClick={editMode ? handleSaveClick : handleEditClick} variant="contained" color="primary">
+            <Box
+                sx={{
+                    // flexGrow: 0,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    marginTop: "15px",
+                    marginBottom: "15px",
+                    padding: "20px",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                    width: "20vw"
+                }} >
+                <div className={styles.coursesContainer}>
+                    <Typography variant="subtitle1">Courses:</Typography>
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Computer Science")} onChange={handleCourseChange} name="Computer Science" />}
+                        label="Computer Science"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Biology")} onChange={handleCourseChange} name="Biology" />}
+                        label="Biology"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Physics")} onChange={handleCourseChange} name="Physics" />}
+                        label="Physics"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Mathematics")} onChange={handleCourseChange} name="Mathematics" />}
+                        label="Mathematics"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Chemistry")} onChange={handleCourseChange} name="Chemistry" />}
+                        label="Chemistry"
+                        disabled={!editMode}
+                    />
+                </div>
+            </Box>
+            <Button
+                sx={{
+                    // flexGrow: 0,
+                    variant: "contained",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                    //padding: "20px",
+                    //border: "1px solid #ddd",
+                    //borderRadius: "5px",
+                    width: "20vw"
+                }}
+                onClick={editMode ? handleSaveClick : handleEditClick} variant="contained" color="primary"
+            >
                 {editMode ? 'Save Changes' : 'Edit Profile'}
             </Button>
         </Box>

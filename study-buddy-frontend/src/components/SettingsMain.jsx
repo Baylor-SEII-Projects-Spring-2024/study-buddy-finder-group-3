@@ -23,7 +23,7 @@ function SettingsMain() {
 function SettingsSidebar({ onSettingClick }) {
     return (
         <Box
-            sx={{ width: "10vw", minHeight: "100vh", borderRight: "1px solid #ddd" }}
+            sx={{ /* width: "10vw", */ minHeight: "100vh", borderRight: "1px solid #ddd" }}
         >
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <h3>Settings</h3>
@@ -47,11 +47,14 @@ function AccountSettings() {
             </div>
             <Box
                 sx={{
+                    marginTop: "15px",
                     marginLeft: "80px",
                     padding: "20px",
                     border: "1px solid #ddd",
                     borderRadius: "5px",
-                    width: "30vw"
+                    minWidth: "30vw",
+                    display: "inline-block"
+                    // width: "30vw"
                 }}
             >
                 <ProfileDisplay />
