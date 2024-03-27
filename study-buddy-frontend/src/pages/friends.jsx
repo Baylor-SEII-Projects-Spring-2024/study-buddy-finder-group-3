@@ -3,7 +3,6 @@ import { useSelector } from "react-redux"
 import { selectToken } from "@/utils/authSlice.js"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
-import FriendsSidebar2 from "@/components/FriendsPage/FriendsSidebar2"
 import FriendsSidebar from "@/components/FriendsPage/FriendsSidebar"
 
 function friends() {
