@@ -33,6 +33,7 @@ export default function FriendsList() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState({});
+  const [profilePic, setProfilePic] = useState(null);
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user);
@@ -51,6 +52,8 @@ export default function FriendsList() {
       setUserid(user.id)
     }
     fetchAllInfo()
+    //setProfilePic(getProfilePic(user))
+
   }, [user, selectedUser])
   
   const fetchAllInfo = async () => {
@@ -89,6 +92,31 @@ export default function FriendsList() {
     left: 0,
   };
 
+  const getProfilePic = async (user) => {
+    console.log('fetching profile pic')
+    try {
+      const config = {
+        responseType: "blob"
+      }
+      const response = await axios.get(`${API_URL}/friends/${user.id}/pic`, config);
+      
+      const reader = new FileReader();
+      reader.readAsDataURL(response.data);
+
+      return new Promise((resolve, reject) => {
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = () => {
+          reject(reader.error);
+        };
+      });
+
+    } catch (error) {
+      console.error("Error fetching profile pic:", error);
+    }
+  }
+
   if (loading) {
     
     return (
@@ -119,7 +147,7 @@ export default function FriendsList() {
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       <CardMedia
                         component="img"
-                        image="/green_iguana.jpg"
+                        image={getProfilePic(user)}
                         alt="green iguana"
                       />
                       
