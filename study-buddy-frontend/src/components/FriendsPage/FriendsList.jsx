@@ -20,8 +20,6 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 
-
-
 export default function FriendsList() {
 
 
@@ -34,6 +32,8 @@ export default function FriendsList() {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState({});
   const [profilePic, setProfilePic] = useState(null);
+  const [profilePics, setProfilePics] = useState([]);
+  const [picLoaded, setPicLoaded] = useState(false);
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user);
@@ -53,8 +53,8 @@ export default function FriendsList() {
     }
     fetchAllInfo()
     getProfilePic(user)
-
-  }, [user, selectedUser])
+    getProfilePics(friends)
+  }, [user, selectedUser, picLoaded])
   
   const fetchAllInfo = async () => {
     try {
@@ -65,6 +65,7 @@ export default function FriendsList() {
     } finally {
       setLoading(false);
     }
+    setPicLoaded(true);
   }
 
   const removeFriend = async (friendId) => {
@@ -93,7 +94,6 @@ export default function FriendsList() {
   };
 
   const getProfilePic = async (user) => {
-    console.log('fetching profile pic')
     try {
       const config = {
         responseType: "blob"
@@ -111,6 +111,44 @@ export default function FriendsList() {
       console.error("Error fetching profile pic:", error);
     }
   }
+
+  const getProfilePics = async (users) => {
+    try {
+        const config = {
+            responseType: "blob"
+        };
+
+        // Create an array to store promises
+        const promises = [];
+
+        for (let i = 0; i < users.length; i++) {
+            promises.push(
+                new Promise((resolve, reject) => {
+                    axios.get(`${API_URL}/friends/${users[i].id}/pic`, config)
+                        .then(response => {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(response.data);
+                            reader.onload = () => {
+                                resolve({ id: users[i].id, pic: reader.result });
+                            };
+                        })
+                        .catch(error => {
+                            reject(error);
+                        });
+                })
+            );
+        }
+
+        // Wait for all promises to resolve
+        const profilePicsArray = await Promise.all(promises);
+
+        // Update state with all profile pictures
+        setProfilePics(profilePicsArray);
+        
+    } catch (error) {
+        console.error("Error fetching profile pics:", error);
+    }
+};
 
   if (loading) {
     
@@ -137,18 +175,18 @@ export default function FriendsList() {
               {friends.map(user => (
                 <Grid item key={user.id}>
                   
-                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa" }}>
+                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa", maxHeight: 496 }}>
                     <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       <CardMedia
                         component="img"
-                        image={profilePic}
+                        image={profilePics[user.id-1]?.pic}
                         alt="green iguana"
                         width={345}
                         height={230}
                       />
                       
-                      <CardContent sx={{width: 345, height: 204, overflow: 'auto'}}>
+                      <CardContent sx={{width: 345, height: 206, overflow: 'auto'}}>
                         <Typography gutterBottom variant="h5" component="div">
                           {user.nameFirst} {user.nameLast}
                         </Typography>
@@ -166,8 +204,8 @@ export default function FriendsList() {
                       
                     </CardActionArea>
                     
-                      <CardActions>
-                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)}>
+                      <CardActions >
+                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)} height={60}>
                           Remove Friend
                         </Button>
                       </CardActions>
