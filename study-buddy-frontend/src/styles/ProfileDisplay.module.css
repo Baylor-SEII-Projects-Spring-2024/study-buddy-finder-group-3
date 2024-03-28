@@ -4,7 +4,7 @@
     /*marginLeft: 80px;*/
     /*padding: "20px";*/
     /*border: "1px solid #ddd";*/
-    borderRadius: 5px;
+    borderRadius: 10px;
     /* width: "30vw";*/
     align-items: center;
     flex: 1 0 auto;
@@ -22,17 +22,17 @@
 }
 
 .profile-field {
-    background-color: #94909b; /* Light gray background */
-    border: 1px solid #3d3d3d; /* Gray border */
+    /*background-color: #94909b; !* Light gray background *!*/
+    /*border: 1px solid #3d3d3d; !* Gray border *!*/
     padding: 10px; /* Padding for content inside the box */
     margin-bottom: 10px; /* Margin between boxes */
 }
 
 .profileDisplay {
     padding: 20px;
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
     border-radius: 5px;
-    background-color: #f9f9f9;
+    /*background-color: #f9f9f9;*/
 }
 
 .profileHeader {
