@@ -52,7 +52,7 @@ export default function FriendsList() {
       setUserid(user.id)
     }
     fetchAllInfo()
-    //setProfilePic(getProfilePic(user))
+    getProfilePic(user)
 
   }, [user, selectedUser])
   
@@ -103,14 +103,9 @@ export default function FriendsList() {
       const reader = new FileReader();
       reader.readAsDataURL(response.data);
 
-      return new Promise((resolve, reject) => {
-        reader.onloadend = () => {
-          resolve(reader.result);
-        };
-        reader.onerror = () => {
-          reject(reader.error);
-        };
-      });
+      reader.onload = () =>
+        setProfilePic(reader.result);
+
 
     } catch (error) {
       console.error("Error fetching profile pic:", error);
@@ -147,8 +142,10 @@ export default function FriendsList() {
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       <CardMedia
                         component="img"
-                        image={getProfilePic(user)}
+                        image={profilePic}
                         alt="green iguana"
+                        width={345}
+                        height={230}
                       />
                       
                       <CardContent sx={{width: 345, height: 204, overflow: 'auto'}}>
