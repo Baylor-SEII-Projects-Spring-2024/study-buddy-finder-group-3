@@ -19,6 +19,9 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
+const fallbackPic = 'profilePicture.png';
 
 export default function FriendsList() {
 
@@ -37,6 +40,7 @@ export default function FriendsList() {
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user);
+    console.log(user.id)
     setOpen(true);
   }
 
@@ -54,6 +58,7 @@ export default function FriendsList() {
     fetchAllInfo()
     getProfilePic(user)
     getProfilePics(friends)
+    console.log(profilePics)
   }, [user, selectedUser, picLoaded])
   
   const fetchAllInfo = async () => {
@@ -84,6 +89,7 @@ export default function FriendsList() {
   const handleClose = (value) => {
     setOpen(false);
   };
+
 
   const textStyle = {
     whiteSpace: 'nowrap',
@@ -172,7 +178,7 @@ export default function FriendsList() {
         </Typography>
           <List>
             <Grid container spacing={5} justifyContent={'center'}>
-              {friends.map(user => (
+              {friends.map((user, index) => (
                 <Grid item key={user.id}>
                   
                   <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa", maxHeight: 496 }}>
@@ -180,8 +186,8 @@ export default function FriendsList() {
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       <CardMedia
                         component="img"
-                        image={profilePics[user.id-1]?.pic}
-                        alt="green iguana"
+                        image={profilePics[index]?.pic}
+                        alt="profile picture"
                         width={345}
                         height={230}
                       />
