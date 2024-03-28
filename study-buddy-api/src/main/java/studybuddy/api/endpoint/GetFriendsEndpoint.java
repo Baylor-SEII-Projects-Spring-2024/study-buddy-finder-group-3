@@ -26,8 +26,6 @@ import java.util.Map;
 @RequestMapping("/friends")
 public class GetFriendsEndpoint {
 
-    //TODO: upgrade deprecated query functions to non deprecated versions
-
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -41,19 +39,6 @@ public class GetFriendsEndpoint {
         String sql = "SELECT u.* FROM users u " +
                 "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
                 "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?";
-
-        /*List<User> friends = jdbcTemplate.query(sql, new Object[]{userId, userId, userId}, (rs, rowNum) ->
-            new User(
-                rs.getLong("user_id"),
-                rs.getString("username"),
-                rs.getString("email_address"),
-                rs.getString("password"),
-                rs.getBoolean("istutor"),
-                rs.getString("namefirst"),
-                rs.getString("namelast"),
-                rs.getString("areaofstudy")
-            )
-        );*/
 
         List<User> friends = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId);
 
@@ -78,19 +63,6 @@ public class GetFriendsEndpoint {
                 "WHERE (f.userto_id = ? OR f.userfrom_id = ?) AND u.user_id != ?)";
 
         String searchTerm = "%" + username + "%";
-
-        /*List<User> users = jdbcTemplate.query(sql, new Object[]{searchTerm, userId, userId, userId, userId, userId, userId, userId}, (rs, rowNum) ->
-                new User(
-                        rs.getLong("user_id"),
-                        rs.getString("username"),
-                        rs.getString("email_address"),
-                        rs.getString("password"),
-                        rs.getBoolean("istutor"),
-                        rs.getString("namefirst"),
-                        rs.getString("namelast"),
-                        rs.getString("areaofstudy")
-                )
-        );*/
 
         List<User> users = jdbcTemplate.query(sql, new UserRowMapper(), searchTerm, userId, userId, userId, userId, userId, userId, userId);
 
@@ -122,19 +94,6 @@ public class GetFriendsEndpoint {
 
         String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
                 "WHERE fr.userto_id = ?";
-
-        /*List<User> friends = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
-                new User(
-                        rs.getLong("user_id"),
-                        rs.getString("username"),
-                        rs.getString("email_address"),
-                        rs.getString("password"),
-                        rs.getBoolean("istutor"),
-                        rs.getString("namefirst"),
-                        rs.getString("namelast"),
-                        rs.getString("areaofstudy")
-                )
-        );*/
 
         List<User> friends = jdbcTemplate.query(sql, new UserRowMapper(), userId);
 
@@ -222,19 +181,6 @@ public class GetFriendsEndpoint {
 
         String sql = "SELECT u.* FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
                 "WHERE bl.blocker_id = ?";
-
-        /*List<User> blockedUsers = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
-                new User(
-                        rs.getLong("user_id"),
-                        rs.getString("username"),
-                        rs.getString("email_address"),
-                        rs.getString("password"),
-                        rs.getBoolean("istutor"),
-                        rs.getString("namefirst"),
-                        rs.getString("namelast"),
-                        rs.getString("areaofstudy")
-                )
-        );*/
 
         List<User> blockedUsers= jdbcTemplate.query(sql, new UserRowMapper(), userId);
 
