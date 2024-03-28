@@ -110,8 +110,26 @@ function ProfileDisplay() {
 
     return (
         <Box className={styles.profileContainer}
-             display="flex" flexDirection="column"
+             display="flex" flexDirection="column" color="secondary"
+             sx={{
+                 position: "relative",
+                 backgroundColor: "#f7f0fa"
+             }}
         >
+            <Box
+                sx={{
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    position: "absolute", // or "fixed" if needed
+                    top: -60,
+                    left: -50,
+                    width: "200%",
+                    height: "300px",
+                    backgroundColor: "#c3f0c8",
+                    zIndex: -1 // Set lower zIndex to appear behind other elements
+                }}
+            >
+            </Box>
             <div className={styles.profileHeader}>
                 <Avatar alt="Profile Picture"
                         src={profile.profilePictureUrl}
@@ -127,9 +145,10 @@ function ProfileDisplay() {
                         flexGrow: 0, // Allow the Typography to grow and shrink as needed
                         overflow: 'hidden', // Hide any overflowing text
                         textOverflow: 'ellipsis', // Add ellipsis for text overflow
-                        whiteSpace: 'nowrap', // Prevent text from wrapping
+                        whiteSpace: 'normal', // Prevent text from wrapping
                         marginLeft: "15px", // Add some space between Avatar and Typography
-                        marginRight: "15px"
+                        marginRight: "15px",
+                        maxWidth: "150px",
                     }}
                 >
                     {profile.nameFirst} {profile.nameLast}

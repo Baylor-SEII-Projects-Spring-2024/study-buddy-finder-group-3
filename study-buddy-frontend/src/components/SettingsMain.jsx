@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import ProfileDisplay from "@/components/ProfileDisplay";
+import {useTheme} from "@mui/material/styles";
+
 
 function SettingsMain() {
     const [selectedSetting, setSelectedSetting] = useState("Account");
@@ -38,23 +40,29 @@ function SettingsSidebar({ onSettingClick }) {
 export default SettingsMain;
 
 function AccountSettings() {
+    const theme = useTheme()
+
     return (
         <Box
-            sx={{width: "75vw"}}
+            sx={{
+                width: "75vw",
+                padding: "15px"
+        }}
         >
-            <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
-                <h3> Account Information</h3>
-            </div>
+            {/*<div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>*/}
+            {/*    <h3> Account Information</h3>*/}
+            {/*</div>*/}
             <Box
                 sx={{
                     marginTop: "15px",
                     marginLeft: "80px",
                     padding: "20px",
                     border: "1px solid #ddd",
-                    borderRadius: "5px",
+                    borderRadius: "10px",
                     minWidth: "30vw",
-                    display: "inline-block"
-                    // width: "30vw"
+                    display: "inline-block",
+                    width: "fit-content",
+                    backgroundColor: "#f7f0fa"
                 }}
             >
                 <ProfileDisplay />
