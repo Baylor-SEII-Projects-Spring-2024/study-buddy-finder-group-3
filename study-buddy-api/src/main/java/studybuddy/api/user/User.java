@@ -10,7 +10,7 @@ public class User {
 
     public static final String TABLE_NAME = "USERS";
 
-    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy, byte[] profilePic) {
+    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy) {
         this.id = id;
         this.username = username;
         this.emailAddress = emailAddress;
@@ -19,7 +19,6 @@ public class User {
         this.nameFirst = nameFirst;
         this.nameLast = nameLast;
         this.areaOfStudy = areaOfStudy;
-        this.profilePic = profilePic;
     }
 
     @Id
