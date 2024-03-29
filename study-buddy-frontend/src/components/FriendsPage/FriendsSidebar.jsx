@@ -278,7 +278,7 @@ return (
           </ListItem>
       </List>
     </StyledDrawer>
-    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+    <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: '', height: '100vh'}} overflow={'auto'}>
       <DrawerHeader />
       {activePage === 'list' ? <FriendsList/> : null}
       {activePage === 'requests' ? 
