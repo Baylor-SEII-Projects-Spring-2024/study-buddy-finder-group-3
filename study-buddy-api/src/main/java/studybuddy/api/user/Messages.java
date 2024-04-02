@@ -29,4 +29,6 @@ public class Messages {
     @ManyToOne //Chat message was sent too
     @JoinColumn(name = "CHAT_ID", referencedColumnName = "CHAT_ID", foreignKey = @ForeignKey(name = "FK_TO_CHAT_ID"))
     Chat chat_id;
+
+
 }
