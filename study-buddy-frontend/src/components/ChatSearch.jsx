@@ -2,7 +2,6 @@ import React from "react"
 import styles from "@/styles/Chat.module.css";
 
 const ChatSearch = () => {
-  const [username, setUsername] = usestate("")
   return (
     <div className={styles.ChatSearch}>
       <div className={styles.SearchForm}>
