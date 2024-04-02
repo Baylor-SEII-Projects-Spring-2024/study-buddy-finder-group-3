@@ -5,13 +5,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import studybuddy.api.user.Messages;
+import studybuddy.api.user.messageService;
 
 @RestController
 @RequestMapping("/chat")
 public class MessageEndpoint {
 
     @Autowired
-    private MessageService messageService;
+    private messageService messageService;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@RequestBody Messages message) {
