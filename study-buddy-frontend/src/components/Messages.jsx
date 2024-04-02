@@ -4,8 +4,8 @@ import Message from "./Message"
 const Messages = () => {
   return (
     <div className={styles.Messages}>
-      <Message/>
-      <Message/>
+      <Message isOwner={true}/>
+      <Message isOwner={false}/>
       <Message/>
       <Message/>
       <Message/>

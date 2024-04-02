@@ -7,8 +7,8 @@ const chat = () => {
   return(
     <div className={styles.chat}>
       <div className={styles.container}>
-        <ChatSidebar className={styles.ChatSidebar} />
         <ChatComp className={styles.ChatComp} />
+        <ChatSidebar className={styles.ChatSidebar} />
       </div>
     </div>
   );
