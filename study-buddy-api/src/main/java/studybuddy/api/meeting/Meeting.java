@@ -43,4 +43,17 @@ public class Meeting {
     @Column(name = "MEETING_LOCATION")
     private String location;
 
+    public Meeting(){
+
+    }
+
+    public Meeting(Long id, Date date, String description, String link, String location, String title){
+        this.id = id;
+        this.date = date;
+        this.description = description;
+        this.link = link;
+        this.location = location;
+        this.title = title;
+    }
+
 }

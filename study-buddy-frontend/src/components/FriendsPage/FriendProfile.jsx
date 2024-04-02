@@ -8,14 +8,41 @@ import Avatar from '@mui/material/Avatar';
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import { API_URL } from "@/utils/config";
+import BlockIcon from '@mui/icons-material/Block';
+import { useSelector } from "react-redux";
+import { selectToken, selectUser } from "@/utils/authSlice.js"
 
 
 function FriendProfile({ open, onClose, user }) {
   const [profile, setProfile] = useState('');
   const [userId, setUserid] = useState('')
+  const realUser = useSelector(selectUser)
 
   const handleClose = () => {
     onClose()
+  }
+
+  const removeFriend = (user2) => {
+    try {
+      axios.post(`${API_URL}/friends/${realUser.id}/deleteFriend/${user2.id}`)
+        .then(response => {
+          console.log(response);
+      })
+    } catch (error) {
+      console.error("Error removing friend:", error)
+    }
+  }
+
+  const blockUser = (user2) => {
+    try {
+      axios.post(`${API_URL}/friends/${realUser.id}/block/${user2.id}`)
+       .then(response => {
+         console.log(response);
+      })
+    } catch (error) {
+      console.error("Error blocking user:", error)
+    }
+    removeFriend(user2)
   }
 
   useEffect(() => {
@@ -33,6 +60,7 @@ function FriendProfile({ open, onClose, user }) {
     } catch (error) {
       console.error("Error fetching profile info:", error);
     }
+    console.log("Profile loaded")
   }
   
 
@@ -88,9 +116,14 @@ function FriendProfile({ open, onClose, user }) {
                     disabled
                     sx={{ backgroundColor: '#f0f0f0', width: '300px' }}
                 />
-                <Button fullWidth variant="text" onClick={handleClose}>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Button variant="text" onClick={handleClose}>
                     Close
                 </Button>
+                <Button variant="text" startIcon={<BlockIcon />} style={{ color: 'red' }} onClick={() => blockUser(user)}>
+                    Block
+                </Button>
+                </Box>
             </Box>
         </Box>
     </Modal>

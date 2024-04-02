@@ -47,6 +47,16 @@ public class User {
     @Column(name = "AREAOFSTUDY")
     String areaOfStudy;
 
+    @Lob
+    @Column(name = "PROFILEPIC",  columnDefinition = "BLOB")
+    byte[] profilePic;
+
+    @Column(name = "PREF_TIME")
+    String prefTime;
+
+    @Column(name = "PREF_MEETING_TYPE")
+    String prefMeetingType;
+
     public User() {
 
     }

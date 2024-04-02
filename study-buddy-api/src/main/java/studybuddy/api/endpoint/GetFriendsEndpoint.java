@@ -3,6 +3,7 @@ import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.User;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import studybuddy.api.utils.JwtUtil;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +25,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/friends")
 public class GetFriendsEndpoint {
-
-    //TODO: upgrade deprecated query functions to non deprecated versions
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -39,18 +40,7 @@ public class GetFriendsEndpoint {
                 "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
                 "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?";
 
-        List<User> friends = jdbcTemplate.query(sql, new Object[]{userId, userId, userId}, (rs, rowNum) ->
-            new User(
-                rs.getLong("user_id"),
-                rs.getString("username"),
-                rs.getString("email_address"),
-                rs.getString("password"),
-                rs.getBoolean("istutor"),
-                rs.getString("namefirst"),
-                rs.getString("namelast"),
-                rs.getString("areaofstudy")
-            )
-        );
+        List<User> friends = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId);
 
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
@@ -74,18 +64,7 @@ public class GetFriendsEndpoint {
 
         String searchTerm = "%" + username + "%";
 
-        List<User> users = jdbcTemplate.query(sql, new Object[]{searchTerm, userId, userId, userId, userId, userId, userId, userId}, (rs, rowNum) ->
-                new User(
-                        rs.getLong("user_id"),
-                        rs.getString("username"),
-                        rs.getString("email_address"),
-                        rs.getString("password"),
-                        rs.getBoolean("istutor"),
-                        rs.getString("namefirst"),
-                        rs.getString("namelast"),
-                        rs.getString("areaofstudy")
-                )
-        );
+        List<User> users = jdbcTemplate.query(sql, new UserRowMapper(), searchTerm, userId, userId, userId, userId, userId, userId, userId);
 
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -116,18 +95,7 @@ public class GetFriendsEndpoint {
         String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
                 "WHERE fr.userto_id = ?";
 
-        List<User> friends = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
-                new User(
-                        rs.getLong("user_id"),
-                        rs.getString("username"),
-                        rs.getString("email_address"),
-                        rs.getString("password"),
-                        rs.getBoolean("istutor"),
-                        rs.getString("namefirst"),
-                        rs.getString("namelast"),
-                        rs.getString("areaofstudy")
-                )
-        );
+        List<User> friends = jdbcTemplate.query(sql, new UserRowMapper(), userId);
 
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
@@ -168,4 +136,89 @@ public class GetFriendsEndpoint {
         return true;
     }
 
+    //Remove friend
+    @PostMapping("/{user1}/deleteFriend/{user2}")
+    public boolean removeFriend(@PathVariable Long user1, @PathVariable Long user2)
+    {
+        String sql = "DELETE FROM friends WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+
+        List<Object[]> parameters = new ArrayList<>();
+
+        parameters.add(new Object[]{
+                user1,
+                user2,
+                user2,
+                user1
+        });
+
+        jdbcTemplate.batchUpdate(sql, parameters);
+
+        return true;
+    }
+
+    //Block user
+    @PostMapping("/{blocker_id}/block/{blocked_id}")
+    public boolean blockUser(@PathVariable Long blocker_id, @PathVariable Long blocked_id)
+    {
+        List<Object[]> parameters = new ArrayList<>();
+
+        parameters.add(new Object[]{
+                blocker_id,
+                blocked_id
+        });
+
+
+
+        jdbcTemplate.batchUpdate("INSERT INTO blockedlist (blocker_id, blocked_id) VALUES(?, ?)", parameters);
+
+        return true;
+    }
+
+    //Get all blocked users
+    @GetMapping("/{userId}/getBlocked")
+    public ResponseEntity<List<User>> getBlocked(@PathVariable Long userId)
+    {
+
+        String sql = "SELECT u.* FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE bl.blocker_id = ?";
+
+        List<User> blockedUsers= jdbcTemplate.query(sql, new UserRowMapper(), userId);
+
+
+
+        return new ResponseEntity<>(blockedUsers, HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}/pic")
+    public ResponseEntity<byte[]> getProfilePic(@PathVariable Long userId)
+    {
+        String sql = "SELECT profilepic FROM users WHERE user_id = ?";
+
+        byte[] pic = jdbcTemplate.queryForObject(sql, byte[].class, userId);
+
+        return new ResponseEntity<>(pic, HttpStatus.OK);
+    }
+
+    public class UserRowMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+
+            user.setId(rs.getLong("user_id"));
+            user.setAreaOfStudy(rs.getString("areaofstudy"));
+            user.setEmailAddress(rs.getString("email_address"));
+            user.setNameFirst(rs.getString("namefirst"));
+            user.setNameLast(rs.getString("namelast"));
+            user.setPassword(rs.getString("password"));
+            user.setUserType(rs.getBoolean("istutor"));
+            user.setUsername(rs.getString("username"));
+            user.setProfilePic(rs.getBytes("profilepic"));
+
+            return user;
+        }
+    }
+
+
 }
+
+

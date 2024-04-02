@@ -13,6 +13,10 @@ import ListItemText from '@mui/material/ListItemText';
 import { ListItemButton } from "@mui/material"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config";
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grow from '@mui/material/Grow';
+import Paper from '@mui/material/Paper';
+import Popper from "@mui/material/Popper"
 
 function FriendsAdd() {
   const user = useSelector(selectUser)
@@ -20,6 +24,8 @@ function FriendsAdd() {
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
   const [searchTerm, setSearchTerm] = useState("")
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
 
   const token = useSelector(selectToken);
 
@@ -44,11 +50,16 @@ function FriendsAdd() {
   }
 
   const handleSearch = async () => {
+    setOpen((prevOpen) => !prevOpen);
     try {
         fetchAddInfo()
     } catch (error) {
       console.error("Search failed:", error)
     }
+  }
+
+  const handleClose = (event) => {
+    setOpen(false);
   }
 
   const handleListItemClick = (event, user2) => {
@@ -69,7 +80,7 @@ function FriendsAdd() {
   }
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} ref={anchorRef}>
         <Box
         sx={{
             display: "flex",
@@ -90,15 +101,33 @@ function FriendsAdd() {
             style={{ flex: 1, margin: "0 10px" }}
         />
         </Box>
-        <List>
-            {friends.map(user => (
-            <ListItem key={user.user_id}>
-                <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
-                    <ListItemText primary={user.username} />
-                </ListItemButton>
-            </ListItem>
-            ))}
-        </List>
+        <Popper open={open} disablePortal anchorEl={anchorRef.current} transition>
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === 'bottom' ? 'center top' : 'center bottom',
+              }}
+            >
+              <Paper style={{backgroundColor: '#f7f0fa'}}>
+                <ClickAwayListener onClickAway={handleClose}>
+                <List>
+                {friends.map(user => (
+                  <ListItem key={user.id}>
+                      <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
+                          <ListItemText primary={user.username} />
+                      </ListItemButton>
+                  </ListItem>
+                ))}
+                </List>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+
+          
+        </Popper>
     </Box>
   )
 }
