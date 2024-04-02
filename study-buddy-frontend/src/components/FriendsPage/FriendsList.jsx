@@ -32,15 +32,13 @@ export default function FriendsList() {
   const [friends, setFriendsList] = useState([]);
   const [userId, setUserid] = useState('')
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingFriendsList, setLoadingFriendsList] = useState(true);
+  const [loadingPics, setLoadingPics] = useState(true);
   const [selectedUser, setSelectedUser] = useState({});
-  const [profilePic, setProfilePic] = useState(null);
   const [profilePics, setProfilePics] = useState([]);
-  const [picLoaded, setPicLoaded] = useState(false);
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user);
-    console.log(user.id)
     setOpen(true);
   }
 
@@ -52,14 +50,12 @@ export default function FriendsList() {
 
   useEffect(() => {
     if (user){
-      console.log('here')
+      console.log('useEffect: FriendsList')
       setUserid(user.id)
     }
     fetchAllInfo()
-    getProfilePic(user)
     getProfilePics(friends)
-    console.log(profilePics)
-  }, [user, selectedUser, picLoaded])
+  }, [user, selectedUser, loadingFriendsList])
   
   const fetchAllInfo = async () => {
     try {
@@ -68,9 +64,8 @@ export default function FriendsList() {
     } catch (error) {
       console.error("Error fetching friends info:", error);
     } finally {
-      setLoading(false);
+      setLoadingFriendsList(false);
     }
-    setPicLoaded(true);
   }
 
   const removeFriend = async (friendId) => {
@@ -82,39 +77,12 @@ export default function FriendsList() {
     }
   }
 
-  const vibeCheck = (user) => {
-    console.log(user)
-  }
-
-  const handleClose = (value) => {
-    setOpen(false);
-  };
-
-
-  const textStyle = {
-    whiteSpace: 'nowrap',
-    animation: 'scroll 10s linear infinite', // Adjust animation duration as needed
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  };
-
-  const getProfilePic = async (user) => {
+  const blockUser = async (friendId) => {
     try {
-      const config = {
-        responseType: "blob"
-      }
-      const response = await axios.get(`${API_URL}/friends/${user.id}/pic`, config);
-      
-      const reader = new FileReader();
-      reader.readAsDataURL(response.data);
-
-      reader.onload = () =>
-        setProfilePic(reader.result);
-
-
+      await axios.post(`${API_URL}/friends/${user.id}/block/${friendId}`);
+      removeFriend(friendId);
     } catch (error) {
-      console.error("Error fetching profile pic:", error);
+      console.error("Error blocking user:", error);
     }
   }
 
@@ -123,7 +91,7 @@ export default function FriendsList() {
         const config = {
             responseType: "blob"
         };
-
+        console.log("Fetching profile pics...")
         // Create an array to store promises
         const promises = [];
 
@@ -135,8 +103,13 @@ export default function FriendsList() {
                             const reader = new FileReader();
                             reader.readAsDataURL(response.data);
                             reader.onload = () => {
+                                
                                 resolve({ id: users[i].id, pic: reader.result });
+                                if (i === users.length - 1) {
+                                    setLoadingPics(false);
+                                }
                             };
+                            
                         })
                         .catch(error => {
                             reject(error);
@@ -156,7 +129,7 @@ export default function FriendsList() {
     }
 };
 
-  if (loading) {
+  if (loadingPics) {
     
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -184,12 +157,14 @@ export default function FriendsList() {
                   <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa", maxHeight: 496 }}>
                     <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
-                      <CardMedia
+                      {/* <CardMedia
                         component="img"
                         image={profilePics[index]?.pic}
                         alt="profile picture"
                         width={345}
                         height={230}
+                      /> */}
+                      <Avatar alt="Profile Picture" src={profilePics[index]?.pic} style={{ width: 345, height: 230 }} variant="square"
                       />
                       
                       <CardContent sx={{width: 345, height: 206, overflow: 'auto'}}>
@@ -212,7 +187,10 @@ export default function FriendsList() {
                     
                       <CardActions >
                         <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)} height={60}>
-                          Remove Friend
+                          Remove
+                        </Button>
+                        <Button size="small" color="primary" onClick={(event) => blockUser(user.id)} height={60}>
+                          Block
                         </Button>
                       </CardActions>
                       

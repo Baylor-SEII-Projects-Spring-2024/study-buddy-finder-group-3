@@ -168,14 +168,13 @@ export default function FriendsSidebar() {
   }
 
   useEffect(() => {
-    console.log('vibe check')
     if (user){
         console.log('here')
         setUserid(user.id)
       }
 
     fetchRequests();
-}, [user, message]);
+}, [user, message, activePage]);
 
   const handleMessageUpdate = () => {
     if (message === 'update') {
