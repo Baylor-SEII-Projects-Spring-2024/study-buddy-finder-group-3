@@ -36,6 +36,7 @@ export default function FriendsList() {
   const [loadingPics, setLoadingPics] = useState(true);
   const [selectedUser, setSelectedUser] = useState({});
   const [profilePics, setProfilePics] = useState([]);
+  const [triggerUpdate, setTriggerUpdate] = useState(false);
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user);
@@ -55,7 +56,7 @@ export default function FriendsList() {
     }
     fetchAllInfo()
     getProfilePics(friends)
-  }, [user, selectedUser, loadingFriendsList])
+  }, [user, selectedUser, loadingFriendsList, triggerUpdate])
   
   const fetchAllInfo = async () => {
     try {
@@ -72,9 +73,10 @@ export default function FriendsList() {
   const removeFriend = async (friendId) => {
     try {
       await axios.post(`${API_URL}/friends/${user.id}/deleteFriend/${friendId}`);
-      fetchAllInfo();
     } catch (error) {
       console.error("Error removing friend:", error);
+    } finally {
+      setTriggerUpdate(!triggerUpdate);
     }
   }
 
@@ -108,12 +110,17 @@ export default function FriendsList() {
                                 resolve({ id: users[i].id, pic: reader.result });
                                 if (i === users.length - 1) {
                                     setLoadingPics(false);
+                                    setTriggerUpdate(!triggerUpdate);
                                 }
                             };
                             
                         })
                         .catch(error => {
                             reject(error);
+                            if (i === users.length - 1) {
+                              setLoadingPics(false);
+                              setTriggerUpdate(!triggerUpdate);
+                          }
                         });
                 })
             );
