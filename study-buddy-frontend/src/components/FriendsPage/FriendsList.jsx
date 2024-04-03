@@ -65,6 +65,7 @@ export default function FriendsList() {
       console.error("Error fetching friends info:", error);
     } finally {
       setLoadingFriendsList(false);
+      console.log(friends.length === 0)
     }
   }
 
@@ -130,12 +131,22 @@ export default function FriendsList() {
 };
 
   if (loadingPics) {
-    
+
+    if (loadingFriendsList) {
+
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <CircularProgress />
       </Box>
     );
+    }
+    if (friends.length === 0) {
+      return (
+        <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
+          OH NO! You have no friends!
+        </Typography>
+      )
+    }
   }
 
   return (
