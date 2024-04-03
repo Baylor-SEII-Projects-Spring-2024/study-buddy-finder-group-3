@@ -56,6 +56,9 @@ export default function FriendsList() {
     }
     fetchAllInfo()
     getProfilePics(friends)
+
+    
+
   }, [user, selectedUser, loadingFriendsList, triggerUpdate])
   
   const fetchAllInfo = async () => {
