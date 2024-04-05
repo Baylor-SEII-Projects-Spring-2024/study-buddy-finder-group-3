@@ -19,8 +19,9 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-
+const fallbackPic = 'profilePicture.png';
 
 export default function FriendsList() {
 
@@ -33,9 +34,13 @@ export default function FriendsList() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState({});
+  const [profilePic, setProfilePic] = useState(null);
+  const [profilePics, setProfilePics] = useState([]);
+  const [picLoaded, setPicLoaded] = useState(false);
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user);
+    console.log(user.id)
     setOpen(true);
   }
 
@@ -51,7 +56,10 @@ export default function FriendsList() {
       setUserid(user.id)
     }
     fetchAllInfo()
-  }, [user, selectedUser])
+    getProfilePic(user)
+    getProfilePics(friends)
+    console.log(profilePics)
+  }, [user, selectedUser, picLoaded])
   
   const fetchAllInfo = async () => {
     try {
@@ -62,6 +70,7 @@ export default function FriendsList() {
     } finally {
       setLoading(false);
     }
+    setPicLoaded(true);
   }
 
   const removeFriend = async (friendId) => {
@@ -81,6 +90,7 @@ export default function FriendsList() {
     setOpen(false);
   };
 
+
   const textStyle = {
     whiteSpace: 'nowrap',
     animation: 'scroll 10s linear infinite', // Adjust animation duration as needed
@@ -88,6 +98,63 @@ export default function FriendsList() {
     top: 0,
     left: 0,
   };
+
+  const getProfilePic = async (user) => {
+    try {
+      const config = {
+        responseType: "blob"
+      }
+      const response = await axios.get(`${API_URL}/friends/${user.id}/pic`, config);
+      
+      const reader = new FileReader();
+      reader.readAsDataURL(response.data);
+
+      reader.onload = () =>
+        setProfilePic(reader.result);
+
+
+    } catch (error) {
+      console.error("Error fetching profile pic:", error);
+    }
+  }
+
+  const getProfilePics = async (users) => {
+    try {
+        const config = {
+            responseType: "blob"
+        };
+
+        // Create an array to store promises
+        const promises = [];
+
+        for (let i = 0; i < users.length; i++) {
+            promises.push(
+                new Promise((resolve, reject) => {
+                    axios.get(`${API_URL}/friends/${users[i].id}/pic`, config)
+                        .then(response => {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(response.data);
+                            reader.onload = () => {
+                                resolve({ id: users[i].id, pic: reader.result });
+                            };
+                        })
+                        .catch(error => {
+                            reject(error);
+                        });
+                })
+            );
+        }
+
+        // Wait for all promises to resolve
+        const profilePicsArray = await Promise.all(promises);
+
+        // Update state with all profile pictures
+        setProfilePics(profilePicsArray);
+        
+    } catch (error) {
+        console.error("Error fetching profile pics:", error);
+    }
+};
 
   if (loading) {
     
@@ -110,27 +177,29 @@ export default function FriendsList() {
           Your Friends
         </Typography>
           <List>
-            <Grid container spacing={3} justifyContent={'center'}>
-              {friends.map(user => (
+            <Grid container spacing={5} justifyContent={'center'}>
+              {friends.map((user, index) => (
                 <Grid item key={user.id}>
                   
-                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa" }}>
+                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa", maxHeight: 496 }}>
                     <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       <CardMedia
                         component="img"
-                        image="/green_iguana.jpg"
-                        alt="green iguana"
+                        image={profilePics[index]?.pic}
+                        alt="profile picture"
+                        width={345}
+                        height={230}
                       />
                       
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div" whiteSpace={'nowrap'}>
+                      <CardContent sx={{width: 345, height: 206, overflow: 'auto'}}>
+                        <Typography gutterBottom variant="h5" component="div">
                           {user.nameFirst} {user.nameLast}
                         </Typography>
-                        <Typography gutterBottom variant="h5" component="div" whiteSpace={'nowrap'}>
+                        <Typography gutterBottom variant="h5" component="div">
                           {user.userType ? "Tutor" : "Student"}
                         </Typography>
-                        <Typography variant="h6" color="text.secondary" whiteSpace={'nowrap'}>
+                        <Typography variant="h6" color="text.secondary">
                           {user.areaOfStudy}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -141,8 +210,8 @@ export default function FriendsList() {
                       
                     </CardActionArea>
                     
-                      <CardActions>
-                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)}>
+                      <CardActions >
+                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)} height={60}>
                           Remove Friend
                         </Button>
                       </CardActions>
@@ -150,7 +219,7 @@ export default function FriendsList() {
                     </ListItem>
                     
                   </Card>
-                  <FriendProfile open={open} onClose={handleClose} user={selectedUser}/>
+                  {/* <FriendProfile open={open} onClose={handleClose} user={selectedUser}/> */}
                 </Grid>
                 
               ))}
