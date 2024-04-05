@@ -48,6 +48,7 @@ public class MeetingRecommendationEndpoint {
 
         for(MeetingReccomendations mr : recList){
             // TODO: Implementation for course and area of study points
+            // TODO: Implementation for blocked users
 
             // Gets time of meeting and checks to see if it is within the user's time preference
             Date date = mr.getMeeting().getDate();
