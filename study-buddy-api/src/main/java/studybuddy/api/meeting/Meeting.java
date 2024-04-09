@@ -2,6 +2,7 @@ package studybuddy.api.meeting;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import studybuddy.api.user.User;
 
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,11 @@ public class Meeting {
 
     @Column(name = "MEETING_LOCATION")
     private String location;
+
+    //TUTOR THAT IS HOSTING THE MEETING
+    @ManyToOne
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_RATING_USER_ID"))
+    private User user;
 
     public Meeting(){
 

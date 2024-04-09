@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MeetingReccomendations {
     @Getter @Setter
-    private int subjectPts;
+    private int coursePts;
     @Getter @Setter
     private int timePts;
     @Getter @Setter
@@ -18,13 +18,16 @@ public class MeetingReccomendations {
     private int meetingTypePts;
     @Getter @Setter
     private int friendPts;
+    @Getter @Setter
+    private int areaOfStudyPts;
     @Getter
     private int totalPts;
     @Getter
     private Meeting meeting;
 
     public MeetingReccomendations(Meeting m){
-        subjectPts = 0;
+        coursePts = 0;
+        areaOfStudyPts = 0;
         timePts = 0;
         tutorRatingPts = 0;
         meetingTypePts = 0;
@@ -34,7 +37,10 @@ public class MeetingReccomendations {
     }
 
     public void addSubjectPts(){
-        this.subjectPts += 5;
+        this.coursePts += 5;
+    }
+    public void addAreaOfStudyPts() {
+        this.areaOfStudyPts += 4;
     }
 
     public void addTimePts(){
