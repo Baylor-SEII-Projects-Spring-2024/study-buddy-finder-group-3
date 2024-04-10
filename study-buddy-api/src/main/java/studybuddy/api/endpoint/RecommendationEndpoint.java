@@ -224,27 +224,34 @@ public class RecommendationEndpoint {
         List<User> users = new ArrayList<>();
         // Get all users besides current user
         String sql = "SELECT * FROM users " +
-                "WHERE user_id NOT IN " +
-                "(SELECT DISTINCT user1_id FROM friends" +
-                " UNION" +
-                " SELECT DISTINCT user2_id FROM friends)";
+                "WHERE user_id != ? AND istutor = FALSE AND user_id NOT IN (" +
 
-        List<UserRecommendations> recList = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
-                new UserRecommendations(
-                        new User(
-                                rs.getLong("user_id"),
-                                rs.getString("username"),
-                                rs.getString("email_address"),
-                                rs.getString("password"),
-                                rs.getBoolean("istutor"),
-                                rs.getString("nameFirst"),
-                                rs.getString("nameLast"),
-                                rs.getString("areaofstudy"),
-                                rs.getString("pref_time"),
-                                rs.getString("pre_meeting_type")
-                        )
-                )
-        );
+                //Get all friends
+                "SELECT u.user_id FROM users u " +
+                "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
+                "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests to user
+                "SELECT u.user_id FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
+                "WHERE fr.userto_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests from user
+
+                "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
+                "WHERE fr.userfrom_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId);
+
+        List<UserRecommendations> recList = new ArrayList<>();
+
+        for (User ur : userList)
+        {
+            recList.add(new UserRecommendations(ur));
+        }
 
         for(UserRecommendations ur : recList){
             Long user2Id = ur.getUser().getId();
@@ -261,7 +268,140 @@ public class RecommendationEndpoint {
 
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ? "
+            ;
+            List<Long> userCourses = jdbcTemplate.query(sql, new Object[]{userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            // For this one, if they have multiple of the same course, it will stack
+            for(Long l1 : otherUserCourses){
+                for(Long l2 : userCourses){
+                    if(l1 != null && l2 != null){
+                        if(l1.equals(l2)){
+                            ur.addCoursePts();
+                        }
+                    }
+
+                }
+            }
+
+            // Area of Study
+            // Gets other user's area of study
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String otherUserSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{user2Id}, String.class);
+
+            // Gets our user's area of study
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String userSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
+
+            // Stacks as well
+            if(userSubjectCsv != null && otherUserSubjectCsv != null) {
+                String[] otherUserSubjectList = otherUserSubjectCsv.split(",");
+                String[] userSubjectList = userSubjectCsv.split(",");
+                for (String s1 : userSubjectList) {
+                    for(String s2 : otherUserSubjectList){
+                        if (s1.equalsIgnoreCase(s2)) {
+                            ur.addAreaOfStudyPts();
+                        }
+                    }
+
+                }
+            }
+            else{
+                System.out.println("THIS HAD NO ROWS");
+            }
+
+            String otherUserTime = ur.getUser().getPrefTime();
+            sql = "SELECT pref_time FROM users WHERE user_id = ?";
+            String userTime = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_time");
+                }
+                else{
+                    return "none";
+                }
+            });
+
+            if (!(userTime == null || otherUserTime == null)){
+                if(userTime.equals("morning")){
+                    if(userTime.equalsIgnoreCase(otherUserTime)){
+                        ur.addTimePts();
+                    }
+                }
+            }
+            ur.totalPoints();
+
+        }
+        recList.sort(Comparator.comparing(UserRecommendations::getTotalPts).reversed());
+        int count = 0;
+        for(UserRecommendations u : recList){
+            if(count >= 6){
+                break;
+            }
+            users.add(u.getUser());
+            count++;
+        }
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/tutors/{userId}")
+    public ResponseEntity<List<User>> getRecTutorList(@PathVariable Long userId)
+    {
+        List<User> users = new ArrayList<>();
+        // Get all users besides current user
+        String sql = "SELECT * FROM users " +
+                "WHERE user_id != ? AND istutor = TRUE AND user_id NOT IN (" +
+
+                //Get all friends
+                "SELECT u.user_id FROM users u " +
+                "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
+                "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests to user
+                "SELECT u.user_id FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
+                "WHERE fr.userto_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests from user
+
+                "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
+                "WHERE fr.userfrom_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId);
+
+        List<UserRecommendations> recList = new ArrayList<>();
+
+        for (User ur : userList)
+        {
+            recList.add(new UserRecommendations(ur));
+        }
+
+        for(UserRecommendations ur : recList){
+            Long user2Id = ur.getUser().getId();
+
+            // Gets other user's course IDs
+
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
                     + " WHERE user_id = ?";
+            List<Long> otherUserCourses = jdbcTemplate.query(sql, new Object[]{user2Id}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            // Gets user course IDs
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ? "
+            ;
             List<Long> userCourses = jdbcTemplate.query(sql, new Object[]{userId}, new RowMapper<Long>() {
                 public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return rs.getLong("course_id");
@@ -326,7 +466,6 @@ public class RecommendationEndpoint {
             }
 
             // Tutor Rating
-            if(ur.getUser().isUserType()){
                 sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
                         "WHERE user_id = ? GROUP BY user_id";
 
@@ -351,7 +490,7 @@ public class RecommendationEndpoint {
                     rating = 0.0;
                 }
                 ur.addTutorRatingPts(rating);
-            }
+
             ur.totalPoints();
 
         }
@@ -368,5 +507,26 @@ public class RecommendationEndpoint {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+
+    public class UserRowMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+
+            user.setId(rs.getLong("user_id"));
+            user.setAreaOfStudy(rs.getString("areaofstudy"));
+            user.setEmailAddress(rs.getString("email_address"));
+            user.setNameFirst(rs.getString("namefirst"));
+            user.setNameLast(rs.getString("namelast"));
+            user.setPassword(rs.getString("password"));
+            user.setUserType(rs.getBoolean("istutor"));
+            user.setUsername(rs.getString("username"));
+            user.setProfilePic(rs.getBytes("profilepic"));
+            user.setPrefTime(rs.getString("pref_time"));
+            user.setPrefMeetingType(rs.getString("pref_meeting_type"));
+
+            return user;
+        }
+    }
 
 }
