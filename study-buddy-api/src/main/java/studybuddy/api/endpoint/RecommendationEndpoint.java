@@ -374,7 +374,7 @@ public class RecommendationEndpoint {
         List<User> users = new ArrayList<>();
         // Get all users besides current user
         String sql = "SELECT * FROM users " +
-                "WHERE user_id NOT IN " +
+                "WHERE isTutor = FALSE AND user_id NOT IN " +
                 "(SELECT DISTINCT user1_id FROM friends" +
                 " UNION" +
                 " SELECT DISTINCT user2_id FROM friends)";
