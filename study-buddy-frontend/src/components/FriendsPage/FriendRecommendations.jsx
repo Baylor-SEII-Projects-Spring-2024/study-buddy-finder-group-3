@@ -20,6 +20,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { toast } from "react-toastify"
 
 const fallbackPic = 'profilePicture.png';
 
@@ -63,7 +64,7 @@ export default function FriendsList() {
   
   const fetchAllInfo = async () => {
     try {
-      const response = await axios.get(`${API_URL}/friends/${user.id}/all`);
+      const response = await axios.get(`${API_URL}/recommendations/users/${user.id}`);
       setFriendsList(response.data);
     } catch (error) {
       console.error("Error fetching friends info:", error);
@@ -73,24 +74,24 @@ export default function FriendsList() {
     }
   }
 
-  const removeFriend = async (friendId) => {
+  const requestFriend = (event, id) => {
     try {
-      await axios.post(`${API_URL}/friends/${user.id}/deleteFriend/${friendId}`);
+        console.log(user.id)
+        console.log(id)
+      axios.post(`${API_URL}/friends/${user.id}/request/${id}`)
+       .then(response => {
+         console.log(response);
+      })
     } catch (error) {
-      console.error("Error removing friend:", error);
-    } finally {
-      setLoadingPics(true);
+      console.error("Error adding friend:", error)
     }
+
+    toast.success("Friend request sent!")
+
+    setTriggerUpdate(!triggerUpdate);
+      
   }
 
-  const blockUser = async (friendId) => {
-    try {
-      await axios.post(`${API_URL}/friends/${user.id}/block/${friendId}`);
-      removeFriend(friendId);
-    } catch (error) {
-      console.error("Error blocking user:", error);
-    }
-  }
 
   const getProfilePics = async (users) => {
     try {
@@ -153,7 +154,7 @@ export default function FriendsList() {
     if (friends.length === 0 && !loadingFriendsList) {
       return (
         <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
-          OH NO! You have no friends!
+          OH NO! No recommendations available!
         </Typography>
       )
     }
@@ -170,12 +171,12 @@ export default function FriendsList() {
     <div style={{backgroundColor: ''}}>
       {friends.length === 0 ? (
         <Typography variant="h3" padding={20} style={{textAlign: "center"}} color={"gray"}>
-          OH NO! You have no friends!
+          OH NO! No recommendations available!
         </Typography>
       ) : (
         <Box sx={{ flexGrow: 1 }}> 
         <Typography variant="h3" padding={5} style={{textAlign: "center"}} color={"gray"}>
-          Your Friends
+          Here are some friends you may know!
         </Typography>
           <List>
             <Grid container spacing={5} justifyContent={'center'}>
@@ -217,12 +218,10 @@ export default function FriendsList() {
                     </CardActionArea>
                     
                       <CardActions >
-                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)} height={60}>
-                          Remove
+                        <Button size="small" color="primary" onClick={(event) => requestFriend(event, user.id)} height={60}>
+                          Request
                         </Button>
-                        <Button size="small" color="primary" onClick={(event) => blockUser(user.id)} height={60}>
-                          Block
-                        </Button>
+                        
                       </CardActions>
                       
                     </ListItem>

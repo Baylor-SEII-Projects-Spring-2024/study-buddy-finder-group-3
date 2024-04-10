@@ -34,6 +34,10 @@ import FriendsRequest from "./FriendsRequests";
 import FriendsBlocked from "./FriendsBlocked";
 import { Badge } from "@mui/material";
 import Header from "../Header";
+import RecommendIcon from '@mui/icons-material/Recommend';
+import FriendProfile from "./FriendProfile";
+import FriendRecommendations from "./FriendRecommendations";
+import TutorRecommendations from "./TutorRecommendations";
 
 const drawerWidth = 240;
 
@@ -128,6 +132,7 @@ export default function FriendsSidebar() {
   const user = useSelector(selectUser)
   const [userId, setUserid] = useState('')
   const [loggingOut, setLoggingOut] = useState(false);
+  const [count, setCount] = useState(0);
 
   const navigateToProfile = () => {
     router.push("/profile")
@@ -168,14 +173,21 @@ export default function FriendsSidebar() {
   }
 
   useEffect(() => {
-    console.log('vibe check')
     if (user){
         console.log('here')
         setUserid(user.id)
       }
 
     fetchRequests();
-}, [user, message]);
+
+    const interval = setInterval(() => {
+      // Update the state every couple of seconds
+      setCount(prevCount => prevCount + 1);
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    return () => clearInterval(interval);
+
+}, [user, message, activePage]);
 
   const handleMessageUpdate = () => {
     if (message === 'update') {
@@ -200,6 +212,10 @@ export default function FriendsSidebar() {
 
   const setActivePageChat = () => {
     setActivePage('chat')
+  }
+
+  const setActivePageRecommendation = () => {
+    setActivePage('recommendation')
   }
 
 
@@ -264,6 +280,14 @@ return (
               <ListItemText primary={"Chat"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePageRecommendation}>
+              <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                  <RecommendIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Recomendation"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
       </List>
     </StyledDrawer>
     <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: '', height: '100vh'}} overflow={'auto'}>
@@ -276,6 +300,12 @@ return (
       </Box> : null}
       {activePage === 'blocked' ? <FriendsBlocked/> : null}
       {activePage === 'chat' ? <div>Chat</div> : null}
+      {activePage === 'recommendation' ? <div>  
+        <Box>
+          <FriendRecommendations/> 
+          <TutorRecommendations/>
+        </Box>
+        </div> : null}
     </Box>
   </Box>
 );
