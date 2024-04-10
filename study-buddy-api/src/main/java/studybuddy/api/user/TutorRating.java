@@ -2,8 +2,6 @@ package studybuddy.api.user;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import studybuddy.api.meeting.Meeting;
-import studybuddy.api.user.User;
 
 @Data
 @Entity
@@ -21,5 +19,15 @@ public class TutorRating {
     private User user;
 
     @Column(name = "RATING")
-    int rating;
+    private int rating;
+
+    @Column(name = "COMMENT", length = 500)
+    private String comment;
+
+    public void setRating(int rating) {
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+        this.rating = rating;
+    }
 }

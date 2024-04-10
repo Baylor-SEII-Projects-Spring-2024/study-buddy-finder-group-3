@@ -16,6 +16,7 @@ import {
   IconButton,
   TextField,
   Button,
+  MenuItem
 } from "@mui/material"
 import { API_URL } from "@/utils/config"
 import axios from "axios"
@@ -46,6 +47,10 @@ function MeetingModal({
   )
   const [editedLink, setEditedLink] = useState(meeting?.link || "")
   const user = useSelector(selectUser)
+  const [showReviewFields, setShowReviewFields] = useState(false);
+  const [rating, setRating] = useState(5) // Default rating value, can be adjusted
+  const [comment, setComment] = useState("")
+  const hasMeetingStarted = new Date() > new Date(meeting?.date)
 
   useEffect(() => {
     if (!open) {
@@ -116,6 +121,22 @@ function MeetingModal({
     }
     setEditMode(!editMode)
   }
+  console.log("meeting", meeting);
+
+  const submitReview = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/tutor/${meeting.tutorId}/review`, {
+        userId: user.id,
+        rating: rating,
+        comment: comment,
+      });
+      toast.success("Review submitted successfully");
+      setShowReviewFields(false); // hide review fields after submission
+    } catch (error) {
+      toast.error("Failed to submit review");
+      console.error("Failed to submit review:", error);
+    }
+  };
 
   const handleAccept = async () => {
     try {
@@ -298,9 +319,51 @@ function MeetingModal({
             user={selectedUser}
           />
         )}
+        {hasMeetingStarted && !showReviewFields && (
+          <Button variant="contained" color="primary" onClick={() => setShowReviewFields(true)}>
+            Leave a Review
+          </Button>
+        )}
+
+        {showReviewFields && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Leave a Review
+            </Typography>
+            <TextField
+              fullWidth
+              select
+              label="Rating"
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              helperText="Please select your rating"
+              sx={{ mb: 2 }}
+            >
+              {[1, 2, 3, 4, 5].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              fullWidth
+              label="Comment"
+              multiline
+              rows={4}
+              variant="outlined"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Button variant="contained" color="primary" onClick={submitReview}>
+              Submit Review
+            </Button>
+          </Box>
+        )}
       </Box>
     </Modal>
-  )
+  );
+
 }
 
 export default MeetingModal
