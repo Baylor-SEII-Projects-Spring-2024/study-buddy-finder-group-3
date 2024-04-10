@@ -70,6 +70,5 @@ public class User {
         this.nameFirst = other.nameFirst;
         this.nameLast = other.nameLast;
         this.areaOfStudy = other.areaOfStudy;
-
     }
 }

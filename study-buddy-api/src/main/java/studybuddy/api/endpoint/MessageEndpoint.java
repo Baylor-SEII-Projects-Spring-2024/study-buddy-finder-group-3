@@ -1,19 +1,22 @@
 package studybuddy.api.endpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import studybuddy.api.user.Messages;
-import studybuddy.api.user.messageService;
+import studybuddy.api.user.User;
 
 @RestController
 @RequestMapping("/chat")
 public class MessageEndpoint {
 
     @Autowired
-    private messageService messageService;
+    private studybuddy.api.user.messageService messageService;
+    private User Null;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@RequestBody Messages message) {
@@ -24,7 +27,7 @@ public class MessageEndpoint {
             }
 
             // Save the message to the database
-            messageService.sendMessage(message);
+            messageService.sendMessage("w", "j", String.valueOf(message));
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

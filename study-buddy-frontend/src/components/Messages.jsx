@@ -9,6 +9,14 @@ const Messages = () => {
       <Message isOwner={false} />
       <Message isOwner={true} />
       <Message />
+      <Message isOwner={true}><p>This is an example</p></Message>
+      <Message isOwner={false} />
+      <Message isOwner={true} />
+      <Message />
+      <Message isOwner={true}><p>This is an example</p></Message>
+      <Message isOwner={false} />
+      <Message isOwner={true} />
+      <Message />
     </div>
   )
 }

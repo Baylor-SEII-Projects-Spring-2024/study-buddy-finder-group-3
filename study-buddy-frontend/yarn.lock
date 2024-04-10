@@ -403,6 +403,25 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
+"@react-buddy/ide-toolbox-next@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@react-buddy/ide-toolbox-next/-/ide-toolbox-next-2.4.1.tgz#5c6527452c040fd2303348f6818be65917456a4b"
+  integrity sha512-WiCO0Zzl9CflBtTF0uht1rbdI83NrUl0qKN5HKAy5oXVr9+qB495E6Y1+qng5ZrQONM9VcF5DF5mf12SQcSG8A==
+  dependencies:
+    "@react-buddy/ide-toolbox" "^2.4.0"
+
+"@react-buddy/ide-toolbox@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@react-buddy/ide-toolbox/-/ide-toolbox-2.4.0.tgz#8c986491f061334c0da6e7c77b65b88ef915ef8d"
+  integrity sha512-TWHX6gwa0Gop7215uHhjFMbYLLdjM/b9rr0wYE3E0m7GNJ56gbPpbZiq86w9uI8zksl827acqGeT437MkuO64w==
+
+"@react-buddy/palette-mui@^5.0.1":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@react-buddy/palette-mui/-/palette-mui-5.0.2.tgz#f949565a6d0d5206f7b9f54f6dfefd05a38e4846"
+  integrity sha512-X9gdm+fwmvZTiOMWtCtljyJtSEYNH2F6qHtmht7liQUkNW8e61icu2vfLWYtwz9XG1QxFuPbev5RCsh/+Ewldw==
+  dependencies:
+    "@react-buddy/ide-toolbox" "^2.4.0"
+
 "@reduxjs/toolkit@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.0.1.tgz#0a5233c1e35c1941b03aece39cceade3467a1062"
