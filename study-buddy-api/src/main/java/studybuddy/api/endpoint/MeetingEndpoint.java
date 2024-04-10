@@ -55,6 +55,28 @@ public class MeetingEndpoint {
         }
     }
 
+    @PatchMapping("/{meetingId}/updateStatus")
+    public ResponseEntity<?> updateMeetingStatus(@PathVariable Long meetingId, @RequestParam String status) {
+        try {
+            meetingService.updateMeetingStatus(meetingId, status);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update meeting status");
+        }
+    }
+
+    @GetMapping("/user/{userId}/pending-invitations")
+    public ResponseEntity<?> getPendingInvitations(@PathVariable Long userId) {
+        try {
+            List<Meeting> pendingInvitations = meetingService.getPendingInvitations(userId);
+            return ResponseEntity.ok(pendingInvitations);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get pending invitations");
+        }
+    }
+
+
+
 
 
 }

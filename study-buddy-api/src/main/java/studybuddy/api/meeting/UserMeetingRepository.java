@@ -7,4 +7,8 @@ import java.util.List;
 @Repository
 public interface UserMeetingRepository extends JpaRepository<UserMeeting, Long> {
     List<UserMeeting> findByMeetingId(Long meetingId);
+
+    List<UserMeeting> findByMeeting(Meeting meeting);
+
+    List<UserMeeting> findByUserIdAndInviteStatus(Long userId, String pending);
 }
