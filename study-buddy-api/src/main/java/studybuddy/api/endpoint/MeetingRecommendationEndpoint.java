@@ -3,6 +3,7 @@ package studybuddy.api.endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.meeting.Meeting;
 import studybuddy.api.meeting.MeetingReccomendations;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import studybuddy.api.utils.JwtUtil;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @RestController
@@ -47,7 +50,54 @@ public class MeetingRecommendationEndpoint {
         );
 
         for(MeetingReccomendations mr : recList){
-            // TODO: Implementation for course and area of study points
+            Long meetingId = mr.getMeeting().getId();
+            // Implementation for course
+            // Gets meeting course ID
+            sql = "SELECT course_id FROM meeting WHERE meeting_id = ?";
+            Long meetingCourse = jdbcTemplate.query(sql, new Object[]{meetingId}, (rs) -> {
+                return rs.getLong("course_id");
+            });
+
+            // Gets user course IDs
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ?";
+            List<Long> userCourses = jdbcTemplate.query(sql, new Object[]{userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            for(Long l : userCourses){
+                if(l != null){
+                    if(meetingCourse.equals(l)){
+                        mr.addCoursePts();
+                        break;
+                    }
+                }
+            }
+
+            // Implementation for areaOfStudy
+            // Get subject area for course of meeting
+            sql = "SELECT subject_area FROM meeting JOIN courses USING(course_id) "
+                    + "WHERE meeting_id = ?";
+            String meetingSubject = jdbcTemplate.query(sql, new Object[]{meetingId}, (rs) -> {
+                return rs.getString("subject_area");
+            });
+
+            // Get subject of user
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String userSubjectCsv = jdbcTemplate.query(sql, new Object[]{userId}, (rs) -> {
+                return rs.getString("areaofstudy");
+            });
+
+            assert userSubjectCsv != null;
+            String[] userSubjectList = userSubjectCsv.split(",");
+            for(String s : userSubjectList){
+                if(s.equalsIgnoreCase(meetingSubject)){
+                    mr.addAreaOfStudyPts();
+                }
+            }
+
             // TODO: Implementation for blocked users
 
             // Gets time of meeting and checks to see if it is within the user's time preference
@@ -90,8 +140,6 @@ public class MeetingRecommendationEndpoint {
                     mr.addTimePts();
                 }
             }
-
-            Long meetingId = mr.getMeeting().getId();
 
             // Get friends list and see if their friend is participating in the meeting
             // Should get the friend ids that are involved in this meeting

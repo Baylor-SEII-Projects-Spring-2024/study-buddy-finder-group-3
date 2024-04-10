@@ -36,7 +36,7 @@ public class MeetingReccomendations {
         meeting = m;
     }
 
-    public void addSubjectPts(){
+    public void addCoursePts(){
         this.coursePts += 5;
     }
     public void addAreaOfStudyPts() {
@@ -68,7 +68,7 @@ public class MeetingReccomendations {
     }
 
     public int totalPoints(){
-        totalPts = subjectPts + timePts + tutorRatingPts + meetingTypePts + friendPts;
+        totalPts = coursePts + areaOfStudyPts + timePts + tutorRatingPts + meetingTypePts + friendPts;
         return totalPts;
     }
 }

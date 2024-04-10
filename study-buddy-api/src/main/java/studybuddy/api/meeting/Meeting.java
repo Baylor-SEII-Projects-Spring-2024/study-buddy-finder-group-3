@@ -2,6 +2,7 @@ package studybuddy.api.meeting;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import studybuddy.api.user.Courses;
 import studybuddy.api.user.User;
 
 import java.util.Date;
@@ -48,6 +49,10 @@ public class Meeting {
     @ManyToOne
     @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_RATING_USER_ID"))
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "COURSE_ID", referencedColumnName = "COURSE_ID", foreignKey = @ForeignKey(name = "FK_COURSE_ID"))
+    private Courses course;
 
     public Meeting(){
 
