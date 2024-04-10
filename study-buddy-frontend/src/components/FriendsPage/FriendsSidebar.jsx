@@ -128,6 +128,7 @@ export default function FriendsSidebar() {
   const user = useSelector(selectUser)
   const [userId, setUserid] = useState('')
   const [loggingOut, setLoggingOut] = useState(false);
+  const [count, setCount] = useState(0);
 
   const navigateToProfile = () => {
     router.push("/profile")
@@ -168,14 +169,21 @@ export default function FriendsSidebar() {
   }
 
   useEffect(() => {
-    console.log('vibe check')
     if (user){
         console.log('here')
         setUserid(user.id)
       }
 
     fetchRequests();
-}, [user, message]);
+
+    const interval = setInterval(() => {
+      // Update the state every couple of seconds
+      setCount(prevCount => prevCount + 1);
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    return () => clearInterval(interval);
+
+}, [user, message, activePage, count]);
 
   const handleMessageUpdate = () => {
     if (message === 'update') {

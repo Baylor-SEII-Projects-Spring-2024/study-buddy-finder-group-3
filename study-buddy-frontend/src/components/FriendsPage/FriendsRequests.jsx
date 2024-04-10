@@ -35,7 +35,6 @@ export default function FriendsRequest( {onUpdate}) {
   }, [user])
   
   const fetchAllInfo = async () => {
-    console.log("vibe check")
     try {
       const response = await axios.get(`${API_URL}/friends/${user.id}/getRequests`);
       setFriendsList(response.data);

@@ -60,11 +60,17 @@ public class GetFriendsEndpoint {
                 //Gets all friend requests
                 "SELECT u.user_id FROM users u " +
                 "JOIN friends_request f ON u.user_id = f.userfrom_id OR u.user_id = f.userto_id " +
-                "WHERE (f.userto_id = ? OR f.userfrom_id = ?) AND u.user_id != ?)";
+                "WHERE (f.userto_id = ? OR f.userfrom_id = ?) AND u.user_id != ?)" +
+
+                "AND user_id NOT IN (" +
+                //Gets all blocked users
+                "SELECT u.user_id FROM users u " +
+                "JOIN blockedlist b ON u.user_id = b.blocked_id OR u.user_id = b.blocker_id " +
+                "WHERE (b.blocked_id = ? OR b.blocker_id = ?) AND u.user_id != ?)";
 
         String searchTerm = "%" + username + "%";
 
-        List<User> users = jdbcTemplate.query(sql, new UserRowMapper(), searchTerm, userId, userId, userId, userId, userId, userId, userId);
+        List<User> users = jdbcTemplate.query(sql, new UserRowMapper(), searchTerm, userId, userId, userId, userId, userId, userId, userId, userId, userId, userId);
 
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
@@ -187,6 +193,24 @@ public class GetFriendsEndpoint {
 
 
         return new ResponseEntity<>(blockedUsers, HttpStatus.OK);
+    }
+
+    //Unblock user
+    @PostMapping("/{blocker_id}/unblock/{blocked_id}")
+    public boolean unBlockUser(@PathVariable Long blocker_id, @PathVariable Long blocked_id)
+    {
+        List<Object[]> parameters = new ArrayList<>();
+
+        parameters.add(new Object[]{
+                blocker_id,
+                blocked_id
+        });
+
+
+
+        jdbcTemplate.batchUpdate("DELETE FROM blockedlist WHERE blocker_id = ? AND blocked_id = ?", parameters);
+
+        return true;
     }
 
     @GetMapping("/{userId}/pic")
