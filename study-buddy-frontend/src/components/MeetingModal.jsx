@@ -3,6 +3,9 @@ import CloseIcon from "@mui/icons-material/Close"
 import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"
 import React, { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { selectUser } from "@/utils/authSlice.js"
+
 import {
   List,
   ListItem,
@@ -12,6 +15,7 @@ import {
   Modal,
   IconButton,
   TextField,
+  Button,
 } from "@mui/material"
 import { API_URL } from "@/utils/config"
 import axios from "axios"
@@ -22,19 +26,26 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import isValid from "date-fns/isValid"
 import VideocamIcon from "@mui/icons-material/Videocam"
 
-function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
+function MeetingModal({
+  meeting,
+  open,
+  handleClose,
+  updateMeetingInParent,
+  isInvitation = false,
+}) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [editMode, setEditMode] = useState(false)
-  const [editedTitle, setEditedTitle] = useState(meeting?.title || '');
+  const [editedTitle, setEditedTitle] = useState(meeting?.title || "")
   const [editedDescription, setEditedDescription] = useState(
-    meeting?.description || ''
+    meeting?.description || ""
   )
-  const [editedLocation, setEditedLocation] = useState(meeting?.location || '')
+  const [editedLocation, setEditedLocation] = useState(meeting?.location || "")
   const [editedDate, setEditedDate] = useState(
-    isValid(new Date(meeting?.date || '')) ? new Date(meeting.date) : new Date()
+    isValid(new Date(meeting?.date || "")) ? new Date(meeting.date) : new Date()
   )
-  const [editedLink, setEditedLink] = useState(meeting?.link || '')
+  const [editedLink, setEditedLink] = useState(meeting?.link || "")
+  const user = useSelector(selectUser)
 
   useEffect(() => {
     if (!open) {
@@ -87,10 +98,10 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         const savedMeeting = response.data
         updateMeetingInParent(savedMeeting)
 
-        setEditedTitle(savedMeeting?.title || '')
-        setEditedDescription(savedMeeting?.description || '')
-        setEditedLocation(savedMeeting?.location || '')
-        setEditedLink(savedMeeting?.link || '')
+        setEditedTitle(savedMeeting?.title || "")
+        setEditedDescription(savedMeeting?.description || "")
+        setEditedLocation(savedMeeting?.location || "")
+        setEditedLink(savedMeeting?.link || "")
         setEditedDate(savedMeeting?.date || new Date(savedMeeting.date))
 
         toast.success("Meeting updated successfully")
@@ -104,6 +115,38 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
       }
     }
     setEditMode(!editMode)
+  }
+
+  const handleAccept = async () => {
+    try {
+      const response = await axios.patch(
+        `${API_URL}/meeting/${meeting.id}/updateStatus/${user.id}?status=Accepted`,
+        { status: "Accepted" }
+      )
+
+      const updatedMeeting = response.data
+      // updateMeetingInParent(updatedMeeting)
+      handleClose()
+      toast.success("Meeting accepted successfully")
+    } catch (error) {
+      console.error("Failed to accept meeting:", error)
+    }
+  }
+
+  const handleReject = async () => {
+    try {
+      const response = await axios.patch(
+        `${API_URL}/meeting/${meeting.id}/updateStatus/${user.id}?status=Rejected`,
+        { status: "Rejected" }
+      )
+
+      const updatedMeeting = response.data
+      // updateMeetingInParent(updatedMeeting)
+      handleClose()
+      toast.success("Meeting rejected successfully")
+    } catch (error) {
+      console.error("Failed to reject meeting:", error)
+    }
   }
 
   return (
@@ -182,7 +225,9 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
             <Typography variant="h6" component="h2">
               {meeting?.title || "No title"}
             </Typography>
-            <Typography sx={{ mt: 2 }}>{meeting?.description || "No Description"}</Typography>
+            <Typography sx={{ mt: 2 }}>
+              {meeting?.description || "No Description"}
+            </Typography>
             <Typography sx={{ mt: 2 }}>
               {meeting?.link ? (
                 <Link
@@ -211,13 +256,26 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
           </>
         )}
 
-        <IconButton
-          aria-label={editMode ? "save" : "edit"}
-          onClick={handleEdit}
-          sx={{ position: "absolute", right: 48, top: 8 }}
-        >
-          {editMode ? <SaveIcon /> : <EditIcon />}
-        </IconButton>
+        {!isInvitation && (
+          <IconButton
+            aria-label={editMode ? "save" : "edit"}
+            onClick={handleEdit}
+            sx={{ position: "absolute", right: 48, top: 8 }}
+          >
+            {editMode ? <SaveIcon /> : <EditIcon />}
+          </IconButton>
+        )}
+
+        {isInvitation && (
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Button onClick={handleAccept} variant="contained" color="primary">
+              Accept
+            </Button>
+            <Button onClick={handleReject} variant="outlined" color="secondary">
+              Reject
+            </Button>
+          </Box>
+        )}
 
         <List sx={{ maxHeight: 200, overflow: "auto" }}>
           {meeting?.attendeeProfiles &&

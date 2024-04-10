@@ -213,6 +213,7 @@ function Header() {
         meeting={selectedMeeting}
         open={Boolean(selectedMeeting)}
         handleClose={() => setSelectedMeeting(null)}
+        isInvitation={true}
       />
     </>
   )
