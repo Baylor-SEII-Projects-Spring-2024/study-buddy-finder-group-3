@@ -146,6 +146,7 @@ function DisplayMeetings() {
     <Container>
       <Header />
       <Box
+        id="home-section"
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -202,6 +203,7 @@ function DisplayMeetings() {
       <Typography variant="body1" align="center" gutterBottom>
         blah blah blah
       </Typography>
+      <Box id="meetings-section">
       {/* need ot add fitlers  */}
       <Grid container spacing={4} sx={{ mt: 4 }}>
         {meetings.map((meeting) => (
@@ -239,6 +241,7 @@ function DisplayMeetings() {
           </Grid>
         ))}
       </Grid>
+      </Box>
       {/* beginning of rec meetings */}
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h2" gutterBottom align="center">
