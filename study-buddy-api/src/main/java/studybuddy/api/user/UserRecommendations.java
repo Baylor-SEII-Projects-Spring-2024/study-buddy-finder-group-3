@@ -1,14 +1,12 @@
-package studybuddy.api.meeting;
+package studybuddy.api.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import studybuddy.api.user.User;
+import studybuddy.api.meeting.Meeting;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MeetingReccomendations {
-    @Getter @Setter
+@Getter
+public class UserRecommendations {
+    @Setter
     private int coursePts;
     @Getter @Setter
     private int timePts;
@@ -17,23 +15,20 @@ public class MeetingReccomendations {
     @Getter @Setter
     private int meetingTypePts;
     @Getter @Setter
-    private int friendPts;
-    @Getter @Setter
     private int areaOfStudyPts;
     @Getter
     private int totalPts;
     @Getter
-    private Meeting meeting;
+    private User user;
 
-    public MeetingReccomendations(Meeting m){
+    public UserRecommendations(User u){
         coursePts = 0;
         areaOfStudyPts = 0;
         timePts = 0;
         tutorRatingPts = 0;
         meetingTypePts = 0;
-        friendPts = 0;
         totalPts = 0;
-        meeting = m;
+        user = u;
     }
 
     public void addCoursePts(){
@@ -63,13 +58,8 @@ public class MeetingReccomendations {
         this.meetingTypePts += 2;
     }
 
-    public void addFriendPts(){
-        this.friendPts += 2;
-    }
-
     public int totalPoints(){
-        totalPts = coursePts + areaOfStudyPts + timePts + tutorRatingPts + meetingTypePts + friendPts;
-        System.out.println(totalPts + " - " + meeting.getTitle());
+        totalPts = coursePts + areaOfStudyPts + timePts + tutorRatingPts + meetingTypePts;
         return totalPts;
     }
 }

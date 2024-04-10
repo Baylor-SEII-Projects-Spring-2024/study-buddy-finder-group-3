@@ -17,7 +17,7 @@ public class TutorRating {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_RATING_USER_ID"))
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_TUTOR_RATING_USER_ID"))
     private User user;
 
     @Column(name = "RATING")
