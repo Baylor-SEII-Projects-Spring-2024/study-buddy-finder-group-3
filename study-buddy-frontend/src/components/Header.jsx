@@ -111,7 +111,7 @@ function Header() {
 
   return (
     <>
-      <AppBar position="fixed" color="primary">
+      <AppBar position="fixed" style={{ zIndex: 1201 }} color="primary">
         <Toolbar style={{ position: "relative" }}>
           <Box
             style={{ display: "flex", justifyContent: "flex-start", flex: 1 }}

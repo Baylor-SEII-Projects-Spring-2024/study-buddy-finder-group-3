@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
@@ -36,8 +37,7 @@ import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
 
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -52,6 +52,11 @@ function DisplayMeetings() {
   const [unreadNotifications, setUnreadNotifications] = useState(0)
   const [recommendedMeetings, setRecommendedMeetings] = useState()
   const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
+  const router = useRouter()
+
+  const handleInviteClick = () => {
+    router.push("/friends")
+  }
 
   useEffect(() => {
     // need to do this
@@ -121,15 +126,17 @@ function DisplayMeetings() {
   useEffect(() => {
     const fetchRecommendedMeetings = async () => {
       try {
-        const response = await axios.get(`${API_URL}/recommendations/meetings/${user.id}`);
-        setRecommendedMeetings(response.data);
+        const response = await axios.get(
+          `${API_URL}/recommendations/meetings/${user.id}`
+        )
+        setRecommendedMeetings(response.data)
       } catch (error) {
-        console.error("Error fetching recommended meetings:", error);
+        console.error("Error fetching recommended meetings:", error)
       }
-    };
+    }
 
-    fetchRecommendedMeetings(); // Call the function to fetch recommended meetings
-  }, [user]);
+    fetchRecommendedMeetings() // Call the function to fetch recommended meetings
+  }, [user])
 
   const handleDeleteMeeting = async () => {
     try {
@@ -396,7 +403,12 @@ function DisplayMeetings() {
             experience.
           </Typography>
           <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
-            <Button variant="contained" color="primary" sx={{ mx: 1 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mx: 1 }}
+              onClick={handleInviteClick}
+            >
               Invite
             </Button>
             <Button variant="outlined" color="primary" sx={{ mx: 1 }}>
