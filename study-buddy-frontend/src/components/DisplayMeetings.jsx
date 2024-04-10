@@ -78,7 +78,7 @@ function DisplayMeetings() {
   useEffect(() => {
     const fetchRecommendedMeetings = async () => {
       try {
-        const response = await axios.get(`${API_URL}/meetingRec/${user.id}`);
+        const response = await axios.get(`${API_URL}/recommendations/meetings/${user.id}`);
         setRecommendedMeetings(response.data);
       } catch (error) {
         console.error("Error fetching recommended meetings:", error);

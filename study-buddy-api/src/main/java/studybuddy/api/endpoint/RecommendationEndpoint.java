@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import studybuddy.api.user.User;
+import studybuddy.api.user.UserRecommendations;
 import studybuddy.api.utils.JwtUtil;
 
 import java.sql.ResultSet;
@@ -20,14 +22,14 @@ import java.sql.SQLException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/meetingRec")
-public class MeetingRecommendationEndpoint {
+@RequestMapping("/recommendations")
+public class RecommendationEndpoint {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/meetings/{userId}")
     public ResponseEntity<List<Meeting>> getReccomendationList(@PathVariable Long userId)
     {
         List<Meeting> meetings = new ArrayList<>();
@@ -168,9 +170,11 @@ public class MeetingRecommendationEndpoint {
 
             // Get tutor rating
             sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
-                    "WHERE user_id = ? GROUP BY user_id";
+                    "WHERE user_id = " +
+                    "(SELECT user_id FROM meeting WHERE meeting_id = ?)" +
+                    " GROUP BY user_id";
 
-            Double rating = jdbcTemplate.query(sql, new Object[]{userId}, (rs) -> {
+            Double rating = jdbcTemplate.query(sql, new Object[]{meetingId}, (rs) -> {
                 if (rs.next()) {
                     long count = rs.getLong("count");
                     int ratingSum = rs.getInt("ratingSum");
@@ -212,6 +216,156 @@ public class MeetingRecommendationEndpoint {
         }*/
 
         return new ResponseEntity<>(meetings, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<User>> getRecUserList(@PathVariable Long userId)
+    {
+        List<User> users = new ArrayList<>();
+        // Get all users besides current user
+        String sql = "SELECT * FROM users " +
+                "WHERE user_id NOT IN " +
+                "(SELECT DISTINCT user1_id FROM friends" +
+                " UNION" +
+                " SELECT DISTINCT user2_id FROM friends)";
+
+        List<UserRecommendations> recList = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
+                new UserRecommendations(
+                        new User(
+                                rs.getLong("user_id"),
+                                rs.getString("username"),
+                                rs.getString("email_address"),
+                                rs.getString("password"),
+                                rs.getBoolean("istutor"),
+                                rs.getString("nameFirst"),
+                                rs.getString("nameLast"),
+                                rs.getString("areaofstudy"),
+                                rs.getString("pref_time"),
+                                rs.getString("pre_meeting_type")
+                        )
+                )
+        );
+
+        for(UserRecommendations ur : recList){
+            Long user2Id = ur.getUser().getId();
+
+            // Gets other user's course IDs
+
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ?";
+            List<Long> otherUserCourses = jdbcTemplate.query(sql, new Object[]{user2Id}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            // Gets user course IDs
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ?";
+            List<Long> userCourses = jdbcTemplate.query(sql, new Object[]{userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            // For this one, if they have multiple of the same course, it will stack
+            for(Long l1 : otherUserCourses){
+                for(Long l2 : userCourses){
+                    if(l1 != null && l2 != null){
+                        if(l1.equals(l2)){
+                            ur.addCoursePts();
+                        }
+                    }
+
+                }
+            }
+
+            // Area of Study
+            // Gets other user's area of study
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String otherUserSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{user2Id}, String.class);
+
+            // Gets our user's area of study
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String userSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
+
+            // Stacks as well
+            if(userSubjectCsv != null && otherUserSubjectCsv != null) {
+                String[] otherUserSubjectList = otherUserSubjectCsv.split(",");
+                String[] userSubjectList = userSubjectCsv.split(",");
+                for (String s1 : userSubjectList) {
+                    for(String s2 : otherUserSubjectList){
+                        if (s1.equalsIgnoreCase(s2)) {
+                            ur.addAreaOfStudyPts();
+                        }
+                    }
+
+                }
+            }
+            else{
+                System.out.println("THIS HAD NO ROWS");
+            }
+
+            String otherUserTime = ur.getUser().getPrefTime();
+            sql = "SELECT pref_time FROM users WHERE user_id = ?";
+            String userTime = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_time");
+                }
+                else{
+                    return "none";
+                }
+            });
+
+            if (!(userTime == null || otherUserTime == null)){
+                if(userTime.equals("morning")){
+                    if(userTime.equalsIgnoreCase(otherUserTime)){
+                        ur.addTimePts();
+                    }
+                }
+            }
+
+            // Tutor Rating
+            if(ur.getUser().isUserType()){
+                sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
+                        "WHERE user_id = ? GROUP BY user_id";
+
+                Double rating = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                    if (rs.next()) {
+                        long count = rs.getLong("count");
+                        int ratingSum = rs.getInt("ratingSum");
+
+                        //Checks to see if there are ratings
+                        if (count != 0) {
+                            return (double) ratingSum / count;
+                        } else {
+                            return 0.0;
+                        }
+                    } else {
+                        return 0.0;
+                    }
+                });
+
+                // Checks to see if rating exists
+                if(rating == null){
+                    rating = 0.0;
+                }
+                ur.addTutorRatingPts(rating);
+            }
+            ur.totalPoints();
+
+        }
+        recList.sort(Comparator.comparing(UserRecommendations::getTotalPts).reversed());
+        int count = 0;
+        for(UserRecommendations u : recList){
+            if(count >= 6){
+                break;
+            }
+            users.add(u.getUser());
+            count++;
+        }
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
 
