@@ -33,7 +33,7 @@ import { selectUser } from "@/utils/authSlice";
 import FriendsRequest from "./FriendsRequests";
 import FriendsBlocked from "./FriendsBlocked";
 import { Badge } from "@mui/material";
-
+import Header from "../Header";
 
 const drawerWidth = 240;
 
@@ -205,24 +205,12 @@ export default function FriendsSidebar() {
 
 
 return (
+
   <Box sx={{ display: 'flex' }}>
+    
     <CssBaseline />
-    <AppBar position="fixed" open={open} style={{boxShadow: "none", borderBottom: "1px solid black", backgroundColor: '#f7f0fa'}} sx={{zIndex: theme.zIndex.drawer + 1,}}>
-    <Toolbar>
-                  <Button onClick={navigateHome}>Home</Button>
+    <Header/>
 
-                  <Button>Meetings</Button>
-
-                  <Button>Settings</Button>
-
-                  <Typography sx={{ flexGrow: 1, color: 'black', textAlign: 'center' }}>
-                    Logo
-                  </Typography>
-
-                  <Button onClick={handleButtonClick} variant='contained'>Menu</Button>
-
-              </Toolbar>
-    </AppBar>
     <StyledDrawer variant="permanent" open={open}>
       {open ? (
           <Box sx={{display: 'flex', justifyContent: 'initial',  marginTop: '80px', marginLeft: '12px'}}>

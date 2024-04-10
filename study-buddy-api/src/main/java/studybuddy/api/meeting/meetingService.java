@@ -9,6 +9,7 @@ import studybuddy.api.endpoint.AuthEndpoint;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,12 +31,14 @@ public class meetingService {
         User creator = userRepository.findByUsername(creatorUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+
         Meeting newMeeting = meetingRepository.save(meeting);
 
         // meeting creator entry
         UserMeeting creatorMeeting = new UserMeeting();
         creatorMeeting.setUser(creator);
         creatorMeeting.setMeeting(newMeeting);
+        creatorMeeting.setInviteStatus("Accepted");
         userMeetingRepository.save(creatorMeeting);
 
         // create link for each invited
@@ -46,6 +49,7 @@ public class meetingService {
             UserMeeting invitedUserMeeting = new UserMeeting();
             invitedUserMeeting.setUser(invitedUser);
             invitedUserMeeting.setMeeting(newMeeting);
+            invitedUserMeeting.setInviteStatus("Pending");
             userMeetingRepository.save(invitedUserMeeting);
         }
     }
@@ -94,6 +98,33 @@ public class meetingService {
 
         meetingRepository.deleteById(meetingId);
     }
+
+    public void updateMeetingStatus(Long meetingId, String status) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+
+        // Retrieve all user meetings associated with this meeting
+        List<UserMeeting> userMeetings = userMeetingRepository.findByMeeting(meeting);
+
+        // Update invite status for each user meeting
+        for (UserMeeting userMeeting : userMeetings) {
+            userMeeting.setInviteStatus(status);
+            userMeetingRepository.save(userMeeting);
+        }
+
+    }
+
+    public List<Meeting> getPendingInvitations(Long userId) {
+        List<Meeting> pendingInvitations = new ArrayList<>();
+        List<UserMeeting> userMeetings = userMeetingRepository.findByUserIdAndInviteStatus(userId, "Pending");
+
+        for (UserMeeting userMeeting : userMeetings) {
+            pendingInvitations.add(userMeeting.getMeeting());
+        }
+
+        return pendingInvitations;
+    }
+
 
 
 
