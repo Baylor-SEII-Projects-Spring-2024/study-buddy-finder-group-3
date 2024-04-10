@@ -18,7 +18,7 @@ import { logout } from "@/utils/authSlice.js";
 const sections = [
   { title: "Home", id: "home-section" },
   { title: "Meetings", id: "meetings-section" },
-  // { title: "Settings", id: "settings-section" },
+  { title: "Friends", id: "friends-section" },
 ];
 
 function Header() {
@@ -34,9 +34,16 @@ function Header() {
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    const offset = 64; 
+    
+    const position = section.getBoundingClientRect().top + window.pageYOffset - offset;
+  
+    window.scrollTo({
+      top: position,
+      behavior: "smooth"
+    });
   };
-
+  
   const handleNotificationClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
