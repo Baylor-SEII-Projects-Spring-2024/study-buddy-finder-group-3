@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
@@ -36,6 +37,8 @@ import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
 
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
+
 function DisplayMeetings() {
   const dispatch = useDispatch()
   const user = useSelector(selectUser)
@@ -49,11 +52,59 @@ function DisplayMeetings() {
   const [unreadNotifications, setUnreadNotifications] = useState(0)
   const [recommendedMeetings, setRecommendedMeetings] = useState()
   const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
+  const router = useRouter()
+
+  const handleInviteClick = () => {
+    router.push("/friends")
+  }
 
   useEffect(() => {
     // need to do this
     setUnreadNotifications(3) //temp for display
   }, [])
+
+  const [hoveredMeetingId, setHoveredMeetingId] = useState(null)
+  // ref to keep track of the current timeout without causing re-renders
+  const hoverTimeoutRef = useRef(null)
+
+  const handleMouseEnter = (meetingId) => {
+    // clear exissting timeout
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+    // new timeout
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredMeetingId(meetingId)
+    }, 1000)
+  }
+
+  const handleMouseLeave = () => {
+    // clear the timeout if the mouse leaves the card
+    clearTimeout(hoverTimeoutRef.current)
+    setHoveredMeetingId(null)
+  }
+
+  // cleanup timeout when the component unmounts or when metting id changes
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+    }
+  }, [hoveredMeetingId])
+
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId)
+    const offset = 64
+
+    const position =
+      section.getBoundingClientRect().top + window.pageYOffset - offset
+
+    window.scrollTo({
+      top: position,
+      behavior: "smooth",
+    })
+  }
 
   const handleOpenDeleteDialog = (meeting) => {
     setMeetingToDelete(meeting)
@@ -72,6 +123,21 @@ function DisplayMeetings() {
     setCreateMeetingOpen(false)
   }
 
+  useEffect(() => {
+    const fetchRecommendedMeetings = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/recommendations/meetings/${user.id}`
+        )
+        setRecommendedMeetings(response.data)
+      } catch (error) {
+        console.error("Error fetching recommended meetings:", error)
+      }
+    }
+
+    fetchRecommendedMeetings() // Call the function to fetch recommended meetings
+  }, [user])
+
   const handleDeleteMeeting = async () => {
     try {
       await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}`)
@@ -81,7 +147,9 @@ function DisplayMeetings() {
     } catch (error) {
       console.error("Failed to delete meeting:", error)
     }
-
+    setTimeout(() => {
+      scrollToSection("meetings-section")
+    }, 100)
     setOpenDeleteDialog(false)
   }
 
@@ -146,15 +214,16 @@ function DisplayMeetings() {
     <Container>
       <Header />
       <Box
+        id="home-section"
         sx={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
-          height: "100vh",
+          height: "50vh",
           padding: 2,
           boxSizing: "border-box",
-          backgroundImage: "url(path-to-your-image.jpg)",
+          backgroundImage: "url('/home-gradient.webp')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -180,7 +249,7 @@ function DisplayMeetings() {
             display: "flex",
             flexDirection: "row",
             "& > *": {
-              margin: 1,
+              marginRight: 1,
             },
           }}
         >
@@ -191,56 +260,84 @@ function DisplayMeetings() {
           >
             Create
           </Button>
-          <Button variant="outlined" color="primary">
-            Join
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => scrollToSection("recommended-meetings")}
+          >
+            View Recommended Meetings
           </Button>
         </Box>
       </Box>
-      <Typography variant="h4" component="h2" gutterBottom align="center">
-        Your Meetings
-      </Typography>
-      <Typography variant="body1" align="center" gutterBottom>
-        blah blah blah
-      </Typography>
-      {/* need ot add fitlers  */}
-      <Grid container spacing={4} sx={{ mt: 4 }}>
-        {meetings.map((meeting) => (
-          <Grid item xs={12} sm={6} md={4} key={meeting.id}>
-            <Card>
-              <CardActionArea onClick={() => handleOpenModal(meeting)}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="/path-to-meeting-image.jpg" // need to replace with random image idk what yet
-                  alt={meeting.title}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {meeting.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {meeting.description}
-                  </Typography>
-                  <Box sx={{ display: "flex", mt: 2, alignItems: "center" }}>
-                    <AccessTimeIcon sx={{ mr: 1 }} />
-                    <Typography variant="body2">
-                      Date: {new Date(meeting.date).toLocaleString()}
+      <Box id="meetings-section" sx={{ height: "100vh", pt: "64px" }}>
+        <Typography variant="h4" component="h2" gutterBottom align="center">
+          Your Meetings
+        </Typography>
+        <Typography variant="body1" align="center" gutterBottom>
+          Here are your upcoming meetings
+        </Typography>
+        {/* need ot add fitlers  */}
+        <Grid container spacing={4} sx={{ mt: 4 }}>
+          {meetings.map((meeting) => (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={4}
+              key={meeting.id}
+              onMouseEnter={() => handleMouseEnter(meeting.id)}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Card style={{ position: "relative" }}>
+                {" "}
+                <CardActionArea onClick={() => handleOpenModal(meeting)}>
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
+                    alt={meeting.title}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {meeting.title}
                     </Typography>
-                  </Box>
-                  <Box sx={{ display: "flex", mt: 1, alignItems: "center" }}>
-                    <LocationOnIcon sx={{ mr: 1 }} />
-                    <Typography variant="body2">
-                      Location: {meeting.location || "Not specified"}
+                    <Typography variant="body2" color="text.secondary">
+                      {meeting.description}
                     </Typography>
-                  </Box>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                    <Box sx={{ display: "flex", mt: 2, alignItems: "center" }}>
+                      <AccessTimeIcon sx={{ mr: 1 }} />
+                      <Typography variant="body2">
+                        Date: {new Date(meeting.date).toLocaleString()}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", mt: 1, alignItems: "center" }}>
+                      <LocationOnIcon sx={{ mr: 1 }} />
+                      <Typography variant="body2">
+                        Location: {meeting.location || "Not specified"}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </CardActionArea>
+                {hoveredMeetingId === meeting.id && (
+                  <IconButton
+                    onClick={() => handleOpenDeleteDialog(meeting)}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      color: "red",
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
       {/* beginning of rec meetings */}
-      <Box sx={{ my: 4 }}>
+      <Box id="recommended-meetings" sx={{ height: "100vh" }}>
         <Typography variant="h4" component="h2" gutterBottom align="center">
           Recommended Meetings
         </Typography>
@@ -288,6 +385,53 @@ function DisplayMeetings() {
       </Box>
       {/* end of recc meetings */}
 
+      <Box
+        id="friends-section"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          height: "100vh",
+        }}
+      >
+        <Box sx={{ width: "60%" }}>
+          <Typography variant="h4" component="h2" gutterBottom>
+            Expand Your Network with Study Buddy
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            Invite friends or peers to join Study Buddy and enhance your study
+            experience.
+          </Typography>
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mx: 1 }}
+              onClick={handleInviteClick}
+            >
+              Invite
+            </Button>
+            <Button variant="outlined" color="primary" sx={{ mx: 1 }}>
+              View Requests
+            </Button>
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            width: "40%",
+            height: 200,
+            bgcolor: "grey.300",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="caption" display="block" gutterBottom>
+            add image eventually
+          </Typography>
+        </Box>
+      </Box>
+
       {selectedMeeting && (
         <MeetingModal
           meeting={selectedMeeting}
@@ -302,10 +446,12 @@ function DisplayMeetings() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure you want to delete this meeting?"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this meeting?
+            This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

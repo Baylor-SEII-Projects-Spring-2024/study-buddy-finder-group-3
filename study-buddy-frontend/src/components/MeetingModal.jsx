@@ -26,23 +26,23 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [editMode, setEditMode] = useState(false)
-  const [editedTitle, setEditedTitle] = useState(meeting.title)
+  const [editedTitle, setEditedTitle] = useState(meeting?.title || '');
   const [editedDescription, setEditedDescription] = useState(
-    meeting.description
+    meeting?.description || ''
   )
-  const [editedLocation, setEditedLocation] = useState(meeting.location)
+  const [editedLocation, setEditedLocation] = useState(meeting?.location || '')
   const [editedDate, setEditedDate] = useState(
-    isValid(new Date(meeting.date)) ? new Date(meeting.date) : new Date()
+    isValid(new Date(meeting?.date || '')) ? new Date(meeting.date) : new Date()
   )
-  const [editedLink, setEditedLink] = useState(meeting.link)
+  const [editedLink, setEditedLink] = useState(meeting?.link || '')
 
   useEffect(() => {
     if (!open) {
       setEditMode(false)
-      setEditedTitle(meeting.title)
-      setEditedDescription(meeting.description)
-      setEditedLocation(meeting.location)
-      setEditedDate(meeting.date)
+      setEditedTitle(meeting?.title)
+      setEditedDescription(meeting?.description)
+      setEditedLocation(meeting?.location)
+      setEditedDate(meeting?.date)
     }
   }, [open, meeting])
 
@@ -87,11 +87,11 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         const savedMeeting = response.data
         updateMeetingInParent(savedMeeting)
 
-        setEditedTitle(savedMeeting.title)
-        setEditedDescription(savedMeeting.description)
-        setEditedLocation(savedMeeting.location)
-        setEditedLink(savedMeeting.link)
-        setEditedDate(savedMeeting.date)
+        setEditedTitle(savedMeeting?.title || '')
+        setEditedDescription(savedMeeting?.description || '')
+        setEditedLocation(savedMeeting?.location || '')
+        setEditedLink(savedMeeting?.link || '')
+        setEditedDate(savedMeeting?.date || new Date(savedMeeting.date))
 
         toast.success("Meeting updated successfully")
         handleClose()
@@ -180,16 +180,16 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         ) : (
           <>
             <Typography variant="h6" component="h2">
-              {meeting.title}
+              {meeting?.title || "No title"}
             </Typography>
-            <Typography sx={{ mt: 2 }}>{meeting.description}</Typography>
+            <Typography sx={{ mt: 2 }}>{meeting?.description || "No Description"}</Typography>
             <Typography sx={{ mt: 2 }}>
-              {meeting.link ? (
+              {meeting?.link ? (
                 <Link
                   href={
-                    meeting.link.startsWith("http://") ||
-                    meeting.link.startsWith("https://")
-                      ? meeting.link
+                    meeting?.link.startsWith("http://") ||
+                    meeting?.link.startsWith("https://")
+                      ? meeting?.link
                       : `https://${meeting.link}`
                   }
                   target="_blank"
@@ -202,11 +202,11 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
                   Join Online Meeting
                 </Link>
               ) : (
-                `Location: ${meeting.location}`
+                `Location: ${meeting?.location}`
               )}
             </Typography>
             <Typography sx={{ mt: 2 }}>
-              Date: {new Date(meeting.date).toLocaleString()}
+              Date: {new Date(meeting?.date).toLocaleString()}
             </Typography>
           </>
         )}
@@ -220,7 +220,7 @@ function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
         </IconButton>
 
         <List sx={{ maxHeight: 200, overflow: "auto" }}>
-          {meeting.attendeeProfiles &&
+          {meeting?.attendeeProfiles &&
             meeting.attendeeProfiles.map((profile) => (
               <ListItem
                 key={profile.username}

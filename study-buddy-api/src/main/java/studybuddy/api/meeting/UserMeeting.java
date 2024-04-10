@@ -22,4 +22,12 @@ public class UserMeeting {
     @ManyToOne
     @JoinColumn(name = "MEETING_ID", referencedColumnName = "MEETING_ID", foreignKey = @ForeignKey(name = "FK_MEETING_ID"))
     private Meeting meeting;
+
+    @Column(name = "invite_status")
+    private String inviteStatus;
+
+    public void setInviteStatus(String inviteStatus) {
+        this.inviteStatus = inviteStatus;
+    }
+
 }
