@@ -41,8 +41,16 @@ public class MeetingReccomendations {
         this.timePts += 3;
     }
 
-    public void addTutorRatingPts(){
-        this.tutorRatingPts += 3;
+    public void addTutorRatingPts(double rating){
+        if(rating >= 4.0){
+            this.tutorRatingPts += 3;
+        }
+        else if(rating >= 3.0){
+            this.tutorRatingPts += 2;
+        }
+        else if(rating >= 2.0){
+            this.tutorRatingPts += 1;
+        }
     }
 
     public void addMeetingTypePts(){

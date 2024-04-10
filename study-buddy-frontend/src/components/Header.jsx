@@ -1,140 +1,62 @@
 import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Login from "./Login"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
-import IconButton from "@mui/material/IconButton"
-import SearchIcon from "@mui/icons-material/Search"
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Grid,
+  Paper,
+} from "@mui/material"
 import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectToken, setToken, logout } from "@/utils/authSlice.js"
 import CreateMeeting from "./CreateMeeting"
 import { API_URL } from "@/utils/config";
 
+const sections = [
+  { title: "Home", id: "home-section" },
+  { title: "Meetings", id: "meetings-section" },
+  { title: "Settings", id: "settings-section" },
+]
+
 function Header() {
   const router = useRouter()
   const dispatch = useDispatch()
-  const [open, setOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
-
-  const handleCreateMeetingOpen = () => setCreateMeetingOpen(true)
-  const handleCreateMeetingClose = () => setCreateMeetingOpen(false)
-
-  const token = useSelector(selectToken)
-
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value)
-  }
-
-  const handleSearch = async () => {
-    try {
-      // implement this when we start backend
-    } catch (error) {
-      console.error("Search failed:", error)
-    }
-  }
-
+   
   const handleLogout = async () => {
     localStorage.removeItem("token")
     dispatch(logout());
     router.push("/")
   }
 
-  const handleCreateAccount = async () => {
-    router.push("/createAccount")
+  const scrollToSection = (sectionId) => {
   }
-
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "10px",
-      }}
-    >
-      <IconButton onClick={handleSearch}>
-        <SearchIcon />
-      </IconButton>
-      <TextField
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        variant="outlined"
-        size="small"
-        style={{ flex: 1, margin: "0 10px" }}
-      />
-      {!token && (
-        <Button
-          variant="contained"
-          onClick={handleOpen}
-          sx={{
-            backgroundColor: "bluegrey",
-            "&:hover": {
-              backgroundColor: "bluegrey",
-            },
-          }}
-        >
-          Login
-        </Button>
-      )}
-      {token && (
-        <Button
-          variant="contained"
-          onClick={handleLogout}
-          sx={{
-            backgroundColor: "bluegrey",
-            "&:hover": {
-              backgroundColor: "bluegrey",
-            },
-          }}
-        >
-          Logout
-        </Button>
-      )}
-      {!token && (
-        <Button
-          variant="contained"
-          onClick={handleCreateAccount}
-          sx={{
-            backgroundColor: "bluegrey",
-            "&:hover": {
-              backgroundColor: "bluegrey",
-            },
-          }}
-        >
-          Create Account
-        </Button>
-      )}
-      {token && (
-        <Button
-          variant="contained"
-          onClick={handleCreateMeetingOpen}
-          sx={{
-            ml: 1,
-            backgroundColor: "bluegrey",
-            "&:hover": {
-              backgroundColor: "#bluegrey",
-            },
-          }}
-        >
-          Create Meeting
-        </Button>
-      )}
-
-      <CreateMeeting
-        open={createMeetingOpen}
-        onClose={handleCreateMeetingClose}
-      />
-
-      <Login open={open} onClose={handleClose} />
-    </Box>
-  )
+    <AppBar position="fixed" color="primary">
+    <Toolbar style={{ justifyContent: "space-between" }}>
+      {/* Sections on the left */}
+      <Box style={{ display: "flex", flexGrow: 1 }}>
+        {/* map sections to appbar */}
+        {sections.map((section) => (
+          <Button
+            key={section.title}
+            color="inherit"
+            onClick={() => scrollToSection(section.id)}
+          >
+            {section.title}
+          </Button>
+        ))}
+      </Box>
+      <Box>
+        <Button color="inherit" onClick={handleLogout}>Logout</Button>
+      </Box>
+    </Toolbar>
+  </AppBar>
+)
 }
 
 export default Header

@@ -47,7 +47,52 @@ public class MeetingRecommendationEndpoint {
         );
 
         for(MeetingReccomendations mr : recList){
+            // TODO: Implementation for course and area of study points
+            // TODO: Implementation for blocked users
+
+            // Gets time of meeting and checks to see if it is within the user's time preference
+            Date date = mr.getMeeting().getDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+
+            sql = "SELECT pref_time FROM users WHERE user_id = ?";
+            String userTime = jdbcTemplate.query(sql, new Object[]{userId}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_time");
+                }
+                else{
+                    return "none";
+                }
+            });
+
+            if (userTime == null){
+                userTime = "none";
+            }
+
+            if(userTime.equals("morning")){
+                if(hourOfDay >= 7 && hourOfDay <= 12){
+                    mr.addTimePts();
+                }
+            }
+            else if(userTime.equals("afternoon")){
+                if(hourOfDay >= 12 && hourOfDay <= 17){
+                    mr.addTimePts();
+                }
+            }
+            else if(userTime.equals("evening")){
+                if(hourOfDay >= 17 && hourOfDay <= 21){
+                    mr.addTimePts();
+                }
+            }
+            else if(userTime.equals("night")){
+                if(hourOfDay >= 21 || hourOfDay <= 7){
+                    mr.addTimePts();
+                }
+            }
+
             Long meetingId = mr.getMeeting().getId();
+
             // Get friends list and see if their friend is participating in the meeting
             // Should get the friend ids that are involved in this meeting
             sql = "SELECT user_id FROM user_meeting " +
@@ -60,11 +105,36 @@ public class MeetingRecommendationEndpoint {
                     rs.getLong("user_id")
             );
 
-            sql = "";
-
             if(!friendIds.isEmpty()){
                 mr.addFriendPts();
             }
+
+            // Get tutor rating
+            sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
+                    "WHERE user_id = ? GROUP BY user_id";
+
+            Double rating = jdbcTemplate.query(sql, new Object[]{userId}, (rs) -> {
+                if (rs.next()) {
+                    long count = rs.getLong("count");
+                    int ratingSum = rs.getInt("ratingSum");
+
+                    //Checks to see if there are ratings
+                    if (count != 0) {
+                        return (double) ratingSum / count;
+                    } else {
+                        return 0.0;
+                    }
+                } else {
+                    return 0.0;
+                }
+            });
+
+            // Checks to see if rating exists
+            if(rating == null){
+                rating = 0.0;
+            }
+            mr.addTutorRatingPts(rating);
+
         }
 
         // Sorts by total points then returns a list of six Meetings
