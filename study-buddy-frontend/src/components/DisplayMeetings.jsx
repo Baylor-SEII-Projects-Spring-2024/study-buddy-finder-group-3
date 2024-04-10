@@ -271,7 +271,7 @@ function DisplayMeetings() {
                   <CardMedia
                     component="img"
                     height="140"
-                    // image="/public/home-gradient.jpg" // need to replace with random image idk what yet
+                    image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
                     alt={meeting.title}
                   />
                   <CardContent>
