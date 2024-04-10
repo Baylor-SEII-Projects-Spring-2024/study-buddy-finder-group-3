@@ -14,6 +14,10 @@ import {
   Box,
   CircularProgress,
   IconButton,
+  Paper,
+  Avatar,
+  CardActionArea,
+  CardMedia,
 } from "@mui/material"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
@@ -29,6 +33,7 @@ import DialogTitle from "@mui/material/DialogTitle"
 import Button from "@mui/material/Button"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
+import Header from "./Header.jsx"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -40,6 +45,13 @@ function DisplayMeetings() {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [meetingToDelete, setMeetingToDelete] = useState(null)
   const [showDeleteIcon, setShowDeleteIcon] = useState(false)
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
+  const [recommendedMeetings, setRecommendedMeetings] = useState()
+
+  useEffect(() => {
+    // need to do this
+    setUnreadNotifications(3) //temp for display
+  }, [])
 
   const handleOpenDeleteDialog = (meeting) => {
     setMeetingToDelete(meeting)
@@ -122,86 +134,146 @@ function DisplayMeetings() {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        My Meetings
+      <Header />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          padding: 2,
+          boxSizing: "border-box",
+          backgroundImage: "url(path-to-your-image.jpg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <Typography
+          variant="h3"
+          component="h1"
+          gutterBottom
+          sx={{ color: "text.primary" }}
+        >
+          Welcome {user && user.username ? user.username : ""}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          gutterBottom
+          sx={{ color: "text.secondary" }}
+        >
+          You have {unreadNotifications} unread notifications
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            "& > *": {
+              margin: 1,
+            },
+          }}
+        >
+          <Button variant="contained" color="primary">
+            Create
+          </Button>
+          <Button variant="outlined" color="primary">
+            Join
+          </Button>
+        </Box>
+      </Box>
+      <Typography variant="h4" component="h2" gutterBottom align="center">
+        Your Meetings
       </Typography>
-      <List>
+      <Typography variant="body1" align="center" gutterBottom>
+        blah blah blah
+      </Typography>
+      {/* need ot add fitlers  */}
+      <Grid container spacing={4} sx={{ mt: 4 }}>
         {meetings.map((meeting) => (
-          <ListItem
-            key={meeting.id}
-            onClick={() => handleOpenModal(meeting)}
-            sx={{ cursor: "pointer" }}
-            onMouseEnter={() => setShowDeleteIcon(true)}
-            onMouseLeave={() => setShowDeleteIcon(false)}
-          >
-            <Card variant="outlined" sx={{ width: "100%" }}>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  {meeting.title}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {meeting.description}
-                </Typography>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item>
-                    {meeting.link ? (
-                      <Link
-                        href={
-                          meeting.link.startsWith("http://") ||
-                          meeting.link.startsWith("https://")
-                            ? meeting.link
-                            : `https://${meeting.link}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        display="flex"
-                        alignItems="center"
-                        gap={1}
-                        onClick={(event) => {
-                          console.log("click")
-                          event.stopPropagation()
-                          setSelectedMeeting(null)
-                        }}
-                      >
-                        <VideocamIcon />
-                        Join Online Meeting
-                      </Link>
-                    ) : (
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <LocationOnIcon />
-                        <Typography variant="body2">
-                          Location: {meeting.location || "Not specified"}
-                        </Typography>
-                      </Box>
-                    )}
-                  </Grid>
-                  <Grid item ml="auto">
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <AccessTimeIcon />
-                      <Typography variant="body2">
-                        Date: {new Date(meeting.date).toLocaleString()}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </CardContent>
+          <Grid item xs={12} sm={6} md={4} key={meeting.id}>
+            <Card>
+              <CardActionArea onClick={() => handleOpenModal(meeting)}>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image="/path-to-meeting-image.jpg" // need to replace with random image idk what yet
+                  alt={meeting.title}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {meeting.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {meeting.description}
+                  </Typography>
+                  <Box sx={{ display: "flex", mt: 2, alignItems: "center" }}>
+                    <AccessTimeIcon sx={{ mr: 1 }} />
+                    <Typography variant="body2">
+                      Date: {new Date(meeting.date).toLocaleString()}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", mt: 1, alignItems: "center" }}>
+                    <LocationOnIcon sx={{ mr: 1 }} />
+                    <Typography variant="body2">
+                      Location: {meeting.location || "Not specified"}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </CardActionArea>
             </Card>
-            {showDeleteIcon && (
-              <IconButton
-                aria-label="delete"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  handleOpenDeleteDialog(meeting)
-                  setSelectedMeeting(null)
-                }}
-                sx={{ position: "absolute", right: -4, top: -8 }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            )}
-          </ListItem>
+          </Grid>
         ))}
-      </List>
+      </Grid>
+      {/* beginning of rec meetings */}
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h2" gutterBottom align="center">
+          Recommended Meetings
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          color="text.secondary"
+          gutterBottom
+          align="center"
+        >
+          Meetings we thought may interest you based on your preferences.
+        </Typography>
+        <Grid container spacing={4} justifyContent="center">
+          {recommendedMeetings?.map((meeting) => (
+            <Grid item xs={12} sm={6} md={4} key={meeting.id}>
+              <Card>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {meeting.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {meeting.description}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {meeting.areaOfStudy} - {meeting.course} - {meeting.mode}
+                  </Typography>
+                  <Button endIcon={<ArrowForwardIosIcon />} sx={{ mt: 2 }}>
+                    View Meeting
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+        <Box textAlign="center" mt={2}>
+          <Button>View All</Button>
+        </Box>
+      </Box>
+      {/* end of recc meetings */}
+
       {selectedMeeting && (
         <MeetingModal
           meeting={selectedMeeting}
@@ -210,7 +282,6 @@ function DisplayMeetings() {
           updateMeetingInParent={updateMeetingInState}
         />
       )}
-
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}

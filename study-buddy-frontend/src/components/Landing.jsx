@@ -65,12 +65,6 @@ const LandingPage = () => {
   }, [])
 
   const scrollToSection = (sectionId) => {
-    // const section = document.getElementById(sectionId);
-    // if (section) {
-    //   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    //   // Trigger AOS to recalculate positions after scroll
-    //   AOS.refresh();
-    // }
   }
 
   return (
