@@ -36,6 +36,9 @@ import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
 
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
+
 function DisplayMeetings() {
   const dispatch = useDispatch()
   const user = useSelector(selectUser)
@@ -71,6 +74,19 @@ function DisplayMeetings() {
   const handleCloseCreateMeeting = () => {
     setCreateMeetingOpen(false)
   }
+
+  useEffect(() => {
+    const fetchRecommendedMeetings = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/recommendations/meetings/${user.id}`);
+        setRecommendedMeetings(response.data);
+      } catch (error) {
+        console.error("Error fetching recommended meetings:", error);
+      }
+    };
+
+    fetchRecommendedMeetings(); // Call the function to fetch recommended meetings
+  }, [user]);
 
   const handleDeleteMeeting = async () => {
     try {
