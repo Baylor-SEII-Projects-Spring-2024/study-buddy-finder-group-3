@@ -1,20 +1,18 @@
 import React from "react"
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import SettingsMain from "@/components/SettingsMain";
-import landingstyles from "@/styles/landing.module.css";
+import Header from "@/components/Header"
+import Sidebar from "@/components/Sidebar"
+import SettingsMain from "@/components/SettingsMain"
+import landingstyles from "@/styles/landing.module.css"
+import Box from "@mui/material/Box"
 
 function settings() {
   return (
-      <>
-          <Header/>
-
-          <div style={{ display: 'flex' }}>
-              <Sidebar/>
-              <SettingsMain/>
-          </div>
-
-      </>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <Header />
+      <Box sx={{ display: "flex", flexGrow: 1, marginTop: "80px" }}>
+        <SettingsMain />
+      </Box>
+    </Box>
   )
 }
 
