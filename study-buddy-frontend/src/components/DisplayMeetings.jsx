@@ -64,10 +64,10 @@ function DisplayMeetings() {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current)
     }
-    // new timeout 
+    // new timeout
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredMeetingId(meetingId)
-    }, 1000) 
+    }, 1000)
   }
 
   const handleMouseLeave = () => {
@@ -195,9 +195,9 @@ function DisplayMeetings() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "flex-start",
           justifyContent: "center",
-          height: "100vh",
+          height: "50vh",
           padding: 2,
           boxSizing: "border-box",
           backgroundImage: "url('/home-gradient.webp')",
@@ -226,7 +226,7 @@ function DisplayMeetings() {
             display: "flex",
             flexDirection: "row",
             "& > *": {
-              margin: 1,
+              marginRight: 1,
             },
           }}
         >
@@ -251,7 +251,7 @@ function DisplayMeetings() {
           Your Meetings
         </Typography>
         <Typography variant="body1" align="center" gutterBottom>
-          blah blah blah
+          Here are your upcoming meetings
         </Typography>
         {/* need ot add fitlers  */}
         <Grid container spacing={4} sx={{ mt: 4 }}>

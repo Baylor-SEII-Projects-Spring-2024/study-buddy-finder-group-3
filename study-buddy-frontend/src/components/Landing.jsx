@@ -64,7 +64,32 @@ const LandingPage = () => {
     // AOS.refresh()
   }, [])
 
-  const scrollToSection = (sectionId) => {}
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId)
+    if (section) {
+      AOS.refreshHard()
+      section.setAttribute("data-aos", "none")
+
+      section.scrollIntoView({ behavior: "smooth" })
+
+      setTimeout(() => {
+        section.removeAttribute("data-aos")
+        AOS.refresh()
+      }, 5000)
+    }
+  }
+
+  const scrollToTop = () => {
+    AOS.refreshHard()
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+
+    setTimeout(() => {
+      AOS.refresh()
+    }, 1000)
+  }
 
   return (
     <>
@@ -96,7 +121,8 @@ const LandingPage = () => {
             <img
               src="/StudyBuddyLogo Background Removed.png"
               alt="Logo"
-              style={{ maxHeight: "50px" }}
+              style={{ maxHeight: "50px", cursor: "pointer" }}
+              onClick={() => scrollToTop()}
             />
           </Box>
 
