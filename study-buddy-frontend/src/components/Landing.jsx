@@ -64,16 +64,16 @@ const LandingPage = () => {
     // AOS.refresh()
   }, [])
 
-  const scrollToSection = (sectionId) => {
-  }
+  const scrollToSection = (sectionId) => {}
 
   return (
     <>
       <AppBar position="fixed" color="primary">
-        <Toolbar style={{ justifyContent: "space-between" }}>
-          {/* Sections on the left */}
-          <Box style={{ display: "flex", flexGrow: 1 }}>
-            {/* map sections to appbar */}
+        <Toolbar style={{ justifyContent: "center", alignItems: "center" }}>
+          {/* left section */}
+          <Box
+            style={{ display: "flex", justifyContent: "flex-start", flex: "1" }}
+          >
             {sections.map((section) => (
               <Button
                 key={section.title}
@@ -84,13 +84,35 @@ const LandingPage = () => {
               </Button>
             ))}
           </Box>
-          <Box>
-            <Button color="inherit" onClick={handleOpenCreateAccount}>Create Account</Button>
-            <Button color="inherit" onClick={handleOpenLogin}>Login</Button>
+
+          {/* center section */}
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              flex: "0 1 auto",
+            }}
+          >
+            <img
+              src="/StudyBuddyLogo Background Removed.png"
+              alt="Logo"
+              style={{ maxHeight: "50px" }}
+            />
+          </Box>
+
+          {/* rigjt section */}
+          <Box
+            style={{ display: "flex", justifyContent: "flex-end", flex: "1" }}
+          >
+            <Button color="inherit" onClick={handleOpenCreateAccount}>
+              Create Account
+            </Button>
+            <Button color="inherit" onClick={handleOpenLogin}>
+              Login
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
-
       {/* Home section */}
       <div data-aos="zoom-out-left">
         <div data-aos="fade-up" data-aos-duration="1000">
@@ -101,7 +123,7 @@ const LandingPage = () => {
               display: "flex", // flexbox
               flexDirection: "column",
               justifyContent: "center", // center to parent, verticle
-              alignItems: "center",  // horizontal center
+              alignItems: "center", // horizontal center
               backgroundColor: theme.palette.background.default, //fetch from themes
               color: theme.palette.fontColor.main, //fetch frome themes
               textAlign: "center", // allign center to parent
@@ -293,7 +315,7 @@ const LandingPage = () => {
         <Box
           id="customers-section"
           sx={{
-            minHeight: "100vh", 
+            minHeight: "100vh",
             display: "flex",
             flexDirection: "column", //  vertical layout.
             justifyContent: "center",
