@@ -47,11 +47,11 @@ public class Meeting {
 
     //TUTOR THAT IS HOSTING THE MEETING
     @ManyToOne
-    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_RATING_USER_ID"))
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_HOST_MEETING_USER_ID"))
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "COURSE_ID", referencedColumnName = "COURSE_ID", foreignKey = @ForeignKey(name = "FK_COURSE_ID"))
+    @JoinColumn(name = "COURSE_ID", referencedColumnName = "COURSE_ID", foreignKey = @ForeignKey(name = "FK_MEETING_COURSE_ID"))
     private Courses course;
 
     public Meeting(){

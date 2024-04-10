@@ -1,6 +1,8 @@
 package studybuddy.api.endpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,16 +34,16 @@ public class MeetingRecommendationEndpoint {
 
         // Get all meetings that the user is not already a part of
         String sql = "SELECT * FROM meeting " +
-                "WHERE meeting_id != " +
+                "WHERE meeting_id NOT IN " +
                 "(SELECT meeting_id FROM meeting JOIN user_meeting USING(meeting_id)" +
-                "WHERE user_id = ?)";
+                "WHERE user_meeting.user_id = ?)";
 
         List<MeetingReccomendations> recList = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
                 new MeetingReccomendations(
                         new Meeting(
                                 rs.getLong("meeting_id"),
-                                rs.getDate("meeting_date"),
-                                rs.getString("meeting_description"),
+                                rs.getTimestamp("meeting_date"),
+                                rs.getString("description"),
                                 rs.getString("meeting_link"),
                                 rs.getString("meeting_location"),
                                 rs.getString("meeting_title")
@@ -54,10 +56,8 @@ public class MeetingRecommendationEndpoint {
             // Implementation for course
             // Gets meeting course ID
             sql = "SELECT course_id FROM meeting WHERE meeting_id = ?";
-            Long meetingCourse = jdbcTemplate.query(sql, new Object[]{meetingId}, (rs) -> {
-                return rs.getLong("course_id");
-            });
-
+            Long meetingCourse = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, Long.class);
+            System.out.println(meetingCourse);
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
                     + " WHERE user_id = ?";
@@ -80,22 +80,31 @@ public class MeetingRecommendationEndpoint {
             // Get subject area for course of meeting
             sql = "SELECT subject_area FROM meeting JOIN courses USING(course_id) "
                     + "WHERE meeting_id = ?";
-            String meetingSubject = jdbcTemplate.query(sql, new Object[]{meetingId}, (rs) -> {
-                return rs.getString("subject_area");
-            });
+            String meetingSubject = null;
+
+            try {
+                meetingSubject = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, String.class);
+                System.out.println("Meeting subject area: " + meetingSubject);
+            } catch (EmptyResultDataAccessException e) {
+                System.out.println("No subject area found for meeting ID: " + meetingId);
+            } catch (DataAccessException e) {
+                e.printStackTrace();
+            }
 
             // Get subject of user
             sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
-            String userSubjectCsv = jdbcTemplate.query(sql, new Object[]{userId}, (rs) -> {
-                return rs.getString("areaofstudy");
-            });
+            String userSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
 
-            assert userSubjectCsv != null;
-            String[] userSubjectList = userSubjectCsv.split(",");
-            for(String s : userSubjectList){
-                if(s.equalsIgnoreCase(meetingSubject)){
-                    mr.addAreaOfStudyPts();
+            if(userSubjectCsv != null) {
+                String[] userSubjectList = userSubjectCsv.split(",");
+                for (String s : userSubjectList) {
+                    if (s.equalsIgnoreCase(meetingSubject)) {
+                        mr.addAreaOfStudyPts();
+                    }
                 }
+            }
+            else{
+                System.out.println("THIS HAD NO ROWS");
             }
 
             // TODO: Implementation for blocked users
@@ -183,13 +192,24 @@ public class MeetingRecommendationEndpoint {
             }
             mr.addTutorRatingPts(rating);
 
+            mr.totalPoints();
         }
+
 
         // Sorts by total points then returns a list of six Meetings
         recList.sort(Comparator.comparing(MeetingReccomendations::getTotalPts).reversed());
-        for(int i = 0; i < 6; ++i){
-            meetings.add(recList.get(i).getMeeting());
+        int count = 0;
+        for(MeetingReccomendations r : recList){
+            if(count >= 6){
+                break;
+            }
+            meetings.add(r.getMeeting());
+            count++;
         }
+
+        /*for(Meeting m : meetings){
+            System.out.println(m.getId());
+        }*/
 
         return new ResponseEntity<>(meetings, HttpStatus.OK);
     }

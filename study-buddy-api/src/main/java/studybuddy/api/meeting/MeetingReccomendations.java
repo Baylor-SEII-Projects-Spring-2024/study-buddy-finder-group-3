@@ -69,6 +69,7 @@ public class MeetingReccomendations {
 
     public int totalPoints(){
         totalPts = coursePts + areaOfStudyPts + timePts + tutorRatingPts + meetingTypePts + friendPts;
+        System.out.println(totalPts + " - " + meeting.getTitle());
         return totalPts;
     }
 }
