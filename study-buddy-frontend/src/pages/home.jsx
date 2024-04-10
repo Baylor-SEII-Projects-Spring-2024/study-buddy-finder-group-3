@@ -20,9 +20,9 @@ function home() {
     return (
         <>
             <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                <Header />
+                {/* <Header /> */}
                 <Box sx={{ display: "flex", flexGrow: 1 }}>
-                    <Sidebar />
+                    {/* <Sidebar /> */}
                     <DisplayMeetings />
                 </Box>
             </Box>
