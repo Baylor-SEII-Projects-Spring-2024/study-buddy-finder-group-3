@@ -34,6 +34,7 @@ import Button from "@mui/material/Button"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
+import CreateMeeting from "./CreateMeeting.jsx"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -47,6 +48,7 @@ function DisplayMeetings() {
   const [showDeleteIcon, setShowDeleteIcon] = useState(false)
   const [unreadNotifications, setUnreadNotifications] = useState(0)
   const [recommendedMeetings, setRecommendedMeetings] = useState()
+  const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
 
   useEffect(() => {
     // need to do this
@@ -60,6 +62,14 @@ function DisplayMeetings() {
 
   const updateMeetingInState = () => {
     dispatch(fetchMeetingsByUserId(user.id))
+  }
+
+  const handleOpenCreateMeeting = () => {
+    setCreateMeetingOpen(true)
+  }
+
+  const handleCloseCreateMeeting = () => {
+    setCreateMeetingOpen(false)
   }
 
   const handleDeleteMeeting = async () => {
@@ -174,7 +184,11 @@ function DisplayMeetings() {
             },
           }}
         >
-          <Button variant="contained" color="primary">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenCreateMeeting}
+          >
             Create
           </Button>
           <Button variant="outlined" color="primary">
@@ -301,6 +315,10 @@ function DisplayMeetings() {
           </Button>
         </DialogActions>
       </Dialog>
+      <CreateMeeting
+        open={createMeetingOpen}
+        onClose={handleCloseCreateMeeting}
+      />
     </Container>
   )
 }
