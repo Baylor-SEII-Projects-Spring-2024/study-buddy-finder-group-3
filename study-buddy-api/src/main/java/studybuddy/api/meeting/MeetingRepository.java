@@ -11,6 +11,4 @@ import java.util.List;
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
     @Query("SELECT um.meeting FROM UserMeeting um WHERE um.user.id = :userId")
     List<Meeting> findMeetingsByUserId(@Param("userId") Long userId);
-
-    List<Meeting> findByUserId(Long userId);
 }

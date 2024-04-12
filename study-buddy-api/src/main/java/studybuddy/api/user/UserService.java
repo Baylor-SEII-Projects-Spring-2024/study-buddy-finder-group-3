@@ -12,9 +12,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private TutorRatingRepository tutorRatingRepository;
-
     //TODO: hash password with bcrypt when user created
     //public User encryptPassword(User user) {
     public String encryptPassword(String pass) {
@@ -43,34 +40,4 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmailAddress(email);
     }
-
-    public boolean addTutorReview(Long tutorId, Long userId, int rating, String comment) {
-        try {
-            // make sure marked as tutor
-            Optional<User> tutorOptional = userRepository.findById(tutorId);
-            if (!tutorOptional.isPresent() || !tutorOptional.get().getIsTutor()) {
-                throw new IllegalArgumentException("Invalid tutor ID or user is not a tutor");
-            }
-
-            //  user exists
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (!userOptional.isPresent()) {
-                throw new IllegalArgumentException("Invalid user ID");
-            }
-
-            // save rating
-            TutorRating tutorRating = new TutorRating();
-            tutorRating.setUser(userOptional.get());
-            tutorRating.setRating(rating);
-            tutorRating.setComment(comment);
-
-            tutorRatingRepository.save(tutorRating);
-            return true;
-        } catch (Exception e) {
-            // TODO: log error
-            return false;
-        }
-
-    }
-
 }

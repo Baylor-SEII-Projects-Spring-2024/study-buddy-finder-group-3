@@ -67,5 +67,4 @@ public class Meeting {
         this.title = title;
     }
 
-
 }

@@ -3,9 +3,6 @@ import CloseIcon from "@mui/icons-material/Close"
 import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"
 import React, { useState, useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { selectUser } from "@/utils/authSlice.js"
-
 import {
   List,
   ListItem,
@@ -15,8 +12,6 @@ import {
   Modal,
   IconButton,
   TextField,
-  Button,
-  MenuItem
 } from "@mui/material"
 import { API_URL } from "@/utils/config"
 import axios from "axios"
@@ -27,30 +22,19 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import isValid from "date-fns/isValid"
 import VideocamIcon from "@mui/icons-material/Videocam"
 
-function MeetingModal({
-  meeting,
-  open,
-  handleClose,
-  updateMeetingInParent,
-  isInvitation = false,
-}) {
+function MeetingModal({ meeting, open, handleClose, updateMeetingInParent }) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [editMode, setEditMode] = useState(false)
-  const [editedTitle, setEditedTitle] = useState(meeting?.title || "")
+  const [editedTitle, setEditedTitle] = useState(meeting?.title || '');
   const [editedDescription, setEditedDescription] = useState(
-    meeting?.description || ""
+    meeting?.description || ''
   )
-  const [editedLocation, setEditedLocation] = useState(meeting?.location || "")
+  const [editedLocation, setEditedLocation] = useState(meeting?.location || '')
   const [editedDate, setEditedDate] = useState(
-    isValid(new Date(meeting?.date || "")) ? new Date(meeting.date) : new Date()
+    isValid(new Date(meeting?.date || '')) ? new Date(meeting.date) : new Date()
   )
-  const [editedLink, setEditedLink] = useState(meeting?.link || "")
-  const user = useSelector(selectUser)
-  const [showReviewFields, setShowReviewFields] = useState(false);
-  const [rating, setRating] = useState(5) // Default rating value, can be adjusted
-  const [comment, setComment] = useState("")
-  const hasMeetingStarted = new Date() > new Date(meeting?.date)
+  const [editedLink, setEditedLink] = useState(meeting?.link || '')
 
   useEffect(() => {
     if (!open) {
@@ -103,10 +87,10 @@ function MeetingModal({
         const savedMeeting = response.data
         updateMeetingInParent(savedMeeting)
 
-        setEditedTitle(savedMeeting?.title || "")
-        setEditedDescription(savedMeeting?.description || "")
-        setEditedLocation(savedMeeting?.location || "")
-        setEditedLink(savedMeeting?.link || "")
+        setEditedTitle(savedMeeting?.title || '')
+        setEditedDescription(savedMeeting?.description || '')
+        setEditedLocation(savedMeeting?.location || '')
+        setEditedLink(savedMeeting?.link || '')
         setEditedDate(savedMeeting?.date || new Date(savedMeeting.date))
 
         toast.success("Meeting updated successfully")
@@ -120,54 +104,6 @@ function MeetingModal({
       }
     }
     setEditMode(!editMode)
-  }
-  console.log("meeting", meeting);
-
-  const submitReview = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/tutor/${meeting.tutorId}/review`, {
-        userId: user.id,
-        rating: rating,
-        comment: comment,
-      });
-      toast.success("Review submitted successfully");
-      setShowReviewFields(false); // hide review fields after submission
-    } catch (error) {
-      toast.error("Failed to submit review");
-      console.error("Failed to submit review:", error);
-    }
-  };
-
-  const handleAccept = async () => {
-    try {
-      const response = await axios.patch(
-        `${API_URL}/meeting/${meeting.id}/updateStatus/${user.id}?status=Accepted`,
-        { status: "Accepted" }
-      )
-
-      const updatedMeeting = response.data
-      // updateMeetingInParent(updatedMeeting)
-      handleClose()
-      toast.success("Meeting accepted successfully")
-    } catch (error) {
-      console.error("Failed to accept meeting:", error)
-    }
-  }
-
-  const handleReject = async () => {
-    try {
-      const response = await axios.patch(
-        `${API_URL}/meeting/${meeting.id}/updateStatus/${user.id}?status=Rejected`,
-        { status: "Rejected" }
-      )
-
-      const updatedMeeting = response.data
-      // updateMeetingInParent(updatedMeeting)
-      handleClose()
-      toast.success("Meeting rejected successfully")
-    } catch (error) {
-      console.error("Failed to reject meeting:", error)
-    }
   }
 
   return (
@@ -246,9 +182,7 @@ function MeetingModal({
             <Typography variant="h6" component="h2">
               {meeting?.title || "No title"}
             </Typography>
-            <Typography sx={{ mt: 2 }}>
-              {meeting?.description || "No Description"}
-            </Typography>
+            <Typography sx={{ mt: 2 }}>{meeting?.description || "No Description"}</Typography>
             <Typography sx={{ mt: 2 }}>
               {meeting?.link ? (
                 <Link
@@ -277,26 +211,13 @@ function MeetingModal({
           </>
         )}
 
-        {!isInvitation && (
-          <IconButton
-            aria-label={editMode ? "save" : "edit"}
-            onClick={handleEdit}
-            sx={{ position: "absolute", right: 48, top: 8 }}
-          >
-            {editMode ? <SaveIcon /> : <EditIcon />}
-          </IconButton>
-        )}
-
-        {isInvitation && (
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-            <Button onClick={handleAccept} variant="contained" color="primary">
-              Accept
-            </Button>
-            <Button onClick={handleReject} variant="outlined" color="secondary">
-              Reject
-            </Button>
-          </Box>
-        )}
+        <IconButton
+          aria-label={editMode ? "save" : "edit"}
+          onClick={handleEdit}
+          sx={{ position: "absolute", right: 48, top: 8 }}
+        >
+          {editMode ? <SaveIcon /> : <EditIcon />}
+        </IconButton>
 
         <List sx={{ maxHeight: 200, overflow: "auto" }}>
           {meeting?.attendeeProfiles &&
@@ -319,51 +240,9 @@ function MeetingModal({
             user={selectedUser}
           />
         )}
-        {hasMeetingStarted && !showReviewFields && (
-          <Button variant="contained" color="primary" onClick={() => setShowReviewFields(true)}>
-            Leave a Review
-          </Button>
-        )}
-
-        {showReviewFields && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Leave a Review
-            </Typography>
-            <TextField
-              fullWidth
-              select
-              label="Rating"
-              value={rating}
-              onChange={(e) => setRating(e.target.value)}
-              helperText="Please select your rating"
-              sx={{ mb: 2 }}
-            >
-              {[1, 2, 3, 4, 5].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              fullWidth
-              label="Comment"
-              multiline
-              rows={4}
-              variant="outlined"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Button variant="contained" color="primary" onClick={submitReview}>
-              Submit Review
-            </Button>
-          </Box>
-        )}
       </Box>
     </Modal>
-  );
-
+  )
 }
 
 export default MeetingModal

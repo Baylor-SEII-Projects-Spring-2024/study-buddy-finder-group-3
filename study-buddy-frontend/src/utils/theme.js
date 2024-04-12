@@ -22,13 +22,13 @@ const themeOptions = {
   },
   palette: {
     background: {
-      default: "#FFFFFF", // off white
+      default: "#f7f0fa", // off white
     },
     primary: {
-      main: "#628dbd", //  purple
+      main: "#5813d6", //  purple
     },
     secondary: {
-      main: "#85cc6f", // mint
+      main: "#c3f0c8", // mint
     },
     fontColor: {
       main: "#00000",
