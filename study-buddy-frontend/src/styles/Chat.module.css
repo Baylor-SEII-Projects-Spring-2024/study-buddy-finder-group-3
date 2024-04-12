@@ -147,14 +147,14 @@
         }
 
         .message.owner .messageContent p {
-            background-color: #218aff;
+            background-color: #628dbd;
             color: white;
             border-radius: 10px 0 10px 10px;
         }
 
         .message.nonOwner .messageContent p {
-            background-color: #39ff5a; /* Update background color for non-owner messages */
-            color: grey; /* Update text color for non-owner messages */
+            background-color: #85cc6f; /* Update background color for non-owner messages */
+            color: white; /* Update text color for non-owner messages */
             border-radius: 0 10px 10px 10px;
         }
 
