@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import studybuddy.api.user.Messages;
-import studybuddy.api.user.User;
 
 @RestController
 @RequestMapping("/chat")
-public class MessageEndpoint {
+public class ChatEndpoint {
 
     @Autowired
     private studybuddy.api.user.messageService messageService;
@@ -33,4 +32,7 @@ public class MessageEndpoint {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send message");
         }
     }
+
+    @RequestMapping("/createChat")
+
 }

@@ -31,7 +31,6 @@ public class ChatServices {
         return chatRepository.findById(chatId);
     }
 
-
     public Chat saveChat(Chat chat) {
         return chatRepository.save(chat);
     }

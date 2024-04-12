@@ -9,6 +9,7 @@ import studybuddy.api.endpoint.UserEndpoint;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -43,7 +44,11 @@ public class MessageServiceTest {
 
         // Call the sendMessage method and assert that no exceptions are thrown
         messageService.sendMessage(savedUser, chatRoom, messageContent);
-        Optional<User> foundMessageOpt;
+        Optional<Messages> foundMessageOpt = messageService.findMessage(savedUser.id);
+        assertTrue(foundMessageOpt.isPresent());
+        Messages foundMsg = foundMessageOpt.get();
+
+//        assertEquals(fo);
 
         System.out.println(messageContent);
     }

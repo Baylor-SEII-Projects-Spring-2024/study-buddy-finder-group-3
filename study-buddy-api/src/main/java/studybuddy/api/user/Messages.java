@@ -3,6 +3,7 @@ package studybuddy.api.user;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Date;
 import java.sql.Time;
 
 @Data
@@ -28,7 +29,7 @@ public class Messages {
     Long id;
 
     @Column(name = "TIMESTAMP")
-    Time timestamp;
+    Date timestamp;
 
     @Column(name = "CONTENT")
     String content;

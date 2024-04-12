@@ -8,6 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Messages, Long> {
+
+    List<Messages> findByChatId(Long chat_id);
+
+
 //    List<Messages> findBySenderId(Long senderId);
 //
 //    List<Messages> findByRecipientId(Long recipientId);
