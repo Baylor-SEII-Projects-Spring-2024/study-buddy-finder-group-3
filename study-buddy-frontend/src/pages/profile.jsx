@@ -6,8 +6,12 @@ import Header from "@/components/Header"
 import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
+import { useTheme } from "@mui/material/styles"
+import TutorInfo from "@/components/TutorInfo";
+
 
 function profiles() {
+  const theme = useTheme()
   const token = useSelector(selectToken)
   const router = useRouter()
   useEffect(() => {
@@ -17,11 +21,45 @@ function profiles() {
   }, [token, router]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box sx={{ pt:"64px", display: "flex", justifyContent: "center", marginRight: "500px" }}>
       <Header />
-      <Box sx={{ display: "flex", flexGrow: 1 }}>
-        <Sidebar />
+      <Box sx={{
+          pt:"64px",
+          marginTop: "15px",
+          marginLeft: "80px",
+          padding: "20px",
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          minWidth: "30vw",
+          width: "fit-content",
+          maxWidth: "50vw",
+          height: "fit-content",
+          // maxHeight: "90vh",
+          display: "inline-block",
+          backgroundColor: theme.palette.background.default,
+          borderColor: theme.palette.primary.main
+      }}>
+        {/*<Sidebar />*/}
         <ProfileDisplay />
+      </Box>
+      <Box sx={{
+          pt:"64px",
+          marginTop: "15px",
+          marginLeft: "80px",
+          padding: "20px",
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          minWidth: "30vw",
+          width: "fit-content",
+          maxWidth: "50vw",
+          height: "fit-content",
+          // maxHeight: "90vh",
+          display: "inline-block",
+          backgroundColor: theme.palette.background.default,
+          borderColor: theme.palette.primary.main
+      }}
+      >
+          <TutorInfo />
       </Box>
     </Box>
   )

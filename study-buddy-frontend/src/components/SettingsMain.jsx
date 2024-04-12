@@ -46,7 +46,8 @@ function AccountSettings() {
         <Box
             sx={{
                 width: "75vw",
-                padding: "15px"
+                padding: "15px",
+                pt:"64px"
         }}
         >
             {/*<div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>*/}
@@ -54,6 +55,7 @@ function AccountSettings() {
             {/*</div>*/}
             <Box
                 sx={{
+                    pt:"64px",
                     marginTop: "15px",
                     marginLeft: "80px",
                     padding: "20px",
@@ -63,7 +65,7 @@ function AccountSettings() {
                     display: "inline-block",
                     width: "fit-content",
                     height: "fit-content",
-                    backgroundColor: "#f7f0fa",
+                    backgroundColor: theme.palette.background.default,
                     borderColor: theme.palette.primary.main
                 }}
             >
