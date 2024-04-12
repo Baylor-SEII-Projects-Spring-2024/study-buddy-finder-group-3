@@ -1,5 +1,5 @@
 .chat {
-    background-color: #a7bcff;
+    background-color: #fff;
     height: 100vh;
     display: flex;
     align-items: center;
@@ -9,14 +9,14 @@
     .container {
         border: 1px solid white;
         border-radius: 10px;
-        width: 65%;
-        height: 80%;
+        width: 100%;
+        height: 100%;
         display: flex;
         overflow: hidden;
 
 
         .ChatSidebar {
-            flex: 1;
+            flex: .5;
             background-color: #3e3c61;
 
             .ChatNavbar{
