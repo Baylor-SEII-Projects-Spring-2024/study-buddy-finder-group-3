@@ -32,7 +32,7 @@ public class MeetingEndpoint {
     @GetMapping("/user/{userId}/meetings")
     public ResponseEntity<?> getMeetingsByUserId(@PathVariable Long userId) {
         try {
-            List<Meeting> meetings = meetingService.getMeetingsByUserId(userId);
+            List<Meeting> meetings = meetingService.getAcceptedMeetingsByUserId(userId);
             return ResponseEntity.ok(meetings);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get meetings for user");
@@ -55,10 +55,11 @@ public class MeetingEndpoint {
         }
     }
 
-    @PatchMapping("/{meetingId}/updateStatus")
-    public ResponseEntity<?> updateMeetingStatus(@PathVariable Long meetingId, @RequestParam String status) {
+    @PatchMapping("/{meetingId}/updateStatus/{userid}")
+    public ResponseEntity<?> updateMeetingStatus(@PathVariable Long meetingId, @RequestParam String status, @PathVariable Long userid) {
         try {
-            meetingService.updateMeetingStatus(meetingId, status);
+
+            meetingService.updateMeetingStatus(meetingId, userid, status);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update meeting status");
@@ -72,6 +73,53 @@ public class MeetingEndpoint {
             return ResponseEntity.ok(pendingInvitations);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get pending invitations");
+        }
+    }
+
+
+
+
+
+
+    public class MeetingWithAttendeesDTO {
+        private Meeting meeting;
+        private List<AttendeeDTO> attendees;
+
+        public Meeting getMeeting() {
+            return meeting;
+        }
+
+        public void setMeeting(Meeting meeting) {
+            this.meeting = meeting;
+        }
+
+        public List<AttendeeDTO> getAttendees() {
+            return attendees;
+        }
+
+        public void setAttendees(List<AttendeeDTO> attendees) {
+            this.attendees = attendees;
+        }
+    }
+
+    public class AttendeeDTO {
+        private Long userId;
+        private String inviteStatus;
+
+        public Long getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
+
+        public String getInviteStatus() {
+            return inviteStatus;
+        }
+
+        public void setInviteStatus(String inviteStatus) {
+            this.inviteStatus = inviteStatus;
         }
     }
 
