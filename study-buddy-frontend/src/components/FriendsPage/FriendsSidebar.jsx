@@ -34,6 +34,12 @@ import FriendsRequest from "./FriendsRequests";
 import FriendsBlocked from "./FriendsBlocked";
 import { Badge } from "@mui/material";
 import Header from "../Header";
+import ChatComp from "@/components/ChatComp"
+import styles from "@/styles/Chat.module.css";
+import ChatSidebar from "@/components/ChatSidebar"
+import Sidebar from "@/components/Sidebar"
+import SearchBar from "@/components/SearchBar"
+
 
 const drawerWidth = 240;
 
@@ -275,7 +281,9 @@ return (
           <FriendsRequest onUpdate={handleMessageUpdate}/>
       </Box> : null}
       {activePage === 'blocked' ? <FriendsBlocked/> : null}
-      {activePage === 'chat' ? <div>Chat</div> : null}
+      {activePage === 'chat' ? <div>
+            <chat/>
+      </div> : null}
     </Box>
   </Box>
 );

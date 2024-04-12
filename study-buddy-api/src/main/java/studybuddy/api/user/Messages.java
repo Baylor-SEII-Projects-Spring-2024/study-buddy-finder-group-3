@@ -11,6 +11,17 @@ import java.sql.Time;
 public class Messages {
     public static final String TABLE_NAME = "MESSAGES";
 
+    public Messages() {
+
+    }
+
+    public Messages(long id, String content, User user_id, Chat chat_id) {
+        this.id = id;
+        this.content = content;
+        this.user_id = user_id;
+        this.chat_id = chat_id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MESSAGE_ID")

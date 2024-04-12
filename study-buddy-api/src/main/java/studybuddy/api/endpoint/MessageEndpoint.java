@@ -16,7 +16,6 @@ public class MessageEndpoint {
 
     @Autowired
     private studybuddy.api.user.messageService messageService;
-    private User Null;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@RequestBody Messages message) {
@@ -27,7 +26,7 @@ public class MessageEndpoint {
             }
 
             // Save the message to the database
-            messageService.sendMessage("w", "j", String.valueOf(message));
+            messageService.sendMessage(message.getUser_id(), message.getChat_id(), message.getContent());
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

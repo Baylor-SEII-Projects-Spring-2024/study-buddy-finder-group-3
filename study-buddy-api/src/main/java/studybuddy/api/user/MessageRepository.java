@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findBySenderId(Long senderId);
-
-    List<Message> findByRecipientId(Long recipientId);
-
-    Optional<Message> findByIdAndSenderId(Long id, Long senderId);
-
-    Optional<Message> findByIdAndRecipientId(Long id, Long recipientId);
+public interface MessageRepository extends JpaRepository<Messages, Long> {
+//    List<Messages> findBySenderId(Long senderId);
+//
+//    List<Messages> findByRecipientId(Long recipientId);
+//
+//    Optional<Messages> findByIdAndSenderId(Long id, Long senderId);
+//
+//    Optional<Messages> findByIdAndRecipientId(Long id, Long recipientId);
 }
