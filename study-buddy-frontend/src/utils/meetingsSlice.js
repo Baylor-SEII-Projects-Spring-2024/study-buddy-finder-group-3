@@ -7,6 +7,7 @@ export const fetchMeetingsByUserId = createAsyncThunk(
   'meetings/fetchByUserId',
   async (userId) => {
     const response = await axios.get(`${API_URL}/meeting/user/${userId}/meetings`);
+    console.log('meeting response data', response.data);
     return response.data; 
   }
 );
