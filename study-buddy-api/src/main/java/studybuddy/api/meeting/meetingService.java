@@ -110,6 +110,7 @@ public class meetingService {
         userMeeting.setInviteStatus(status);
         userMeetingRepository.save(userMeeting);
     }
+
     public List<Meeting> getPendingInvitations(Long userId) {
         List<Meeting> pendingInvitations = new ArrayList<>();
         List<UserMeeting> userMeetings = userMeetingRepository.findByUserIdAndInviteStatus(userId, "Pending");

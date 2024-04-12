@@ -80,5 +80,52 @@ public class MeetingEndpoint {
 
 
 
+
+    public class MeetingWithAttendeesDTO {
+        private Meeting meeting;
+        private List<AttendeeDTO> attendees;
+
+        public Meeting getMeeting() {
+            return meeting;
+        }
+
+        public void setMeeting(Meeting meeting) {
+            this.meeting = meeting;
+        }
+
+        public List<AttendeeDTO> getAttendees() {
+            return attendees;
+        }
+
+        public void setAttendees(List<AttendeeDTO> attendees) {
+            this.attendees = attendees;
+        }
+    }
+
+    public class AttendeeDTO {
+        private Long userId;
+        private String inviteStatus;
+
+        public Long getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
+
+        public String getInviteStatus() {
+            return inviteStatus;
+        }
+
+        public void setInviteStatus(String inviteStatus) {
+            this.inviteStatus = inviteStatus;
+        }
+    }
+
+
+
+
+
 }
 
