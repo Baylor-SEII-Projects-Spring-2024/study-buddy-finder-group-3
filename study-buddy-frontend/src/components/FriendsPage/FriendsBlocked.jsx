@@ -8,9 +8,18 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ListItemButton, CircularProgress } from "@mui/material";
+import { ListItemButton, CircularProgress, Avatar, IconButton, Popper } from "@mui/material";
 import FriendProfile from "./FriendProfile";
 import { API_URL } from "@/utils/config";
+import MenuIcon from '@mui/icons-material/Menu';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grow from '@mui/material/Grow';
+import Paper from '@mui/material/Paper';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+const options = ['Unblock', 'option2', 'option3'];
 
 export default function FriendsBlocked() {
 
@@ -22,6 +31,10 @@ export default function FriendsBlocked() {
   const [userId, setUserid] = useState('')
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = useState(true); 
+  const [openMenu, setOpenMenu] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [refresh, setRefresh] = useState(false);
 
   const handleListItemClick = (event, user) => {
     setOpen(true);
@@ -39,12 +52,13 @@ export default function FriendsBlocked() {
       setUserid(user.id)
     }
     fetchAllInfo()
-  }, [user])
+  }, [user, refresh])
   
   const fetchAllInfo = async () => {
     try {
       const response = await axios.get(`${API_URL}/friends/${user.id}/getBlocked`);
       setFriendsList(response.data);
+      console.log(response.data)
     } catch (error) {
       console.error("Error fetching blocked users info:", error);
     } finally {
@@ -52,9 +66,27 @@ export default function FriendsBlocked() {
     }
   }
 
+  const unblockUser = (user2) => {
+    try {
+      axios.post(`${API_URL}/friends/${user.id}/unblock/${user2.id}`)
+       .then(response => {
+         console.log(response);
+         fetchAllInfo()
+      })
+    } catch (error) {
+      console.error("Error unblocking user:", error)
+    }
+    
+  }
+
   const handleClose = (value) => {
-    setOpen(false);
+    setOpenMenu(false);
   };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setOpenMenu(false);
+  }
 
   if (loading) {
     
@@ -75,11 +107,17 @@ export default function FriendsBlocked() {
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}> 
           <List>
             {friends.map(user => (
-              <ListItem key={user.user_id}>
-                <ListItemButton onClick={(event) => handleListItemClick(event, user)}>
-                  <ListItemText primary={user.username} />
+              <ListItem key={user.id}>
+                
+                <ListItemButton onClick={(event) => handleListItemClick(event, user)} sx={{boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)'}}>
+                  <Avatar alt={user.username} src={'/green_iguana.jpg'} />
+                  <ListItemText primary={user.username} sx={{marginLeft: '10px'}}/>
+                  <IconButton onClick={(event) => unblockUser(user)} ref={anchorRef}>
+                    <CancelIcon />
+                  </IconButton>
                 </ListItemButton>
-                <FriendProfile user={user} open={open} onClose={handleClose} />
+                
+                {/* <FriendProfile user={user} open={open} onClose={handleClose} /> */}
               </ListItem>
             ))}
           </List>

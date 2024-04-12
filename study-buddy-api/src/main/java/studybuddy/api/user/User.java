@@ -47,8 +47,31 @@ public class User {
     @Column(name = "AREAOFSTUDY")
     String areaOfStudy;
 
+    @Lob
+    @Column(name = "PROFILEPIC",  columnDefinition = "BLOB")
+    byte[] profilePic;
+
+    @Column(name = "PREF_TIME")
+    String prefTime;
+
+    @Column(name = "PREF_MEETING_TYPE")
+    String prefMeetingType;
+
     public User() {
 
+    }
+
+    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy, String prefTime, String prefMeet) {
+        this.id = id;
+        this.username = username;
+        this.emailAddress = emailAddress;
+        this.password = password;
+        this.userType = userType;
+        this.nameFirst = nameFirst;
+        this.nameLast = nameLast;
+        this.areaOfStudy = areaOfStudy;
+        this.prefTime = prefTime;
+        this.prefMeetingType = prefMeet;
     }
 
     public User(User other){

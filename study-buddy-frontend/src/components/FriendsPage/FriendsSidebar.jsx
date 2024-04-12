@@ -33,7 +33,11 @@ import { selectUser } from "@/utils/authSlice";
 import FriendsRequest from "./FriendsRequests";
 import FriendsBlocked from "./FriendsBlocked";
 import { Badge } from "@mui/material";
-
+import Header from "../Header";
+import RecommendIcon from '@mui/icons-material/Recommend';
+import FriendProfile from "./FriendProfile";
+import FriendRecommendations from "./FriendRecommendations";
+import TutorRecommendations from "./TutorRecommendations";
 
 const drawerWidth = 240;
 
@@ -128,6 +132,7 @@ export default function FriendsSidebar() {
   const user = useSelector(selectUser)
   const [userId, setUserid] = useState('')
   const [loggingOut, setLoggingOut] = useState(false);
+  const [count, setCount] = useState(0);
 
   const navigateToProfile = () => {
     router.push("/profile")
@@ -168,14 +173,21 @@ export default function FriendsSidebar() {
   }
 
   useEffect(() => {
-    console.log('vibe check')
     if (user){
         console.log('here')
         setUserid(user.id)
       }
 
     fetchRequests();
-}, [user, message]);
+
+    const interval = setInterval(() => {
+      // Update the state every couple of seconds
+      setCount(prevCount => prevCount + 1);
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    return () => clearInterval(interval);
+
+}, [user, message, activePage]);
 
   const handleMessageUpdate = () => {
     if (message === 'update') {
@@ -202,27 +214,19 @@ export default function FriendsSidebar() {
     setActivePage('chat')
   }
 
+  const setActivePageRecommendation = () => {
+    setActivePage('recommendation')
+  }
+
 
 
 return (
+
   <Box sx={{ display: 'flex' }}>
+    
     <CssBaseline />
-    <AppBar position="fixed" open={open} style={{boxShadow: "none", borderBottom: "1px solid black", backgroundColor: '#f7f0fa'}} sx={{zIndex: theme.zIndex.drawer + 1,}}>
-    <Toolbar>
-                  <Button onClick={navigateHome}>Home</Button>
+    <Header/>
 
-                  <Button>Meetings</Button>
-
-                  <Button>Settings</Button>
-
-                  <Typography sx={{ flexGrow: 1, color: 'black', textAlign: 'center' }}>
-                    Logo
-                  </Typography>
-
-                  <Button onClick={handleButtonClick} variant='contained'>Menu</Button>
-
-              </Toolbar>
-    </AppBar>
     <StyledDrawer variant="permanent" open={open}>
       {open ? (
           <Box sx={{display: 'flex', justifyContent: 'initial',  marginTop: '80px', marginLeft: '12px'}}>
@@ -276,9 +280,17 @@ return (
               <ListItemText primary={"Chat"} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <ListItemButton sx={{minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5,}} onClick={setActivePageRecommendation}>
+              <ListItemIcon sx={{minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center',}}>
+                  <RecommendIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Recomendation"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
       </List>
     </StyledDrawer>
-    <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+    <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: '', height: '100vh'}} overflow={'auto'}>
       <DrawerHeader />
       {activePage === 'list' ? <FriendsList/> : null}
       {activePage === 'requests' ? 
@@ -288,6 +300,12 @@ return (
       </Box> : null}
       {activePage === 'blocked' ? <FriendsBlocked/> : null}
       {activePage === 'chat' ? <div>Chat</div> : null}
+      {activePage === 'recommendation' ? <div>  
+        <Box>
+          <FriendRecommendations/> 
+          <TutorRecommendations/>
+        </Box>
+        </div> : null}
     </Box>
   </Box>
 );
