@@ -140,7 +140,7 @@ function Header() {
               open={Boolean(settingsAnchorEl)}
               onClose={handleCloseSettingsMenu}
             >
-              <MenuItem onClick={() => navigateToSetting("/profile/")}>
+              <MenuItem onClick={() => navigateToSetting("/settings/account")}>
                 Account
               </MenuItem>
               <MenuItem onClick={() => navigateToSetting("/settings/courses")}>
@@ -213,7 +213,6 @@ function Header() {
         meeting={selectedMeeting}
         open={Boolean(selectedMeeting)}
         handleClose={() => setSelectedMeeting(null)}
-        isInvitation={true}
       />
     </>
   )

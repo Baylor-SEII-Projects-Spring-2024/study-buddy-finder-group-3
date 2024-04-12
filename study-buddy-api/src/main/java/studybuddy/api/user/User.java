@@ -57,15 +57,6 @@ public class User {
     @Column(name = "PREF_MEETING_TYPE")
     String prefMeetingType;
 
-    public boolean getIsTutor() {
-        return userType;
-    }
-
-    public void setIsTutor(boolean isTutor) {
-        this.userType = isTutor;
-    }
-
-
     public User() {
 
     }

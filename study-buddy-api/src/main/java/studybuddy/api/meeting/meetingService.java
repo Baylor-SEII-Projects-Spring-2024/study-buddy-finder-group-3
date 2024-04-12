@@ -11,7 +11,6 @@ import studybuddy.api.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -100,15 +99,19 @@ public class meetingService {
         meetingRepository.deleteById(meetingId);
     }
 
-    public void updateMeetingStatus(Long meetingId, Long userId, String status) {
+    public void updateMeetingStatus(Long meetingId, String status) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
-        Optional<User> user = userRepository.findById(userId);
-        UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, user);
+        // Retrieve all user meetings associated with this meeting
+        List<UserMeeting> userMeetings = userMeetingRepository.findByMeeting(meeting);
 
-        userMeeting.setInviteStatus(status);
-        userMeetingRepository.save(userMeeting);
+        // Update invite status for each user meeting
+        for (UserMeeting userMeeting : userMeetings) {
+            userMeeting.setInviteStatus(status);
+            userMeetingRepository.save(userMeeting);
+        }
+
     }
 
     public List<Meeting> getPendingInvitations(Long userId) {
@@ -123,12 +126,6 @@ public class meetingService {
     }
 
 
-    public List<Meeting> getAcceptedMeetingsByUserId(Long userId) {
-        List<UserMeeting> acceptedUserMeetings = userMeetingRepository.findByUserIdAndInviteStatus(userId, "Accepted");
 
-        return acceptedUserMeetings.stream()
-                .map(UserMeeting::getMeeting) // get meeting from obj
-                .distinct() // remove dupes
-                .collect(Collectors.toList());
-    }
+
 }

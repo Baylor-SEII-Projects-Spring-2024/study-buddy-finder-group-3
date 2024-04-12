@@ -12,12 +12,12 @@ function profiles() {
   const router = useRouter()
   useEffect(() => {
     if (!token) {
-      router.push("/")
+      router.push('/');
     }
-  }, [token, router])
+  }, [token, router]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", pt: "64px" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Header />
       <Box sx={{ display: "flex", flexGrow: 1 }}>
         <Sidebar />
