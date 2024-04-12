@@ -62,6 +62,7 @@ function AccountSettings() {
                     minWidth: "30vw",
                     display: "inline-block",
                     width: "fit-content",
+                    height: "fit-content",
                     backgroundColor: "#f7f0fa",
                     borderColor: theme.palette.primary.main
                 }}

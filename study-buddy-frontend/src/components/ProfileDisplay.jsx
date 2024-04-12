@@ -287,6 +287,56 @@ function ProfileDisplay() {
                     />
                 </div>
             </Box>
+            <Box
+                sx={{
+                marginLeft: "auto",
+                marginRight: "auto",
+                marginTop: "15px",
+                marginBottom: "15px",
+                padding: "20px",
+                border: "1px solid #ddd",
+                borderRadius: "5px",
+                width: "20vw"
+                }} >
+                <div className={styles.coursesContainer}>
+                    <Typography variant="subtitle1">Time Preference:</Typography>
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Morning")} onChange={handleCourseChange} name="Morning" />}
+                        label="Morning"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Evening")} onChange={handleCourseChange} name="Evening" />}
+                        label="Evening"
+                        disabled={!editMode}
+                    />
+                </div>
+            </Box>
+            <Box
+                sx={{
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    marginTop: "15px",
+                    marginBottom: "15px",
+                    padding: "20px",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                    width: "20vw"
+                }} >
+                <div className={styles.coursesContainer}>
+                    <Typography variant="subtitle1">Meeting Type Preference:</Typography>
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Physical")} onChange={handleCourseChange} name="Physical" />}
+                        label="Physical"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedCourses.includes("Virtual")} onChange={handleCourseChange} name="Virtual" />}
+                        label="Virtual"
+                        disabled={!editMode}
+                    />
+                </div>
+            </Box>
             <Button
                 sx={{
                     // flexGrow: 0,
