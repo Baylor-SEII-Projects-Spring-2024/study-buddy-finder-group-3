@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import ProfileDisplay from "@/components/ProfileDisplay"
 import { useSelector } from "react-redux"
-import { selectToken } from "@/utils/authSlice.js"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
 import Header from "@/components/Header"
 import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
@@ -14,7 +14,9 @@ function profiles() {
   const theme = useTheme()
   const token = useSelector(selectToken)
   const router = useRouter()
-  useEffect(() => {
+    const user = useSelector(selectUser)
+
+    useEffect(() => {
     if (!token) {
       router.push('/');
     }
@@ -37,28 +39,11 @@ function profiles() {
           // maxHeight: "90vh",
           display: "inline-block",
           backgroundColor: theme.palette.background.default,
-          borderColor: theme.palette.primary.main
+          borderColor: theme.palette.primary.main,
+          alignItems: "center"
       }}>
         {/*<Sidebar />*/}
-        <ProfileDisplay />
-      </Box>
-      <Box sx={{
-          pt:"64px",
-          marginTop: "15px",
-          marginLeft: "80px",
-          padding: "20px",
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          minWidth: "30vw",
-          width: "fit-content",
-          maxWidth: "50vw",
-          height: "fit-content",
-          // maxHeight: "90vh",
-          display: "inline-block",
-          backgroundColor: theme.palette.background.default,
-          borderColor: theme.palette.primary.main
-      }}
-      >
+          <ProfileDisplay />
           <TutorInfo />
       </Box>
     </Box>

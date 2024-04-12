@@ -140,7 +140,8 @@ function ProfileDisplay() {
                 <Avatar
                     // src={profile.profilePictureUrl}
                     // src={avatarImage}
-                    src="/_next/static/media/StudyBuddyLogo.4d4a46a7.png"
+                    // src="/_next/static/media/StudyBuddyLogo.4d4a46a7.png"
+                    src="/StudyBuddyLogo.png"
                     alt="Profile Picture"
                     className={styles.avatar}
                     sx={{
