@@ -126,7 +126,7 @@
         }
 
         .Messages {
-            background-color: #ddddf7;
+            background-color: #c3eec8;
             padding: 10px;
             height: calc(100% - 100px);
             overflow: scroll;
@@ -153,7 +153,7 @@
         }
 
         .message.nonOwner .messageContent p {
-            background-color: #85cc6f; /* Update background color for non-owner messages */
+            background-color: #57886c; /* Update background color for non-owner messages */
             color: white; /* Update text color for non-owner messages */
             border-radius: 0 10px 10px 10px;
         }

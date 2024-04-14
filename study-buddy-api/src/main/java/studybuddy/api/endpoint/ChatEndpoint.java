@@ -33,6 +33,6 @@ public class ChatEndpoint {
         }
     }
 
-    @RequestMapping("/createChat")
+
 
 }
