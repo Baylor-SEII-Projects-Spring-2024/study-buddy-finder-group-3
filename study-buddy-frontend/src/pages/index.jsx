@@ -25,7 +25,7 @@ function landing() {
 
       <main>
         {/* <h1 className={landingstyles.testingCss}>Landing page</h1> */}
-        <TempAws/>
+        <LandingPage/>
       </main>
     </>
   )
