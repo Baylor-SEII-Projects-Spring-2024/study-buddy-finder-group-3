@@ -13,6 +13,7 @@ import landingstyles from "@/styles/landing.module.css"
 import Header from "@/components/Header.jsx"
 import LandingPage from "@/components/Landing"
 import Sidebar from "@/components/Sidebar.jsx"
+import TempAws from "@/components/TempAws"
 
 function landing() {
   return (
@@ -24,7 +25,7 @@ function landing() {
 
       <main>
         {/* <h1 className={landingstyles.testingCss}>Landing page</h1> */}
-        <LandingPage />
+        <TempAws/>
       </main>
     </>
   )
