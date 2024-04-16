@@ -30,11 +30,12 @@ const ChatInput = () => {
       value={inputValue} onChange={handleInputChange}/>
       <div className={styles.Send}>
         <img src={""} alt={""} />
-        <input type={"file"} style={{display:"none"}} id={"file"}/>
+        <input type={"file"} style={{ display: "none" }} id={"file"} />
         <label htmlFor={"file"}>
           <img src={""} alt={""} />
         </label>
-        <button onClick={sendMessage}>Send</button> {/* Bind onClick event to sendMessage function */}
+        <button onClick={sendMessage} style={{ borderRadius: '5px' }}>Send</button>
+        {/* Bind onClick event to sendMessage function */}
       </div>
     </div>
   )

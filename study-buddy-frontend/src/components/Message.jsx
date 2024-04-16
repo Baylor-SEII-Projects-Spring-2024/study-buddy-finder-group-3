@@ -8,7 +8,7 @@ const Message = ({ isOwner }) => {
           src="/StudyBuddyLogo.png"
           alt="Profile Picture"
         />
-        <span>just now</span>
+        {/*<span>just now</span>*/}
       </div>
       <div className={styles.messageContent}>
         <p>hello</p>

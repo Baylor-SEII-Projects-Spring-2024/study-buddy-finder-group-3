@@ -25,7 +25,7 @@ public class ChatEndpoint {
             }
 
             // Save the message to the database
-            messageService.sendMessage(message.getUser_id(), message.getChat_id(), message.getContent());
+            messageService.sendMessage(message.getUser_id(), message.getReceiver(), message.getContent());
 
             return ResponseEntity.ok().build();
         } catch (Exception e) {

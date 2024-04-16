@@ -17,14 +17,14 @@ public class messageService {
     @Autowired
     public UserRepository userRepository;
 
-    public void sendMessage(User senderUser, Chat chatRoom, String messageContent) {
+    public void sendMessage(User senderUser, User receiver, String messageContent) {
         // Find the recipient user by their username
         User sender = userRepository.findByUsername(senderUser.username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 
         // Create a new message object
-        Messages message = new Messages(0, messageContent, sender, chatRoom);
+        Messages message = new Messages(0, messageContent, sender, receiver);
         //message.setTimestamp();
 
         // Save the message

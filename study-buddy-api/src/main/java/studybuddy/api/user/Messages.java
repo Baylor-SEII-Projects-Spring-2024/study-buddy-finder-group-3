@@ -16,11 +16,11 @@ public class Messages {
 
     }
 
-    public Messages(long id, String content, User user_id, Chat chat_id) {
+    public Messages(long id, String content, User user_id, User receiver) {
         this.id = id;
         this.content = content;
         this.user_id = user_id;
-        this.chat_id = chat_id;
+        this.receiver = receiver;
     }
 
     @Id
@@ -39,6 +39,6 @@ public class Messages {
     User user_id;
 
     @ManyToOne //Chat message was sent too
-    @JoinColumn(name = "CHAT_ID", referencedColumnName = "CHAT_ID", foreignKey = @ForeignKey(name = "FK_TO_CHAT_ID"))
-    Chat chat_id;
+    @JoinColumn(name = "RECEIVER_ID", referencedColumnName = "RECEIVER_ID", foreignKey = @ForeignKey(name = "FK_TO_CHAT_ID"))
+    User receiver;
 }
