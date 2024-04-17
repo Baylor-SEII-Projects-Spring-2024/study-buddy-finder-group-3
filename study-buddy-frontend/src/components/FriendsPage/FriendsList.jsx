@@ -193,61 +193,43 @@ export default function FriendsList() {
             <Grid container spacing={5} justifyContent={"center"}>
               {friends.map((user, index) => (
                 <Grid item key={user.id}>
-                  <Card
-                    sx={{
-                      maxWidth: 345,
-                      flexBasis: "100%",
-                      background: "#f7f0fa",
-                      maxHeight: 496,
-                    }}
-                  >
-                    <ListItem
-                      direction="row"
-                      alignItems="center"
-                      disablePadding
-                      sx={{ display: "block" }}
-                    >
-                      <CardActionArea
-                        onClick={(event) => handleListItemClick(event, user)}
-                      >
-                        <Avatar
-                          alt="Profile Picture"
-                          src={
-                            profilePics[index]?.pic === "data:text/xml;base64,"
-                              ? null
-                              : profilePics[index]?.pic
-                          }
-                          style={{ width: 345, height: 230 }}
-                          variant="square"
-                        />
-
-                        <CardContent
-                          sx={{ width: 345, height: 206, overflow: "auto" }}
-                        >
-                          <Typography gutterBottom variant="h5" component="div">
-                            {user.nameFirst} {user.nameLast}
-                          </Typography>
-                          <Typography gutterBottom variant="h5" component="div">
-                            {user.userType ? "Tutor" : "Student"}
-                          </Typography>
-                          <Typography variant="h6" color="text.secondary">
-                            {user.areaOfStudy}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Lizards are a widespread group of squamate reptiles,
-                            with over 6,000 species, ranging across all
-                            continents except Antarctica
-                          </Typography>
-                        </CardContent>
-                      </CardActionArea>
-
-                      <CardActions>
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={(event) => removeFriend(user.id)}
-                          height={60}
-                        >
+                  
+                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa", maxHeight: 496 }}>
+                    <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
+                    <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
+                      {/* <CardMedia
+                        component="img"
+                        image={profilePics[index]?.pic}
+                        alt="profile picture"
+                        width={345}
+                        height={230}
+                      /> */}
+                      {/* <Avatar alt="Profile Picture" src={profilePics[index]?.pic} style={{ width: 345, height: 230 }} variant="square"
+                      /> */}
+                      <Avatar alt="Profile Picture" src={profilePics[index]?.pic === "data:text/xml;base64," ? null : profilePics[index]?.pic
+                      } style={{ width: 345, height: 230 }} variant="square"
+                      />
+                      
+                      <CardContent sx={{width: 345, height: 206, overflow: 'auto'}}>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {user.nameFirst} {user.nameLast}
+                        </Typography>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {user.userType ? "Tutor" : "Student"}
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {user.areaOfStudy}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Lizards are a widespread group of squamate reptiles, with over 6,000
+                          species, ranging across all continents except Antarctica
+                        </Typography>
+                      </CardContent>
+                      
+                    </CardActionArea>
+                    
+                      <CardActions >
+                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)} height={60}>
                           Remove
                         </Button>
                         <Button
