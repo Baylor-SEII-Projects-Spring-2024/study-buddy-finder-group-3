@@ -199,7 +199,7 @@ export default function FriendsList() {
                     sx={{
                       maxWidth: 345,
                       flexBasis: "100%",
-                      background: "#f7f0fa",
+                      background: "",
                       maxHeight: 496,
                     }}
                   >
