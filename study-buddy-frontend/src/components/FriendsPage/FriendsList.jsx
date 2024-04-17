@@ -194,7 +194,7 @@ export default function FriendsList() {
                       /> */}
                       {/* <Avatar alt="Profile Picture" src={profilePics[index]?.pic} style={{ width: 345, height: 230 }} variant="square"
                       /> */}
-                      <Avatar alt="Profile Picture" src={profilePics[index].pic === "data:text/xml;base64," ? null : profilePics[index].pic
+                      <Avatar alt="Profile Picture" src={profilePics[index]?.pic === "data:text/xml;base64," ? null : profilePics[index]?.pic
                       } style={{ width: 345, height: 230 }} variant="square"
                       />
                       

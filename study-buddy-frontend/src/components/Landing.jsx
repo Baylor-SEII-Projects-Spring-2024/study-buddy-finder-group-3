@@ -8,6 +8,7 @@ import {
   Container,
   Grid,
   Paper,
+  styled,
 } from "@mui/material"
 import { Image as ImageIcon } from "@mui/icons-material"
 import {
@@ -19,12 +20,16 @@ import "aos/dist/aos.css"
 import { useTheme } from "@mui/material/styles"
 import Login from "./Login"
 import CreateAccount from "./CreateAccount"
+import styles from "@/styles/landing.module.css"
+import CustomCursor from "@/utils/customCursor"
 
 const sections = [
   { title: "Home", id: "home-section" },
   { title: "About", id: "about-us-section" },
   { title: "Potential", id: "unlock-potential-section" },
   { title: "Customers", id: "customers-section" },
+  { title: "Our Mission", id: "mission-section" },
+  { title: "Contact", id: "contact-section" },
 ]
 
 const testimonials = [
@@ -48,6 +53,24 @@ const testimonials = [
   },
 ]
 
+const FillButton = styled(Button)(({ theme, width, height, x, y }) => ({
+  position: "relative",
+  overflow: "hidden",
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    top: 0,
+    left: 0,
+    background: `radial-gradient(circle closest-side at ${x}px ${y}px, ${theme.palette.primary.main}, transparent)`,
+    transition: "background 0.3s",
+  },
+  "&:hover::after": {
+    background: `radial-gradient(circle at ${x}px ${y}px, ${theme.palette.primary.dark}, transparent)`,
+  },
+}))
+
 const LandingPage = () => {
   const theme = useTheme()
   const [loginOpen, setLoginOpen] = useState(false)
@@ -58,10 +81,12 @@ const LandingPage = () => {
 
   const handleOpenCreateAccount = () => setCreateAccountOpen(true)
   const handleCloseCreateAccount = () => setCreateAccountOpen(false)
+  const [buttonProps, setButtonProps] = useState({ x: 0, y: 0 })
+
+  const [isHovered, setIsHovered] = useState(false)
 
   useEffect(() => {
     AOS.init({})
-    // AOS.refresh()
   }, [])
 
   const scrollToSection = (sectionId) => {
@@ -79,6 +104,11 @@ const LandingPage = () => {
     }
   }
 
+  const handleMouseMove = (e) => {
+    const rect = e.target.getBoundingClientRect()
+    setButtonProps({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+  }
+
   const scrollToTop = () => {
     AOS.refreshHard()
     window.scrollTo({
@@ -93,6 +123,7 @@ const LandingPage = () => {
 
   return (
     <>
+      {/* <CustomCursor hover={isHovered} /> */}
       <AppBar position="fixed" color="primary">
         <Toolbar style={{ justifyContent: "center", alignItems: "center" }}>
           {/* left section */}
@@ -101,9 +132,21 @@ const LandingPage = () => {
           >
             {sections.map((section) => (
               <Button
+                onMouseEnter={() => { setIsHovered(true) }}
+                onMouseLeave={() => {setIsHovered(false)}}
                 key={section.title}
                 color="inherit"
+                className={styles.buttonUnderlineCenter}
                 onClick={() => scrollToSection(section.id)}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    // cursor: 'none',
+                    "@media (hover: none)": {
+                      backgroundColor: "transparent",
+                    },
+                  },
+                }}
               >
                 {section.title}
               </Button>
@@ -130,10 +173,40 @@ const LandingPage = () => {
           <Box
             style={{ display: "flex", justifyContent: "flex-end", flex: "1" }}
           >
-            <Button color="inherit" onClick={handleOpenCreateAccount}>
+            <Button
+              color="inherit"
+              onMouseEnter={() => { setIsHovered(true) }}
+              onMouseLeave={() => {setIsHovered(false)}}
+              onClick={handleOpenCreateAccount}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  // cursor: 'none',
+                  "@media (hover: none)": {
+                    backgroundColor: "transparent",
+                  },
+                },
+              }}
+              className={styles.buttonUnderlineCenter}
+            >
               Create Account
             </Button>
-            <Button color="inherit" onClick={handleOpenLogin}>
+            <Button
+              color="inherit"
+              onMouseEnter={() => { setIsHovered(true) }}
+              onMouseLeave={() => {setIsHovered(false)}}
+              onClick={handleOpenLogin}
+              sx={{
+                "&:hover": {
+                  // cursor: 'none',
+                  backgroundColor: "transparent",
+                  "@media (hover: none)": {
+                    backgroundColor: "transparent",
+                  },
+                },
+              }}
+              className={styles.buttonUnderlineCenter}
+            >
               Login
             </Button>
           </Box>
@@ -160,7 +233,7 @@ const LandingPage = () => {
               variant="h2"
               component="h1"
               gutterBottom
-              sx={{ fontWeight: "bold" }}
+              sx={{ fontWeight: "bold", color: theme.palette.fontColor.main }}
             >
               Connect and study with Study Buddy
             </Typography>
@@ -171,17 +244,21 @@ const LandingPage = () => {
             <Box>
               <Button
                 variant="contained"
+                onMouseMove={handleMouseMove}
                 sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
+                onClick={handleOpenCreateAccount}
               >
                 Get Started
               </Button>
               <Button
                 variant="outlined"
+                onMouseMove={handleMouseMove}
                 sx={{
                   color: "black",
                   borderColor: "black",
                   "&:hover": { borderColor: "grey.900" },
                 }}
+                onClick={scrollToSection.bind(null, "about-us-section")}
               >
                 Learn More
               </Button>
@@ -280,16 +357,26 @@ const LandingPage = () => {
               justifyContent="center"
             >
               <Grid item xs={12} md={6}>
-                <Typography variant="h4" component="h3" gutterBottom>
+                <Typography
+                  variant="h4"
+                  component="h3"
+                  data-aos="zoom-out-left"
+                  gutterBottom
+                >
                   Unlock Your Potential with Study Buddy
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom>
+                <Typography variant="subtitle1" data-aos="fade-up" gutterBottom>
                   Study Buddy is the ultimate tool for effective learning and
                   networking. With Study Buddy, you can easily set up meetings,
                   join study sessions, and connect with like-minded individuals.
                 </Typography>
                 <Box sx={{ my: 4 }}>
-                  <Typography variant="h6" component="h4" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    component="h4"
+                    data-aos="zoom-out-right"
+                    gutterBottom
+                  >
                     Efficient Learning
                   </Typography>
                   <Typography variant="body1" gutterBottom>
@@ -306,7 +393,9 @@ const LandingPage = () => {
                   <Button variant="contained" sx={{ mr: 2 }}>
                     Learn More
                   </Button>
-                  <Button variant="outlined">Sign Up</Button>
+                  <Button variant="outlined" onClick={handleOpenCreateAccount}>
+                    Sign Up
+                  </Button>
                 </Box>
               </Grid>
               <Grid item xs={12} md={6}>
@@ -409,3 +498,119 @@ const LandingPage = () => {
 }
 
 export default LandingPage
+// import React, { useState } from "react";
+// import {
+//   AppBar,
+//   Toolbar,
+//   Button,
+//   Box,
+//   Typography,
+//   Container,
+//   Grid,
+//   Paper,
+// } from "@mui/material";
+// import { Image as ImageIcon } from "@mui/icons-material";
+// import {
+//   Star as StarIcon,
+//   AccountCircle as AccountCircleIcon,
+// } from "@mui/icons-material";
+// import { useTheme } from "@mui/material/styles";
+// import Login from "./Login";
+// import CreateAccount from "./CreateAccount";
+// import ReactFullpage from "@fullpage/react-fullpage";
+
+// const sections = [
+//   { title: "Home", id: "home-section" },
+//   { title: "About", id: "about-us-section" },
+//   { title: "Potential", id: "unlock-potential-section" },
+//   { title: "Customers", id: "customers-section" },
+//   { title: "Our Mission", id: "mission-section" },
+//   { title: "Contact", id: "contact-section" },
+// ];
+
+// const testimonials = [
+//   {
+//     review:
+//       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
+//     name: "Name Name",
+//     role: "Student, Baylor University",
+//   },
+//   {
+//     review:
+//       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
+//     name: "Name Name",
+//     role: "Student, Baylor University",
+//   },
+//   {
+//     review:
+//       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
+//     name: "Name Name",
+//     role: "Professor, Baylor University",
+//   },
+// ];
+
+// const LandingPage = () => {
+//   const theme = useTheme();
+//   const [loginOpen, setLoginOpen] = useState(false);
+//   const [createAccountOpen, setCreateAccountOpen] = useState(false);
+
+//   const handleOpenLogin = () => setLoginOpen(true);
+//   const handleCloseLogin = () => setLoginOpen(false);
+//   const handleOpenCreateAccount = () => setCreateAccountOpen(true);
+//   const handleCloseCreateAccount = () => setCreateAccountOpen(false);
+
+//   const FullPageOptions = {
+//     licenseKey: "test",
+//     scrollingSpeed: 1000,
+//     navigation: true,
+//     sectionsColor: sections.map(() => theme.palette.background.default),
+//     anchors: sections.map(section => section.id),
+//   };
+
+//   return (
+//     <ReactFullpage
+//       {...FullPageOptions}
+//       render={({ state, fullpageApi }) => (
+//         <ReactFullpage.Wrapper>
+//           <AppBar position="fixed" color="primary">
+//             <Toolbar style={{ justifyContent: "center", alignItems: "center" }}>
+//               <Box style={{ display: "flex", justifyContent: "flex-start", flex: "1" }}>
+//                 {sections.map((section, index) => (
+//                   <Button key={section.title} color="inherit" onClick={() => fullpageApi.moveTo(index + 1)}>
+//                     {section.title}
+//                   </Button>
+//                 ))}
+//               </Box>
+//               <Box style={{ display: "flex", justifyContent: "center", flex: "0 1 auto" }}>
+//                 <img
+//                   src="/StudyBuddyLogo Background Removed.png"
+//                   alt="Logo"
+//                   style={{ maxHeight: "50px", cursor: "pointer" }}
+//                   onClick={() => fullpageApi.moveTo(1)}
+//                 />
+//               </Box>
+//               <Box style={{ display: "flex", justifyContent: "flex-end", flex: "1" }}>
+//                 <Button color="inherit" onClick={handleOpenCreateAccount}>Create Account</Button>
+//                 <Button color="inherit" onClick={handleOpenLogin}>Login</Button>
+//               </Box>
+//             </Toolbar>
+//           </AppBar>
+
+//           {sections.map((section, index) => (
+//             <div className="section" key={section.id}>
+//               <Container maxWidth="lg" style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+//                 <Typography variant="h3">{section.title}</Typography>
+//                 {/* Additional content specific to each section can go here */}
+//               </Container>
+//             </div>
+//           ))}
+
+//           <Login open={loginOpen} onClose={handleCloseLogin} />
+//           <CreateAccount open={createAccountOpen} onClose={handleCloseCreateAccount} />
+//         </ReactFullpage.Wrapper>
+//       )}
+//     />
+//   );
+// };
+
+// export default LandingPage;
