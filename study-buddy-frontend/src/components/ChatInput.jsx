@@ -1,37 +1,42 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/utils/authSlice";
 import axios from "axios";
 import { API_URL } from "@/utils/config";
 import styles from "@/styles/Chat.module.css";
 
-const ChatInput = ({ currentUser }) => {
+const ChatInput = ({ user, selectedUser }) => {
   const [inputValue, setInputValue] = useState("");
-  const user = useSelector(selectUser)
-  const [userId, setUserid] = useState('')
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
   const sendMessage = async () => {
-    if (inputValue.trim() !== "") {
-      try {
-        const response = await axios.post(`${API_URL}/chat/send`, {
-          content: inputValue,
-          user_id: currentUser.id, // Assuming currentUser has an id property
-          receiver: currentUser.id /* Logic to determine receiver user */, // You need to determine the receiver user
-        });
+    if (!selectedUser) {
+      // setErrorMessage("Please select a user to send a message.");
+      return;
+    }
 
-        // Handle successful response if needed
-        console.log("Message sent successfully:", response.data);
+    if (inputValue.trim() === "") {
+      // setErrorMessage("Message content cannot be empty.");
+      return;
+    }
 
-        // Clear the input field after sending the message
-        setInputValue("");
-      } catch (error) {
-        // Handle errors from the server
-        console.error("Error sending message:", error);
-      }
+    try {
+      const response = await axios.post(`${API_URL}/chat/send`, {
+        user: user, // Assuming user is an object containing necessary user data
+        receiver: selectedUser, // Assuming selectedUser is an object containing necessary user data
+        content: inputValue.trim()
+      });
+
+      console.log("Message sent successfully:", response.data);
+
+      // Clear the input field after sending the message
+      setInputValue("");
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // setErrorMessage("Failed to send message. Please try again later.");
     }
   };
 
@@ -44,8 +49,9 @@ const ChatInput = ({ currentUser }) => {
         onChange={handleInputChange}
       />
       <div className={styles.Send}>
-        <button onClick={sendMessage}>Send</button>
+        <button onClick={sendMessage} style={{ borderRadius: "10px" }}>Send</button>
       </div>
+      {/*{errorMessage && <div className={styles.ErrorMessage}>{errorMessage}</div>}*/}
     </div>
   );
 };

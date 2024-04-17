@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<Messages, Long> {
 
-    List<Messages> findByChatId(Long chat_id);
+//    List<Messages> findByChatId(Long chat_id);
 
-    ResponseEntity<?> getByUser_idAndReceiver(Long s_id, Long r_id);
+//    ResponseEntity<?> getByUser_idAndReceiver(Long s_id, Long r_id);
 
 //    List<Messages> findBySenderId(Long senderId);
 //

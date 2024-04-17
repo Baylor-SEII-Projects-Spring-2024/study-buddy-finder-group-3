@@ -35,13 +35,13 @@ public class messageService {
         System.out.println("Message sent: " + message);
     }
 
-    public ResponseEntity<?> findMessageByUser(User senderUser, User receiverUser) {
-        User sender = userRepository.findByUsername(senderUser.username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        User receiver = userRepository.findByUsername(receiverUser.username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return messageRepository.getByUser_idAndReceiver(senderUser.id, receiver.id);
-    }
+//    public ResponseEntity<?> findMessageByUser(User senderUser, User receiverUser) {
+//        User sender = userRepository.findByUsername(senderUser.username)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        User receiver = userRepository.findByUsername(receiverUser.username)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        return messageRepository.getByUser_idAndReceiver(senderUser.id, receiver.id);
+//    }
 }

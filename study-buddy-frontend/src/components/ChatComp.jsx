@@ -5,13 +5,14 @@ import ChatInput from "@/components/ChatInput";
 import axios from "axios"; // Import Axios for making HTTP requests
 import { API_URL } from "@/utils/config"; // Assuming you have an API_URL constant
 
-const ChatComp = ({ user }) => {
+const ChatComp = ({ user, selectedUser }) => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/users/${user.id}`);
+        // Use the selected user's ID to fetch their data
+        const response = await axios.get(`${API_URL}/users/${selectedUser.id}`);
         setUserData(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -19,25 +20,27 @@ const ChatComp = ({ user }) => {
       }
     };
 
-    if (user) {
+    if (selectedUser) {
       fetchUserData();
+    } else {
+      console.error("No selected user");
     }
-  }, [user]);
+  }, [selectedUser]);
 
   return (
     <div className={styles.ChatComp}>
       <div className={styles.chatInfo}>
         {userData ? (
-          <span>{userData.username}</span>
+          <span>{selectedUser.username}</span>
         ) : (
-          <span>Loading user data...</span>
+          <span>Select a User to Chat With</span>
         )}
-        <div className={styles.chatIcons}>
-          {/* Display user icons or images */}
-        </div>
+        {/*<div className={styles.chatIcons}>*/}
+        {/*  /!*{selectedUser.profilePicture}*!/*/}
+        {/*</div>*/}
       </div>
-      <Messages />
-      <ChatInput />
+      <Messages user={user} selectedUser={selectedUser} />
+      <ChatInput user={user} selectedUser={selectedUser} />
     </div>
   );
 };
