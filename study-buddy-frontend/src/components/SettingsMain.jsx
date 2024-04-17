@@ -91,19 +91,26 @@ function SettingsMain() {
         //  add logic here to handle email updates setting change
     };
 
+    {/*
+        overflowY: 'auto',
+        marginLeft: '20vw',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '5px',
+        justifyContent: 'center',
+        height: '80vh',*/}
+
     return (
-        <Box
-            className="settings-page"
-            sx={{
-                overflowY: 'auto',
-                marginLeft: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                justifyContent: 'center', // Center items horizontally
-                height: '80vh',
-            }}
-        >
+    <Box
+        id="home-section"
+        sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "center",
+            height: "80vh",
+            padding: 2,
+        }}>
             <Typography variant="h4" gutterBottom>
                 Settings
             </Typography>
@@ -114,6 +121,7 @@ function SettingsMain() {
                 padding={2}
                 display="flex"
                 flexDirection="column"
+                width={"50vw"}
             >
                 <Typography variant="h8" gutterBottom>
                     Personal Information
@@ -137,6 +145,7 @@ function SettingsMain() {
                 padding={2}
                 display="flex"
                 flexDirection="column"
+                width={"50vw"}
             >
                 <Typography variant="h8" gutterBottom>
                     Appearance
@@ -167,6 +176,7 @@ function SettingsMain() {
                 padding={2}
                 display="flex"
                 flexDirection="column"
+                width={"50vw"}
 
             >
                 <Typography variant="h8" gutterBottom>
@@ -193,6 +203,7 @@ function SettingsMain() {
                 padding={2}
                 display="flex"
                 flexDirection="column"
+                width={"50vw"}
             >
                 <Typography variant="h8" gutterBottom>
                     Account and Privacy
@@ -213,12 +224,14 @@ function SettingsMain() {
                 </div>
             </Box>
 
-
         </Box>
+
+
     );
 
 
 }
+
 /*
 function SettingsMain() {
     const [selectedSetting, setSelectedSetting] = useState("Account");
@@ -237,7 +250,7 @@ function SettingsMain() {
     );
 }*/
 
-const SettingsOption = ({ title, description, value, onChange }) => {
+const SettingsOption = ({title, description, value, onChange}) => {
     return (
         <div className="settings-option">
             <h3>{title}</h3>
