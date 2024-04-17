@@ -162,47 +162,49 @@ function DisplayMeetings() {
 
   const handleOpenModal = async (meeting) => {
     //  attendeeUserIds is an array before proceeding
-    console.log('meeting ob', meeting);
-    const attendeeUserIds = meeting?.attendeeUserIds || [];
-  
+    console.log("meeting ob", meeting)
+    const attendeeUserIds = meeting?.attendeeUserIds || []
+
     const attendeeProfiles = await Promise.all(
       attendeeUserIds
-        .filter((id) => id !== user.id) 
+        .filter((id) => id !== user.id)
         .map(async (userId) => {
           try {
             const [profileResponse, isTutorResponse] = await Promise.all([
               axios.get(`${API_URL}/profile/${userId}`),
-              axios.get(`${API_URL}/users/${userId}/is-tutor`)
-            ]);
+              axios.get(`${API_URL}/users/${userId}/is-tutor`),
+            ])
             if (isTutorResponse.data == true) {
-              setTutorId(userId);
+              setTutorId(userId)
             }
-            console.log("isTutorResponse",isTutorResponse);
+            console.log("isTutorResponse", isTutorResponse)
             // if (isTutorResponse.data.isTutor) {
             //   response.data.isTutor = true;
             // }
-            console.log("profile res", profileResponse);
-            return profileResponse.data;
+            console.log("profile res", profileResponse)
+            return profileResponse.data
           } catch (error) {
-            console.error("Error fetching attendee info:", error);
-            return null; // null for errors fix later
+            console.error("Error fetching attendee info:", error)
+            return null // null for errors fix later
           }
         })
-    );
-  
+    )
+
     // filter out any null profiles resulting from errors
-    const validAttendeeProfiles = attendeeProfiles.filter((profile) => profile !== null);
-  
+    const validAttendeeProfiles = attendeeProfiles.filter(
+      (profile) => profile !== null
+    )
+
     setSelectedMeeting({
       ...meeting,
       attendeeProfiles: validAttendeeProfiles,
-    });
-  
-    setModalOpen(true);
-  };
-  
+    })
+
+    setModalOpen(true)
+  }
+
   const handleCloseModal = () => {
-    setTutorId(null);
+    setTutorId(null)
     setModalOpen(false)
     setSelectedMeeting(null)
   }
@@ -240,7 +242,8 @@ function DisplayMeetings() {
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
-          height: "50vh",
+          height: "30vh",
+          marginTop: "64px",
           padding: 2,
           boxSizing: "border-box",
           backgroundImage: "url('/home-gradient.webp')",
@@ -289,7 +292,7 @@ function DisplayMeetings() {
           </Button>
         </Box>
       </Box>
-      <Box id="meetings-section" sx={{ height: "100vh", pt: "64px" }}>
+      <Box id="meetings-section" sx={{ height: "100vh", pt: "64px", marginBottom: "64px" }}>
         <Typography variant="h4" component="h2" gutterBottom align="center">
           Your Meetings
         </Typography>
@@ -298,7 +301,7 @@ function DisplayMeetings() {
         </Typography>
         {/* need ot add fitlers  */}
         <Grid container spacing={4} sx={{ mt: 4 }}>
-          {meetings.map((meeting) => (
+          {meetings.slice(0, 6).map((meeting) => (
             <Grid
               item
               xs={12}
@@ -357,7 +360,7 @@ function DisplayMeetings() {
         </Grid>
       </Box>
       {/* beginning of rec meetings */}
-      <Box id="recommended-meetings" sx={{ height: "100vh" }}>
+      <Box id="recommended-meetings" sx={{ height: "100vh", pt:"64px", }}>
         <Typography variant="h4" component="h2" gutterBottom align="center">
           Recommended Meetings
         </Typography>

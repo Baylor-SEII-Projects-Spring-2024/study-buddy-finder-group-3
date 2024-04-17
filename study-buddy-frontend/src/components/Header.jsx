@@ -20,7 +20,6 @@ import MeetingModal from "./MeetingModal"
 
 const sections = [
   { title: "Home", id: "home-section" },
-  { title: "Meetings", id: "meetings-section" },
   { title: "Friends", id: "friends-section" },
 ]
 
@@ -29,16 +28,16 @@ function Header() {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null)
+  const [meetingsAnchorEl, setMeetingsAnchorEl] = useState(null)
+
   const [pendingInvitations, setPendingInvitations] = useState([])
   const user = useSelector(selectUser)
-  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [selectedMeeting, setSelectedMeeting] = useState(null)
 
   useEffect(() => {
     fetchPendingInvitations()
   }, [])
 
-
-  
   const fetchPendingInvitations = async () => {
     try {
       // Fetch pending invitations from backend API
@@ -60,6 +59,14 @@ function Header() {
     setSettingsAnchorEl(null)
   }
 
+  const handleMeetingsClick = (event) => {
+    setMeetingsAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseMeetingsMenu = () => {
+    setMeetingsAnchorEl(null)
+  }
+
   const navigateToSetting = (settingPath) => {
     router.push(settingPath)
     handleCloseSettingsMenu() // close the menu after navigation
@@ -75,6 +82,8 @@ function Header() {
     const section = document.getElementById(sectionId)
 
     if (section) {
+      handleCloseMeetingsMenu();
+      handleCloseSettingsMenu();
       const offset = 64
       const position =
         section.getBoundingClientRect().top + window.pageYOffset - offset
@@ -101,9 +110,9 @@ function Header() {
   }
 
   const handleNotificationClick = (event, meeting) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedMeeting(meeting);
-  };
+    setAnchorEl(event.currentTarget)
+    setSelectedMeeting(meeting)
+  }
 
   const handleCloseNotificationMenu = () => {
     setAnchorEl(null)
@@ -125,6 +134,33 @@ function Header() {
                 {section.title}
               </Button>
             ))}
+            <Button
+              color="inherit"
+              aria-controls="meetings-menu"
+              aria-haspopup="true"
+              onClick={handleMeetingsClick}
+            >
+              Meetings
+            </Button>
+            <Menu
+              id="meetings-menu"
+              anchorEl={meetingsAnchorEl}
+              open={Boolean(meetingsAnchorEl)}
+              onClose={handleCloseMeetingsMenu}
+            >
+              <MenuItem onClick={() => scrollToSection("meetings-section")}>
+                Upcoming Meetings
+              </MenuItem>
+              <MenuItem onClick={() => scrollToSection("recommended-meetings")}>
+                Recommended Meetings
+              </MenuItem>
+              <MenuItem
+                onClick={() => console.log("Navigate to settings/courses")}
+              >
+                View All Meetings
+              </MenuItem>
+            </Menu>
+
             <Button
               color="inherit"
               aria-controls="settings-menu"
