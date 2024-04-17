@@ -1,7 +1,181 @@
-import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
+import React, {useEffect, useState} from "react";
+import { Box, Typography, Avatar, Select, MenuItem, Link, Switch } from '@mui/material';
+import styles from "@/styles/ProfileDisplay.module.css";
+import axios from "axios";
+import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
+import { useSelector } from "react-redux"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { useRouter } from "next/router"
+import { API_URL } from "@/utils/config";
+import { toast } from "react-toastify";
+import {Title} from "@mui/icons-material";
 
+
+function SettingsMain() {
+    const [receiveEmails, setReceiveEmails] = useState(true);
+    const [darkMode, setDarkMode] = useState(false);
+    const token = useSelector(selectToken);
+    const user = useSelector(selectUser);
+    const router = useRouter();
+    const [profile, setProfile] = useState('');
+    const [userId, setUserId] = useState('');
+    const [editMode, setEditMode] = useState(false);
+    const [selectedCourses, setSelectedCourses] = useState([]);
+    const [theme, setTheme] = useState('light'); // State to track selected theme
+    const [notifications, setNotifications] = useState(false);
+    const [emails, setEmailUpdates] = useState(false);
+
+
+
+    useEffect(() => {
+        if (!token || !user) {
+            router.push('/');
+        }
+    }, [token, router]);
+
+    useEffect(() => {
+        if (user) {
+            setUserId(user.id);
+            fetchProfileInfo(user.id);
+        }
+    }, [user]);
+
+    const fetchProfileInfo = async (userId) => {
+        try {
+            const response = await axios.get(`${API_URL}/profile/${userId}`);
+
+            // Log the entire response data object
+            console.log("Response data:", response.data);
+
+            setProfile(response.data);
+
+            // Extract courses from the areaOfStudy field
+            let coursesArray = [];
+            if (response.data.areaOfStudy) {
+                if (typeof response.data.areaOfStudy === 'string') {
+                    // If areaOfStudy is a string, split it into an array
+                    coursesArray = response.data.areaOfStudy.split(',').map(course => course.trim());
+                } else if (Array.isArray(response.data.areaOfStudy)) {
+                    // If areaOfStudy is already an array, use it directly
+                    coursesArray = response.data.areaOfStudy;
+                }
+            }
+
+            setSelectedCourses(coursesArray);
+            console.log("User's initial courses are: ", response.data.areaOfStudy);
+            console.log(`Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
+        } catch (error) {
+            console.error("Error fetching profile info:", error);
+        }
+    };
+
+    // Handler for changing settings
+    const handleEmailsChange = () => {
+        setReceiveEmails(!receiveEmails);
+    };
+
+    const handleDarkModeChange = () => {
+        setDarkMode(!darkMode);
+    };
+    const handleThemeChange = (event) => {
+        setTheme(event.target.value);
+        // add logic here to switch the theme
+    };
+
+    const handleNotificationsChange = (event) => {
+        setNotifications(event.target.checked);
+        //  add logic here to handle notifications setting change
+    };
+    const handleEmailUpdatesChange = (event) => {
+        setEmailUpdates(event.target.checked);
+        //  add logic here to handle email updates setting change
+    };
+
+    return (
+        <Box
+            className="settings-page"
+            sx={{
+                overflowY: 'auto',
+                marginLeft: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '5px',
+                justifyContent: 'center', // Center items horizontally
+            }}
+        >
+            <Typography variant="h4" gutterBottom>
+                Settings
+            </Typography>
+            <Typography variant="h8" gutterBottom>
+                Personal Information
+            </Typography>
+            <div style={{display: 'flex', alignItems: 'flex-start'}}>
+                <Avatar alt="Profile Picture" src={profile.profilePictureUrl}
+                        style={{marginTop: '10px', marginBottom: '10px', marginRight: '10px'}}/>
+                <Typography id="profile-container-title" variant="h6" component={"h2"}>
+                    {profile.nameFirst} {profile.nameLast}
+                </Typography>
+            </div>
+
+            {/* Appearance  section */}
+            <Typography variant="h8" gutterBottom>
+                Appearance
+            </Typography>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <Typography variant="h8" gutterBottom style={{marginRight: '25vw'}}>
+                    Theme
+                </Typography>
+                <Select
+                    value={theme}
+                    onChange={handleThemeChange}
+                    style={{width: '150px', marginBottom: '10px'}}
+                >
+                    label="Receive Email Updates"
+                    <MenuItem value="light">Light</MenuItem>
+                    <MenuItem value="dark">Dark</MenuItem>
+                </Select>
+            </div>
+
+            {/* Notifications section */}
+            <Typography variant="h8" gutterBottom>
+                Notifications
+            </Typography>
+            <FormControlLabel
+                control={<Switch checked={notifications} onChange={handleNotificationsChange}/>}
+                label="Receive notifications"
+            />
+            <FormControlLabel
+                control={<Switch checked={emails} onChange={handleEmailUpdatesChange}/>}
+                label="Receive Email Updates"
+            />
+
+
+            {/* Account/Privacy section */}
+            <Typography variant="h8" gutterBottom>
+                Account and Privacy
+            </Typography>
+
+            <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                <Typography variant="h8" gutterBottom style={{ marginRight: '20px' }}>
+                    Account
+                </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    style={{marginTop: '20px'}}
+                >
+                    Edit
+                </Button>
+            </div>
+
+
+        </Box>
+);
+
+
+
+}
+/*
 function SettingsMain() {
     const [selectedSetting, setSelectedSetting] = useState("Account");
 
@@ -17,7 +191,19 @@ function SettingsMain() {
             {selectedSetting === "Help" && <HelpSettings />}
         </div>
     );
-}
+}*/
+
+const SettingsOption = ({ title, description, value, onChange }) => {
+    return (
+        <div className="settings-option">
+            <h3>{title}</h3>
+            <p>{description}</p>
+            <input type="checkbox" checked={value} onChange={onChange} />
+        </div>
+    );
+};
+
+
 
 function SettingsSidebar({ onSettingClick }) {
     return (
@@ -34,7 +220,7 @@ function SettingsSidebar({ onSettingClick }) {
     );
 }
 
-export default SettingsMain;
+
 
 function AccountSettings() {
     return (
@@ -97,3 +283,4 @@ function HelpSettings() {
         </Box>
     )
 }
+export default SettingsMain;

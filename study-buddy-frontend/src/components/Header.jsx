@@ -140,16 +140,16 @@ function Header() {
               open={Boolean(settingsAnchorEl)}
               onClose={handleCloseSettingsMenu}
             >
-              <MenuItem onClick={() => navigateToSetting("/settings/account")}>
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
                 Account
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/courses")}>
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
                 Courses
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/privacy")}>
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
                 Privacy
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/help")}>
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
                 Help
               </MenuItem>
             </Menu>
