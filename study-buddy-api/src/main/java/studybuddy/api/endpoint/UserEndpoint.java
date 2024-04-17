@@ -2,6 +2,7 @@ package studybuddy.api.endpoint;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
@@ -27,4 +28,18 @@ public class UserEndpoint {
     public User saveUser(@RequestBody User user) {
         return userService.saveUser(user);
     }
+
+    @GetMapping("/users/{id}/is-tutor")
+    public ResponseEntity<?> isUserATutor(@PathVariable Long id) {
+        User user = userService.findUser(id).orElse(null);
+        log.warn(user);
+        if (user == null) {
+            log.warn("User not found for ID: {}", id);
+            return ResponseEntity.notFound().build();
+        }
+
+        boolean isTutor = user.getIsTutor();
+        return ResponseEntity.ok(isTutor);
+    }
+
 }
