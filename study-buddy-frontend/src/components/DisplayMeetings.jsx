@@ -38,6 +38,7 @@ import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
+import Footer from "./Footer.jsx"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -233,6 +234,7 @@ function DisplayMeetings() {
   }
 
   return (
+    <>
     <Container>
       <Header />
       <Box
@@ -490,6 +492,7 @@ function DisplayMeetings() {
         onClose={handleCloseCreateMeeting}
       />
     </Container>
+    </>
   )
 }
 
