@@ -38,6 +38,7 @@ import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
+import Footer from "./Footer.jsx"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -52,6 +53,7 @@ function DisplayMeetings() {
   const [unreadNotifications, setUnreadNotifications] = useState(0)
   const [recommendedMeetings, setRecommendedMeetings] = useState()
   const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
+  const [tutorId, setTutorId] = useState(null)
   const router = useRouter()
 
   const handleInviteClick = () => {
@@ -160,29 +162,48 @@ function DisplayMeetings() {
   }, [dispatch, user, meetingsStatus])
 
   const handleOpenModal = async (meeting) => {
+    //  attendeeUserIds is an array before proceeding
+    console.log('meeting ob', meeting);
+    const attendeeUserIds = meeting?.attendeeUserIds || [];
+  
     const attendeeProfiles = await Promise.all(
-      meeting.attendeeUserIds
-        .filter((id) => id !== user.id)
+      attendeeUserIds
+        .filter((id) => id !== user.id) 
         .map(async (userId) => {
           try {
-            const response = await axios.get(`${API_URL}/profile/${userId}`)
-            console.log("profile res", response)
-            return response.data
+            const [profileResponse, isTutorResponse] = await Promise.all([
+              axios.get(`${API_URL}/profile/${userId}`),
+              axios.get(`${API_URL}/users/${userId}/is-tutor`)
+            ]);
+            if (isTutorResponse.data == true) {
+              setTutorId(userId);
+            }
+            console.log("isTutorResponse",isTutorResponse);
+            // if (isTutorResponse.data.isTutor) {
+            //   response.data.isTutor = true;
+            // }
+            console.log("profile res", profileResponse);
+            return profileResponse.data;
           } catch (error) {
-            console.error("Error fetching attendee info:", error)
-            return null
+            console.error("Error fetching attendee info:", error);
+            return null; // null for errors fix later
           }
         })
-    )
-
+    );
+  
+    // filter out any null profiles resulting from errors
+    const validAttendeeProfiles = attendeeProfiles.filter((profile) => profile !== null);
+  
     setSelectedMeeting({
       ...meeting,
-      attendeeProfiles: attendeeProfiles.filter((profile) => profile !== null),
-    })
-    setModalOpen(true)
-  }
-
+      attendeeProfiles: validAttendeeProfiles,
+    });
+  
+    setModalOpen(true);
+  };
+  
   const handleCloseModal = () => {
+    setTutorId(null);
     setModalOpen(false)
     setSelectedMeeting(null)
   }
@@ -211,6 +232,7 @@ function DisplayMeetings() {
   }
 
   return (
+    <>
     <Container>
       <Header />
       <Box
@@ -438,6 +460,7 @@ function DisplayMeetings() {
           open={modalOpen}
           handleClose={handleCloseModal}
           updateMeetingInParent={updateMeetingInState}
+          tutorId={tutorId}
         />
       )}
       <Dialog
@@ -466,6 +489,7 @@ function DisplayMeetings() {
         onClose={handleCloseCreateMeeting}
       />
     </Container>
+    </>
   )
 }
 
