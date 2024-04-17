@@ -20,6 +20,7 @@ import "aos/dist/aos.css"
 import { useTheme } from "@mui/material/styles"
 import Login from "./Login"
 import CreateAccount from "./CreateAccount"
+import Footer from "./Footer"
 import styles from "@/styles/landing.module.css"
 import CustomCursor from "@/utils/customCursor"
 
@@ -487,12 +488,15 @@ const LandingPage = () => {
           </Container>
         </Box>
       </div>
+      
       <Login open={loginOpen} onClose={handleCloseLogin} />
       <CreateAccount
         open={createAccountOpen}
         onClose={handleCloseCreateAccount}
       />
-      {/* footer */}
+      <div>
+        <Footer/>
+      </div>
     </>
   )
 }

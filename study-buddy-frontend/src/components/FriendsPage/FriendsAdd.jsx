@@ -112,7 +112,7 @@ function FriendsAdd() {
                 placement === "bottom" ? "center top" : "center bottom",
             }}
           >
-            <Paper style={{ backgroundColor: "#f7f0fa" }}>
+            <Paper style={{ backgroundColor: "" }}>
               <ClickAwayListener onClickAway={handleClose}>
                 <List>
                   {friends.map((user) => (
