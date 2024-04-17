@@ -16,7 +16,8 @@ import {
   IconButton,
   TextField,
   Button,
-  MenuItem
+  MenuItem,
+  Rating,
 } from "@mui/material"
 import { API_URL } from "@/utils/config"
 import axios from "axios"
@@ -33,6 +34,7 @@ function MeetingModal({
   handleClose,
   updateMeetingInParent,
   isInvitation = false,
+  tutorId
 }) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
@@ -47,11 +49,12 @@ function MeetingModal({
   )
   const [editedLink, setEditedLink] = useState(meeting?.link || "")
   const user = useSelector(selectUser)
-  const [showReviewFields, setShowReviewFields] = useState(false);
-  const [rating, setRating] = useState(5) // Default rating value, can be adjusted
+  const [showReviewFields, setShowReviewFields] = useState(false)
+  const [rating, setRating] = useState(0)
   const [comment, setComment] = useState("")
   const hasMeetingStarted = new Date() > new Date(meeting?.date)
-
+  console.log("user in meeting modal", user);
+  console.log("tutorid in modal click", tutorId);
   useEffect(() => {
     if (!open) {
       setEditMode(false)
@@ -121,22 +124,25 @@ function MeetingModal({
     }
     setEditMode(!editMode)
   }
-  console.log("meeting", meeting);
+  console.log("meeting", meeting)
 
   const submitReview = async () => {
     try {
-      const response = await axios.post(`${API_URL}/tutor/${meeting.tutorId}/review`, {
-        userId: user.id,
-        rating: rating,
-        comment: comment,
-      });
-      toast.success("Review submitted successfully");
-      setShowReviewFields(false); // hide review fields after submission
+      const response = await axios.post(
+        `${API_URL}/tutor/${tutorId}/review`,
+        {
+          userId: user.id,
+          rating: rating,
+          comment: comment,
+        }
+      )
+      toast.success("Review submitted successfully")
+      setShowReviewFields(false) // hide review fields after submission
     } catch (error) {
-      toast.error("Failed to submit review");
-      console.error("Failed to submit review:", error);
+      toast.error("Failed to submit review")
+      console.error("Failed to submit review:", error)
     }
-  };
+  }
 
   const handleAccept = async () => {
     try {
@@ -319,8 +325,12 @@ function MeetingModal({
             user={selectedUser}
           />
         )}
-        {hasMeetingStarted && !showReviewFields && (
-          <Button variant="contained" color="primary" onClick={() => setShowReviewFields(true)}>
+        {hasMeetingStarted && !showReviewFields && tutorId !== null && tutorId !== undefined && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShowReviewFields(true)}
+          >
             Leave a Review
           </Button>
         )}
@@ -330,21 +340,15 @@ function MeetingModal({
             <Typography variant="h6" gutterBottom>
               Leave a Review
             </Typography>
-            <TextField
-              fullWidth
-              select
-              label="Rating"
+            <Typography component="legend">Rating</Typography>
+            <Rating
+              name="simple-controlled"
               value={rating}
-              onChange={(e) => setRating(e.target.value)}
-              helperText="Please select your rating"
-              sx={{ mb: 2 }}
-            >
-              {[1, 2, 3, 4, 5].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                setRating(newValue)
+              }}
+            />
+            <Typography sx={{ mt: 2 }}>Please select your rating</Typography>
             <TextField
               fullWidth
               label="Comment"
@@ -362,8 +366,7 @@ function MeetingModal({
         )}
       </Box>
     </Modal>
-  );
-
+  )
 }
 
 export default MeetingModal

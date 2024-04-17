@@ -126,9 +126,21 @@ public class meetingService {
     public List<Meeting> getAcceptedMeetingsByUserId(Long userId) {
         List<UserMeeting> acceptedUserMeetings = userMeetingRepository.findByUserIdAndInviteStatus(userId, "Accepted");
 
-        return acceptedUserMeetings.stream()
-                .map(UserMeeting::getMeeting) // get meeting from obj
-                .distinct() // remove dupes
+        // convert and remove dupes
+        List<Meeting> meetings = acceptedUserMeetings.stream()
+                .map(UserMeeting::getMeeting) // extract meeting
+                .distinct()
                 .collect(Collectors.toList());
+
+        // for each attach attending
+        meetings.forEach(meeting -> {
+            List<UserMeeting> userMeetings = userMeetingRepository.findByMeetingId(meeting.getId());
+            List<Long> attendeeUserIds = userMeetings.stream()
+                    .map(um -> um.getUser().getId()) // get id from user meetingobj
+                    .collect(Collectors.toList());
+            meeting.setAttendeeUserIds(attendeeUserIds);
+        });
+
+        return meetings;
     }
 }

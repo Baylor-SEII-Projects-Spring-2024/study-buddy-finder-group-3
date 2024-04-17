@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import '@/styles/globals.css'
+import CustomCursor from '@/utils/customCursor';
 
 // Initialize Redux
 let initialState = {};
@@ -20,6 +21,7 @@ let reduxStore = buildStore(initialState);
 export default function App({ Component, pageProps }) {
   return (
     <>
+    {/* <CustomCursor/> */}
     <ReduxProvider store={reduxStore}>
       <AppCacheProvider>
         <Head>
