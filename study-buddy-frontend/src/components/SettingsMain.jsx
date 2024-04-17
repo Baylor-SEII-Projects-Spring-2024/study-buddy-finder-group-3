@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Box, Typography, Avatar, Select, MenuItem, Link, Switch } from '@mui/material';
+import { Box, Typography, Avatar, Select, MenuItem, Link, Switch, Divider } from '@mui/material';
 import styles from "@/styles/ProfileDisplay.module.css";
 import axios from "axios";
 import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
@@ -101,77 +101,121 @@ function SettingsMain() {
                 flexDirection: 'column',
                 gap: '5px',
                 justifyContent: 'center', // Center items horizontally
+                height: '80vh',
             }}
         >
             <Typography variant="h4" gutterBottom>
                 Settings
             </Typography>
-            <Typography variant="h8" gutterBottom>
-                Personal Information
-            </Typography>
-            <div style={{display: 'flex', alignItems: 'flex-start'}}>
-                <Avatar alt="Profile Picture" src={profile.profilePictureUrl}
-                        style={{marginTop: '10px', marginBottom: '10px', marginRight: '10px'}}/>
-                <Typography id="profile-container-title" variant="h6" component={"h2"}>
-                    {profile.nameFirst} {profile.nameLast}
+            <Box
+                border={1}
+                borderColor="primary.main"
+                borderRadius={8}
+                padding={2}
+                display="flex"
+                flexDirection="column"
+            >
+                <Typography variant="h8" gutterBottom>
+                    Personal Information
                 </Typography>
-            </div>
+                <Divider/>
+                <div style={{display: 'flex', alignItems: 'flex-start'}}>
+                    <Avatar alt="Profile Picture" src={profile.profilePictureUrl}
+                            style={{marginTop: '10px', marginBottom: '10px', marginRight: '10px'}}/>
+                    <Typography id="profile-container-title" variant="h6" component={"h2"}>
+                        {profile.nameFirst} {profile.nameLast}
+                    </Typography>
+                </div>
+            </Box>
+            <br/>
 
             {/* Appearance  section */}
-            <Typography variant="h8" gutterBottom>
-                Appearance
-            </Typography>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <Typography variant="h8" gutterBottom style={{marginRight: '25vw'}}>
-                    Theme
+            <Box
+                border={1}
+                borderColor="primary.main"
+                borderRadius={8}
+                padding={2}
+                display="flex"
+                flexDirection="column"
+            >
+                <Typography variant="h8" gutterBottom>
+                    Appearance
                 </Typography>
-                <Select
-                    value={theme}
-                    onChange={handleThemeChange}
-                    style={{width: '150px', marginBottom: '10px'}}
-                >
-                    label="Receive Email Updates"
-                    <MenuItem value="light">Light</MenuItem>
-                    <MenuItem value="dark">Dark</MenuItem>
-                </Select>
-            </div>
+                <Divider/>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <Typography variant="h8" gutterBottom style={{marginRight: '25vw'}}>
+                        Theme
+                    </Typography>
+                    <Select
+                        value={theme}
+                        onChange={handleThemeChange}
+                        style={{width: '150px', marginBottom: '10px'}}
+                    >
+                        label="Receive Email Updates"
+                        <MenuItem value="light">Light</MenuItem>
+                        <MenuItem value="dark">Dark</MenuItem>
+                    </Select>
+                </div>
+            </Box>
+            <br/>
 
             {/* Notifications section */}
-            <Typography variant="h8" gutterBottom>
-                Notifications
-            </Typography>
-            <FormControlLabel
-                control={<Switch checked={notifications} onChange={handleNotificationsChange}/>}
-                label="Receive notifications"
-            />
-            <FormControlLabel
-                control={<Switch checked={emails} onChange={handleEmailUpdatesChange}/>}
-                label="Receive Email Updates"
-            />
+            <Box
+                border={1}
+                borderColor="primary.main"
+                borderRadius={8}
+                padding={2}
+                display="flex"
+                flexDirection="column"
+
+            >
+                <Typography variant="h8" gutterBottom>
+                    Notifications
+                </Typography>
+                <Divider/>
+                <FormControlLabel
+                    control={<Switch checked={notifications} onChange={handleNotificationsChange}/>}
+                    label="Receive notifications"
+                />
+                <FormControlLabel
+                    control={<Switch checked={emails} onChange={handleEmailUpdatesChange}/>}
+                    label="Receive Email Updates"
+                />
+            </Box>
+            <br/>
 
 
             {/* Account/Privacy section */}
-            <Typography variant="h8" gutterBottom>
-                Account and Privacy
-            </Typography>
-
-            <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                <Typography variant="h8" gutterBottom style={{ marginRight: '20px' }}>
-                    Account
+            <Box
+                border={1}
+                borderColor="primary.main"
+                borderRadius={8}
+                padding={2}
+                display="flex"
+                flexDirection="column"
+            >
+                <Typography variant="h8" gutterBottom>
+                    Account and Privacy
                 </Typography>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    style={{marginTop: '20px'}}
-                >
-                    Edit
-                </Button>
-            </div>
+                <Divider/>
+
+                <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    <Typography variant="h8" gutterBottom style={{marginRight: '20px'}}>
+                        Account
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={{marginTop: '20px'}}
+                    >
+                        Edit
+                    </Button>
+                </div>
+            </Box>
 
 
         </Box>
-);
-
+    );
 
 
 }
