@@ -75,6 +75,27 @@ function CreateAccount({ open, onClose }) {
       toast.error("Password cannot be empty");
       return;
     }
+    const numberRegex = /\d/;
+    if (!numberRegex.test(password)) {
+      toast.error("Password must contain at least one number");
+      return;
+    }
+    const uppercaseRegex = /[A-Z]/;
+    if (!uppercaseRegex.test(password)) {
+      toast.error("Password must contain at least one uppercase character");
+      return;
+    }
+    const lowercaseRegex = /[a-z]/;
+    if (!lowercaseRegex.test(password)) {
+      toast.error("Password must contain at least one uppercase character");
+      return;
+    }
+    const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    if (!specialCharRegex.test(password)) {
+      toast.error("Password must contain at least one special character");
+      return;
+    }
+
     const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if(!emailRegex.test(email)){
       toast.error("Invalid email address format");
