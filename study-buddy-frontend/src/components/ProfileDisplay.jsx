@@ -26,9 +26,11 @@ function ProfileDisplay() {
     const [userId, setUserId] = useState('');
     const [editMode, setEditMode] = useState(false);
     const [selectedCourses, setSelectedCourses] = useState([]);
+    const [selectedTime, setSelectedTime] = useState('');
+    const [selectedMeetingType, setSelectedMeetingType] = useState('');
     const theme = useTheme()
     const imagePath = avatarImage;
-    console.log(avatarImage);
+    // console.log(avatarImage);
 
     useEffect(() => {
         if (!token || !user) {
@@ -45,7 +47,7 @@ function ProfileDisplay() {
 
     const fetchProfileInfo = async (userId) => {
         try {
-            console.log("API_URL: ", API_URL);
+            // console.log("API_URL: ", API_URL);
             const response = await axios.get(`${API_URL}/profile/${userId}`);
             setProfile(response.data);
 
@@ -76,7 +78,10 @@ function ProfileDisplay() {
                 firstName: profile.nameFirst,
                 lastName: profile.nameLast,
                 courses: selectedCourses.join(', '),
+                prefTime: selectedTime,
+                prefMeetingType: selectedMeetingType,
             };
+            console.log(updatedProfile);
 
             const response = await axios.put(`${API_URL}/auth/updateProfile/${userId}`, updatedProfile, {
                 headers: {
@@ -111,6 +116,24 @@ function ProfileDisplay() {
         }
     };
 
+    const handlePrefTimeChange = (event) => {
+        const { name, checked } = event.target;
+        if (checked) {
+            setSelectedTime(name);
+        } else {
+            setSelectedTime('');
+        }
+    };
+
+    const handleMeetingTypeChange = (event) => {
+        const { name, checked } = event.target;
+        if (checked) {
+            setSelectedMeetingType(name);
+        } else {
+            setSelectedMeetingType('');
+        }
+    };
+
     return (
         <Box className={styles.profileContainer}
              display="flex" flexDirection="column"
@@ -120,22 +143,6 @@ function ProfileDisplay() {
                  borderColor: theme.palette.primary.main
              }}
         >
-            <Box
-                sx={{
-                    borderRadius: "10px",
-                    overflow: "hidden",
-                    position: "absolute", // or "fixed" if needed
-                    top: -60,
-                    left: -50,
-                    width: "200%",
-                    height: "300px",
-                    backgroundColor: theme.palette.secondary.main,
-                    border: "1px solid",
-                    borderColor: theme.palette.primary.main,
-                    zIndex: -1 // Set lower zIndex to appear behind other elements
-                }}
-            >
-            </Box>
             <div className={styles.profileHeader}>
                 <Avatar
                     // src={profile.profilePictureUrl}
@@ -302,12 +309,12 @@ function ProfileDisplay() {
                 <div className={styles.coursesContainer}>
                     <Typography variant="subtitle1">Time Preference:</Typography>
                     <FormControlLabel
-                        control={<Checkbox checked={selectedCourses.includes("Morning")} onChange={handleCourseChange} name="Morning" />}
+                        control={<Checkbox checked={selectedTime === "morning"} onChange={handlePrefTimeChange} name="morning" />}
                         label="Morning"
                         disabled={!editMode}
                     />
                     <FormControlLabel
-                        control={<Checkbox checked={selectedCourses.includes("Evening")} onChange={handleCourseChange} name="Evening" />}
+                        control={<Checkbox checked={selectedTime === "evening"} onChange={handlePrefTimeChange} name="evening" />}
                         label="Evening"
                         disabled={!editMode}
                     />
@@ -327,12 +334,12 @@ function ProfileDisplay() {
                 <div className={styles.coursesContainer}>
                     <Typography variant="subtitle1">Meeting Type Preference:</Typography>
                     <FormControlLabel
-                        control={<Checkbox checked={selectedCourses.includes("Physical")} onChange={handleCourseChange} name="Physical" />}
+                        control={<Checkbox checked={selectedMeetingType === "physical"} onChange={handleMeetingTypeChange} name="physical" />}
                         label="Physical"
                         disabled={!editMode}
                     />
                     <FormControlLabel
-                        control={<Checkbox checked={selectedCourses.includes("Virtual")} onChange={handleCourseChange} name="Virtual" />}
+                        control={<Checkbox checked={selectedMeetingType === "virtual"} onChange={handleMeetingTypeChange} name="virtual" />}
                         label="Virtual"
                         disabled={!editMode}
                     />

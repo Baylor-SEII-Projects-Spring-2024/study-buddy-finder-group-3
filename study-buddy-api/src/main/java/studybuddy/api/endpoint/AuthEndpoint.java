@@ -123,7 +123,9 @@ public class AuthEndpoint {
                         "namefirst = ?, " +
                         "namelast = ?, " +
                         //"istutor = ?, " +
-                        "username = ? " +
+                        "username = ?, " +
+                        "pref_meeting_type = ?, " +
+                        "pref_time = ? " +
                         "WHERE user_id = ?",
                 userRequest.getEmail(),
                 //hashedPassword,
@@ -132,6 +134,8 @@ public class AuthEndpoint {
                 userRequest.getLastName(),
                 //userRequest.getIsTutor(),
                 userRequest.getUsername(),
+                userRequest.getPrefMeetingType(),
+                userRequest.getPrefTime(),
                 userId);
 
         return true;
@@ -147,6 +151,8 @@ public class AuthEndpoint {
         private String email;
         private Boolean isTutor;
         private String courses;
+        private String prefTime;
+        private String prefMeetingType;
 
         public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
             this.username = username;
@@ -183,5 +189,8 @@ public class AuthEndpoint {
 
         public String getCourses() { return courses; }
 
+        public String getPrefTime() { return prefTime; }
+
+        public String getPrefMeetingType() { return prefMeetingType; }
     }
 }
