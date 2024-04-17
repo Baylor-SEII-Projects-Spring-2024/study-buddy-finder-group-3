@@ -141,17 +141,14 @@ function Header() {
               onClose={handleCloseSettingsMenu}
             >
 
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
+                General
+              </MenuItem>
               <MenuItem onClick={() => navigateToSetting("/profile/")}>
                 Account
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings")}>
+              <MenuItem onClick={() => navigateToSetting("/courses")}>
                 Courses
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings")}>
-                Privacy
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings")}>
-                Help
               </MenuItem>
             </Menu>
           </Box>

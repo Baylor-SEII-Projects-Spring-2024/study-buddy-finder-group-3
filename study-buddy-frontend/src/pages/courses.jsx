@@ -6,15 +6,12 @@ import ProfileDisplay from "@/components/ProfileDisplay"
 import landingstyles from "@/styles/landing.module.css"
 import Box from "@mui/material/Box"
 
-function settings() {
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <Header />
-      <Box sx={{ display: "flex", flexGrow: 1, marginTop: "80px" }}>
-        <SettingsMain />
-      </Box>
-    </Box>
-  )
+function courses() {
+    return (
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+            <Header />
+        </Box>
+    )
 }
 
-export default settings
+export default courses

@@ -24,6 +24,7 @@ function SettingsMain() {
     const [theme, setTheme] = useState('light'); // State to track selected theme
     const [notifications, setNotifications] = useState(false);
     const [emails, setEmailUpdates] = useState(false);
+    const [accountType, setAccountType] = useState('Student'); // change to current type
 
 
 
@@ -91,6 +92,12 @@ function SettingsMain() {
         //  add logic here to handle email updates setting change
     };
 
+    const handleAccountTypeChange = (event) => {
+        setAccountType(event.target.checked);
+        //  add logic here to handle email updates setting change
+    };
+
+
     {/*
         overflowY: 'auto',
         marginLeft: '20vw',
@@ -101,13 +108,16 @@ function SettingsMain() {
         height: '80vh',*/}
 
     return (
-    <Box
+
+
+        <Box
         id="home-section"
         sx={{
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
             justifyContent: "center",
+            marginLeft: '25vw',
             height: "80vh",
             padding: 2,
         }}>
@@ -151,14 +161,15 @@ function SettingsMain() {
                     Appearance
                 </Typography>
                 <Divider/>
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <Typography variant="h8" gutterBottom style={{marginRight: '25vw'}}>
+                <br/>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <Typography variant="h8" gutterBottom style={{marginLeft: '5vh'}}>
                         Theme
                     </Typography>
                     <Select
                         value={theme}
                         onChange={handleThemeChange}
-                        style={{width: '150px', marginBottom: '10px'}}
+                        style={{width: '150px', marginRight: '5vh'}}
                     >
                         label="Receive Email Updates"
                         <MenuItem value="light">Light</MenuItem>
@@ -186,10 +197,14 @@ function SettingsMain() {
                 <FormControlLabel
                     control={<Switch checked={notifications} onChange={handleNotificationsChange}/>}
                     label="Receive notifications"
+                    labelPlacement="start"
+                    style={{ justifyContent: "space-between", paddingRight: "20px" }}
                 />
                 <FormControlLabel
                     control={<Switch checked={emails} onChange={handleEmailUpdatesChange}/>}
                     label="Receive Email Updates"
+                    labelPlacement="start"
+                    style={{ justifyContent: "space-between", paddingRight: "20px" }}
                 />
             </Box>
             <br/>
@@ -210,17 +225,37 @@ function SettingsMain() {
                 </Typography>
                 <Divider/>
 
-                <div style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                    <Typography variant="h8" gutterBottom style={{marginRight: '20px'}}>
-                        Account
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    marginBottom: '10px',
+                    justifyContent: 'space-between'
+                }}>
+                    <Typography variant="h8" gutterBottom style={{marginLeft: '5vh'}}>
+                        Profile
                     </Typography>
                     <Button
                         variant="contained"
                         color="primary"
-                        style={{marginTop: '20px'}}
+                        style={{marginRight: '5vh'}}
+                        onClick={() => router.push("/profile/")}
                     >
                         Edit
                     </Button>
+                </div>
+
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <Typography variant="h8" gutterBottom style={{marginLeft: '5vh'}}>
+                        Account type
+                    </Typography>
+                    <Select
+                        value={theme}
+                        onChange={handleAccountTypeChange}
+                        style={{width: '150px', marginRight: '5vh'}}
+                    >
+                        <MenuItem value="Tutor">Tutor</MenuItem>
+                        <MenuItem value="Student">Student</MenuItem>
+                    </Select>
                 </div>
             </Box>
 
