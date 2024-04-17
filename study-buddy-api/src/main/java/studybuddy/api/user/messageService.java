@@ -1,5 +1,6 @@
 package studybuddy.api.user;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,7 +25,7 @@ public class messageService {
 
 
         // Create a new message object
-        Messages message = new Messages(0, messageContent, sender, receiver);
+        Messages message = new Messages(messageContent, sender, receiver);
         //message.setTimestamp();
 
         // Save the message
@@ -34,8 +35,13 @@ public class messageService {
         System.out.println("Message sent: " + message);
     }
 
-    public Optional<Messages> findMessage(Long messageId) {
-        return messageRepository.findById(messageId);
-    }
+    public ResponseEntity<?> findMessageByUser(User senderUser, User receiverUser) {
+        User sender = userRepository.findByUsername(senderUser.username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        User receiver = userRepository.findByUsername(receiverUser.username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return messageRepository.getByUser_idAndReceiver(senderUser.id, receiver.id);
+    }
 }

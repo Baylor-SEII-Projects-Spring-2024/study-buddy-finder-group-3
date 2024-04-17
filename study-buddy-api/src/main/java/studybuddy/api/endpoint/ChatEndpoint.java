@@ -3,11 +3,9 @@ package studybuddy.api.endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.Messages;
+import studybuddy.api.user.User;
 
 @RestController
 @RequestMapping("/chat")
@@ -33,6 +31,9 @@ public class ChatEndpoint {
         }
     }
 
-
+//    @GetMapping("/getChat")
+//    public ResponseEntity<?> getChat() {
+//        return messageService.findMessageByUser(User s, User r);
+//    }
 
 }

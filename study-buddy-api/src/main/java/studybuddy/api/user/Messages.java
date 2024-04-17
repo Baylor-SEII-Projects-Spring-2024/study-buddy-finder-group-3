@@ -16,6 +16,11 @@ public class Messages {
 
     }
 
+    public Messages(String content, User user_id, User receiver) {
+        this.content = content;
+        this.user_id = user_id;
+        this.receiver = receiver;
+    }
     public Messages(long id, String content, User user_id, User receiver) {
         this.id = id;
         this.content = content;
@@ -37,6 +42,7 @@ public class Messages {
     @ManyToOne //User that sent the message
     @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_FROM_USER_ID"))
     User user_id;
+
 
     @ManyToOne //Chat message was sent too
     @JoinColumn(name = "RECEIVER_ID", referencedColumnName = "RECEIVER_ID", foreignKey = @ForeignKey(name = "FK_TO_CHAT_ID"))
