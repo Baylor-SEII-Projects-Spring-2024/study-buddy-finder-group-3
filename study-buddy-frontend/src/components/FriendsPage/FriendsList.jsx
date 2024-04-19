@@ -41,11 +41,11 @@ export default function FriendsList() {
     setOpen(true)
   }
 
-  useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
-  }, [token, router])
+  // useEffect(() => {
+  //   if (!token || !user) {
+  //     router.push("/")
+  //   }
+  // }, [token, router])
 
   useEffect(() => {
     if (user) {

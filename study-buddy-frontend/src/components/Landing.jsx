@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, containerRef } from "react"
+import { useRouter } from "next/router"
 import {
   AppBar,
   Toolbar,
@@ -23,6 +24,9 @@ import CreateAccount from "./CreateAccount"
 import Footer from "./Footer"
 import styles from "@/styles/landing.module.css"
 import CustomCursor from "@/utils/customCursor"
+import { useSelector } from "react-redux"
+import { selectToken } from "@/utils/authSlice"
+import ChaseButton from "./ChaseButton"
 
 const sections = [
   { title: "Home", id: "home-section" },
@@ -85,6 +89,27 @@ const LandingPage = () => {
   const [buttonProps, setButtonProps] = useState({ x: 0, y: 0 })
 
   const [isHovered, setIsHovered] = useState(false)
+
+  // const router = useRouter();
+//   const token = useSelector(selectToken);
+//   const [isCheckingToken, setIsCheckingToken] = useState(true);
+
+//   useEffect(() => {
+//       const timer = setTimeout(() => {
+//           setIsCheckingToken(false); 
+//       }, 1000);  
+//       if (token){
+//         router.push("/home")
+//       }
+//       return () => clearTimeout(timer);
+//   }, []);
+
+//   useEffect(() => {
+//     if (token){
+//       router.push("/home")
+//     }
+// }, [token, isCheckingToken, router]);
+
 
   useEffect(() => {
     AOS.init({})
@@ -243,26 +268,25 @@ const LandingPage = () => {
               schedule meetings, and ace your exams.
             </Typography>
             <Box>
-              <Button
-                variant="contained"
-                onMouseMove={handleMouseMove}
-                sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
+              <ChaseButton
+                // variant="contained"
+                // onMouseMove={handleMouseMove}
+                // sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
                 onClick={handleOpenCreateAccount}
               >
                 Get Started
-              </Button>
-              <Button
-                variant="outlined"
-                onMouseMove={handleMouseMove}
-                sx={{
-                  color: "black",
-                  borderColor: "black",
-                  "&:hover": { borderColor: "grey.900" },
-                }}
+              </ChaseButton>
+              <ChaseButton
+                // variant="outlined"
+                // sx={{
+                //   color: "black",
+                //   borderColor: "black",
+                //   "&:hover": { borderColor: "grey.900" },
+                // }}
                 onClick={scrollToSection.bind(null, "about-us-section")}
               >
                 Learn More
-              </Button>
+              </ChaseButton>
             </Box>
           </Box>
         </div>
@@ -270,7 +294,7 @@ const LandingPage = () => {
 
       {/* About Us section */}
       <div
-        data-aos-duration="1000" //  duration in milliseconds
+        data-aos-duration="1000" //durat  ion in milliseconds
       >
         <Box
           id="about-us-section"
