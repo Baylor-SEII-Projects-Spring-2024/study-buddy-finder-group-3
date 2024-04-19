@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import FriendsSidebar from '@/components/FriendsPage/FriendsSidebar';
 import { useAuth } from '@/utils/useAuth';
+import { useTheme } from '@emotion/react';
 
 function Friends() {
+  const theme = useTheme();
   const isCheckingToken = useAuth();
   const [progress, setProgress] = useState(0);
 
@@ -32,7 +34,7 @@ function Friends() {
     return () => clearInterval(timer);
   }, [isCheckingToken]);
 
-  // if (isCheckingToken) {
+  if (isCheckingToken) {
     return (
       <Box sx={{
         display: 'flex',
@@ -55,13 +57,13 @@ function Friends() {
         />
       </Box>
     );
-  // }
+  }
 
-  // return (
-  //   <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-  //     <FriendsSidebar />
-  //   </Box>
-  // );
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <FriendsSidebar />
+    </Box>
+  );
 }
 
 export default Friends;

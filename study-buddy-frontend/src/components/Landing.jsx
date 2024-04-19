@@ -26,6 +26,8 @@ import styles from "@/styles/landing.module.css"
 import CustomCursor from "@/utils/customCursor"
 import { useSelector } from "react-redux"
 import { selectToken } from "@/utils/authSlice"
+import ChaseButton from "./ChaseButton"
+
 const sections = [
   { title: "Home", id: "home-section" },
   { title: "About", id: "about-us-section" },
@@ -266,26 +268,25 @@ const LandingPage = () => {
               schedule meetings, and ace your exams.
             </Typography>
             <Box>
-              <Button
-                variant="contained"
-                onMouseMove={handleMouseMove}
-                sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
+              <ChaseButton
+                // variant="contained"
+                // onMouseMove={handleMouseMove}
+                // sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
                 onClick={handleOpenCreateAccount}
               >
                 Get Started
-              </Button>
-              <Button
-                variant="outlined"
-                onMouseMove={handleMouseMove}
-                sx={{
-                  color: "black",
-                  borderColor: "black",
-                  "&:hover": { borderColor: "grey.900" },
-                }}
+              </ChaseButton>
+              <ChaseButton
+                // variant="outlined"
+                // sx={{
+                //   color: "black",
+                //   borderColor: "black",
+                //   "&:hover": { borderColor: "grey.900" },
+                // }}
                 onClick={scrollToSection.bind(null, "about-us-section")}
               >
                 Learn More
-              </Button>
+              </ChaseButton>
             </Box>
           </Box>
         </div>
@@ -293,7 +294,7 @@ const LandingPage = () => {
 
       {/* About Us section */}
       <div
-        data-aos-duration="1000" //  duration in milliseconds
+        data-aos-duration="1000" //durat  ion in milliseconds
       >
         <Box
           id="about-us-section"
