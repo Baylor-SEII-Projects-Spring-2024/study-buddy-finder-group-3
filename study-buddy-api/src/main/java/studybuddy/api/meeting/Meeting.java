@@ -11,6 +11,11 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = Meeting.TABLE_NAME)
+
+
+//TODO
+// add coursename/id, *area of study
+// select course in frontned
 public class Meeting {
     public static final String TABLE_NAME = "MEETING";
 
@@ -24,7 +29,6 @@ public class Meeting {
 
     @Transient
     private List<Long> invitedUserIds;
-
 
     @Transient
     private List<Long> attendeeUserIds;
@@ -46,7 +50,7 @@ public class Meeting {
     private String location;
 
     //TUTOR THAT IS HOSTING THE MEETING
-    @ManyToOne
+    @ManyToOne//TODO: use this
     @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_HOST_MEETING_USER_ID"))
     private User user;
 

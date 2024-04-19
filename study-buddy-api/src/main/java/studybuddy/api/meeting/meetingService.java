@@ -40,6 +40,7 @@ public class meetingService {
         creatorMeeting.setUser(creator);
         creatorMeeting.setMeeting(newMeeting);
         creatorMeeting.setInviteStatus("Accepted");
+//        creatorMeeting.setHost(true);
         userMeetingRepository.save(creatorMeeting);
 
         // create link for each invited
@@ -51,6 +52,7 @@ public class meetingService {
             invitedUserMeeting.setUser(invitedUser);
             invitedUserMeeting.setMeeting(newMeeting);
             invitedUserMeeting.setInviteStatus("Pending");
+//            invitedUserMeeting.setHost(false);
             userMeetingRepository.save(invitedUserMeeting);
         }
     }

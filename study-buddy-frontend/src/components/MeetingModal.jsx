@@ -53,8 +53,8 @@ function MeetingModal({
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState("")
   const hasMeetingStarted = new Date() > new Date(meeting?.date)
-  console.log("user in meeting modal", user);
-  console.log("tutorid in modal click", tutorId);
+  // console.log("user in meeting modal", user);
+  // console.log("tutorid in modal click", tutorId);
   useEffect(() => {
     if (!open) {
       setEditMode(false)
@@ -124,7 +124,7 @@ function MeetingModal({
     }
     setEditMode(!editMode)
   }
-  console.log("meeting", meeting)
+  // console.log("meeting", meeting)
 
   const submitReview = async () => {
     try {

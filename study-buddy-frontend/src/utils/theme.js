@@ -25,7 +25,7 @@ const themeOptions = {
       default: "#FFFFFF", // off white
     },
     primary: {
-      main: "#628dbd", //  purple
+      main: "#5813d6", //  purple 
     },
     secondary: {
       main: "#85cc6f", // mint
