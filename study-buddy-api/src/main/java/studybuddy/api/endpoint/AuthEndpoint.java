@@ -1,7 +1,9 @@
 package studybuddy.api.endpoint;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 import studybuddy.api.utils.JwtUtil;
+import studybuddy.api.utils.TokenStore;
 
 import java.util.*;
 
@@ -24,6 +27,9 @@ public class AuthEndpoint {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private TokenStore tokenStore;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserReq loginRequest) {
@@ -136,6 +142,37 @@ public class AuthEndpoint {
 
         return true;
     }
+
+    @GetMapping("/validateToken")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String tokenHeader) {
+        String token = tokenHeader.replace("Bearer ", "");
+        try {
+            if (jwtUtil.validateToken(token)) {
+                String username = jwtUtil.extractUsername(token);
+                User user = userService.findByUsername(username).orElse(null);
+                if (user != null) {
+                    return ResponseEntity.ok(user);
+                }
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            log.error("Token validation error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/invalidateToken")
+    public ResponseEntity<?> invalidateToken(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenStore.invalidateToken(token);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body("Invalid Authorization header");
+    }
+
+
 
 
 
