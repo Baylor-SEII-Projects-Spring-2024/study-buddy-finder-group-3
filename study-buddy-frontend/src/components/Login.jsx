@@ -53,6 +53,7 @@ function Login({ open, onClose }) {
       if (response.status === 200){
         dispatch(setToken(response.data.token))
         dispatch(setUser(response.data.user))
+        localStorage.setItem('token', response.data.token);
         console.log('user', response.data.user)
         //authenticate token
 

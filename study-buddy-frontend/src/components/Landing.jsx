@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, containerRef } from "react"
+import { useRouter } from "next/router"
 import {
   AppBar,
   Toolbar,
@@ -23,7 +24,8 @@ import CreateAccount from "./CreateAccount"
 import Footer from "./Footer"
 import styles from "@/styles/landing.module.css"
 import CustomCursor from "@/utils/customCursor"
-
+import { useSelector } from "react-redux"
+import { selectToken } from "@/utils/authSlice"
 const sections = [
   { title: "Home", id: "home-section" },
   { title: "About", id: "about-us-section" },
@@ -85,6 +87,27 @@ const LandingPage = () => {
   const [buttonProps, setButtonProps] = useState({ x: 0, y: 0 })
 
   const [isHovered, setIsHovered] = useState(false)
+
+  // const router = useRouter();
+//   const token = useSelector(selectToken);
+//   const [isCheckingToken, setIsCheckingToken] = useState(true);
+
+//   useEffect(() => {
+//       const timer = setTimeout(() => {
+//           setIsCheckingToken(false); 
+//       }, 1000);  
+//       if (token){
+//         router.push("/home")
+//       }
+//       return () => clearTimeout(timer);
+//   }, []);
+
+//   useEffect(() => {
+//     if (token){
+//       router.push("/home")
+//     }
+// }, [token, isCheckingToken, router]);
+
 
   useEffect(() => {
     AOS.init({})

@@ -11,7 +11,9 @@ import {
   MenuItem,
   IconButton,
   Badge,
+  Divider,
 } from "@mui/material"
+import axios from "axios"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import { useRouter } from "next/router"
 import { logout } from "@/utils/authSlice.js"
@@ -73,17 +75,24 @@ function Header() {
   }
 
   const handleLogout = async () => {
-    localStorage.removeItem("token")
-    dispatch(logout())
-    router.push("/")
-  }
+    const token = localStorage.getItem("token");
+    if (token) {
+        await axios.post(`${API_URL}/auth/invalidateToken`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        localStorage.removeItem("token");
+        dispatch(logout());
+        router.push("/");
+    }
+};
+
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId)
 
     if (section) {
-      handleCloseMeetingsMenu();
-      handleCloseSettingsMenu();
+      handleCloseMeetingsMenu()
+      handleCloseSettingsMenu()
       const offset = 64
       const position =
         section.getBoundingClientRect().top + window.pageYOffset - offset
@@ -147,20 +156,33 @@ function Header() {
               anchorEl={meetingsAnchorEl}
               open={Boolean(meetingsAnchorEl)}
               onClose={handleCloseMeetingsMenu}
+              PaperProps={{
+                style: {
+                  backgroundColor: "#628dbd", 
+                  color: "white", 
+                },
+              }}
             >
-              <MenuItem onClick={() => scrollToSection("meetings-section")}>
-                Upcoming Meetings
-              </MenuItem>
-              <MenuItem onClick={() => scrollToSection("recommended-meetings")}>
-                Recommended Meetings
+              <MenuItem
+                onClick={() => scrollToSection("meetings-section")}
+                sx={{ padding: "10px 20px" }}
+              >
+                <Typography variant="inherit">Upcoming Meetings</Typography>
               </MenuItem>
               <MenuItem
-                onClick={() => console.log("Navigate to settings/courses")}
+                onClick={() => scrollToSection("recommended-meetings")}
+                sx={{ padding: "10px 20px" }}
               >
-                View All Meetings
+                <Typography variant="inherit">Recommended Meetings</Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => console.log("Navigate to settings/courses")}
+                sx={{ padding: "10px 20px" }}
+              >
+                <Typography variant="inherit">View All Meetings</Typography>
               </MenuItem>
             </Menu>
-
             <Button
               color="inherit"
               aria-controls="settings-menu"
@@ -175,6 +197,12 @@ function Header() {
               keepMounted
               open={Boolean(settingsAnchorEl)}
               onClose={handleCloseSettingsMenu}
+              PaperProps={{
+                style: {
+                  backgroundColor: "#628dbd", 
+                  color: "white", 
+                },
+              }}
             >
               <MenuItem onClick={() => navigateToSetting("/profile/")}>
                 Account
