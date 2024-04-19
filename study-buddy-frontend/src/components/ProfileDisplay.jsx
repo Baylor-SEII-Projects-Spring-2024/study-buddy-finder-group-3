@@ -1,6 +1,6 @@
 // ProfileDisplay.jsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -30,6 +30,10 @@ function ProfileDisplay() {
     const [selectedMeetingType, setSelectedMeetingType] = useState('');
     const theme = useTheme()
     const imagePath = avatarImage;
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const inputRef = useRef(null);
+    const [profilePic, setProfilePic] = useState(null);
+    const [triggerUpdate, setTriggerUpdate] = useState(false)
     // console.log(avatarImage);
 
     useEffect(() => {
@@ -42,6 +46,7 @@ function ProfileDisplay() {
         if (user) {
             setUserId(user.id);
             fetchProfileInfo(user.id);
+            fetchProfilePic(user.id);
         }
     }, [user]);
 
@@ -66,6 +71,15 @@ function ProfileDisplay() {
         }
     };
 
+    const fetchProfilePic = async (userId) => {
+        try {
+            const picData = await getProfilePic(userId);
+            setProfilePic(picData);
+        } catch (error) {
+            console.error("Error fetching profile pic:", error);
+        }
+    };
+
     const handleEditClick = () => {
         setEditMode(!editMode);
     };
@@ -83,7 +97,7 @@ function ProfileDisplay() {
             };
             console.log(updatedProfile);
 
-            const response = await axios.put(`${API_URL}/auth/updateProfile/${userId}`, updatedProfile, {
+            const response = await axios.put(`${API_URL}/profile/updateProfile/${userId}`, updatedProfile, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -134,6 +148,161 @@ function ProfileDisplay() {
         }
     };
 
+    // const compressImage = async (file, maxSizeInBytes) => {
+    //     console.log("compressing...");
+    //     return new Promise((resolve, reject) => {
+    //         const reader = new FileReader();
+    //         reader.onload = async (event) => {
+    //             const img = new Image();
+    //             img.src = event.target.result;
+    //             img.onload = async () => {
+    //                 const canvas = document.createElement('canvas');
+    //                 const ctx = canvas.getContext('2d');
+    //                 canvas.width = img.width;
+    //                 canvas.height = img.height;
+    //                 ctx.drawImage(img, 0, 0);
+    //
+    //                 // Convert the image to JPEG format with specified quality (e.g., 0.7)
+    //                 const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.4);
+    //
+    //                 // Convert the data URL to a Blob
+    //                 const compressedBlob = await fetch(compressedDataUrl).then((res) => res.blob());
+    //
+    //                 // Check the size of the compressed image
+    //                 if (compressedBlob.size > maxSizeInBytes) {
+    //                     // If still too large, recursively call the function with lower quality
+    //                     resolve(compressImage(compressedBlob, maxSizeInBytes));
+    //                 } else {
+    //                     // If within the size limit, resolve with the compressed Blob
+    //                     console.log("resolved compressing...");
+    //                     resolve(compressedBlob);
+    //                 }
+    //             };
+    //         };
+    //         console.log("reject");
+    //         reader.onerror = reject;
+    //         reader.readAsDataURL(file);
+    //     });
+    // };
+
+    const compressImage = async (file, maxSizeInBytes, quality = 0.9, maxAttempts = 9) => {
+        console.log("compressing...");
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = async () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    // Convert the image to JPEG format with specified quality
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+
+                    // Convert the data URL to a Blob
+                    const compressedBlob = await fetch(compressedDataUrl).then((res) => res.blob());
+
+                    console.log(`Compressed file size: ${compressedBlob.size} bytes`);
+
+                    // Check if the compressed image size is within the limit
+                    if (compressedBlob.size <= maxSizeInBytes || maxAttempts <= 1) {
+                        console.log("resolved compressing");
+                        resolve(compressedBlob);
+                    } else {
+                        console.log("compressing again...")
+                        // If the size is still too large, recursively call the function with lower quality
+                        resolve(
+                            compressImage(file, maxSizeInBytes, quality - 0.1, maxAttempts - 1)
+                        );
+                    }
+                };
+            };
+            console.log("reject");
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handlePhotoChange = async (e) => {
+        const file = e.target.files[0];
+        setSelectedPhoto(file);
+
+        try {
+            // Compress the image if it's larger than 30kb
+            const compressedImage = await compressImage(file, 30 * 1024);
+            const formData = new FormData();
+            formData.append('photo', compressedImage);
+            // const formData = new FormData();
+            // formData.append('photo', file);
+
+            // // Check if the selected photo meets the size requirement
+            // if (file.size > 30 * 1024) {
+            //     toast.error("Selected photo must be 30kb or less.");
+            //     return;
+            // }
+            //
+            // Check if the selected photo meets the size requirement
+            if (compressedImage.size > 30 * 1024) {
+                toast.error("Selected photo must be 225kb or less.");
+                return;
+            }
+
+            // Upload the photo to the server
+            console.log(formData);
+            // const response = await axios.put(`${API_URL}/profile/updateProfilePhoto/${userId}`, formData, {
+            const response = await axios.put(`${API_URL}/profile/updateProfilePhoto/${userId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                toast.success("Photo uploaded successfully!");
+                // Update the profile picture in the UI
+                // You can implement this part based on your UI structure
+                router.reload();
+            } else {
+                toast.error("Failed to upload photo");
+            }
+        } catch (error) {
+            console.error("Error uploading photo:", error);
+            toast.error("Error uploading photo");
+        }
+    };
+
+    const handleUploadClick = () => {
+        inputRef.current.click();
+    };
+
+    const getProfilePic = async (userId) => {
+        try {
+            const config = {
+                responseType: "blob",
+            };
+
+            console.log("Fetching profile pic...");
+
+            const response = await axios.get(`${API_URL}/friends/${userId}/pic`, config);
+            const reader = new FileReader();
+
+            return new Promise((resolve, reject) => {
+                reader.onload = () => {
+                    resolve(reader.result);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(response.data);
+            });
+        } catch (error) {
+            console.error("Error fetching profile pic:", error);
+            throw error;
+        }
+    };
+
+
     return (
         <Box className={styles.profileContainer}
              display="flex" flexDirection="column"
@@ -144,11 +313,15 @@ function ProfileDisplay() {
              }}
         >
             <div className={styles.profileHeader}>
+                {/*<Avatar alt="Profile Picture" src={profilePics[profile.id]?.pic === "data:text/xml;base64," ? null : profilePics[profile.id]?.pic*/}
+                {/*} style={{ width: 345, height: 230 }} variant="square"*/}
+                {/*/>*/}
                 <Avatar
                     // src={profile.profilePictureUrl}
                     // src={avatarImage}
                     // src="/_next/static/media/StudyBuddyLogo.4d4a46a7.png"
-                    src="/StudyBuddyLogo.png"
+                    // alt="/StudyBuddyLogo.png"
+                    src={profilePic || null}
                     alt="Profile Picture"
                     className={styles.avatar}
                     sx={{
@@ -172,8 +345,17 @@ function ProfileDisplay() {
                 >
                     {profile.nameFirst} {profile.nameLast}
                 </Typography>
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    style={{ display: 'none' }}
+                    ref={inputRef}
+                />
                 <Button
-                    variant="contained" color="primary"
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUploadClick}
                     sx={{
                         // marginLeft: "auto",
                         // marginRight: "auto",
