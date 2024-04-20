@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import ProfileDisplay from "@/components/ProfileDisplay";
+import {useTheme} from "@mui/material/styles";
+
 
 function SettingsMain() {
     const [selectedSetting, setSelectedSetting] = useState("Account");
@@ -22,7 +25,7 @@ function SettingsMain() {
 function SettingsSidebar({ onSettingClick }) {
     return (
         <Box
-            sx={{ width: "10vw", minHeight: "100vh", borderRight: "1px solid #ddd" }}
+            sx={{ /* width: "10vw", */ minHeight: "100vh", borderRight: "1px solid #ddd" }}
         >
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <h3>Settings</h3>
@@ -37,13 +40,37 @@ function SettingsSidebar({ onSettingClick }) {
 export default SettingsMain;
 
 function AccountSettings() {
+    const theme = useTheme()
+
     return (
         <Box
-            sx={{width: "75vw"}}
+            sx={{
+                width: "75vw",
+                padding: "15px",
+                pt:"64px"
+        }}
         >
-            <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
-                <h3> Account Information</h3>
-            </div>
+            {/*<div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>*/}
+            {/*    <h3> Account Information</h3>*/}
+            {/*</div>*/}
+            <Box
+                sx={{
+                    pt:"64px",
+                    marginTop: "15px",
+                    marginLeft: "80px",
+                    padding: "20px",
+                    border: "1px solid #ddd",
+                    borderRadius: "10px",
+                    minWidth: "30vw",
+                    display: "inline-block",
+                    width: "fit-content",
+                    height: "fit-content",
+                    backgroundColor: theme.palette.background.default,
+                    borderColor: theme.palette.primary.main
+                }}
+            >
+                <ProfileDisplay />
+            </Box>
             <div>
                 <Button
                     fullWidth style={{justifyContent: 'left', paddingLeft: "5vw" }}

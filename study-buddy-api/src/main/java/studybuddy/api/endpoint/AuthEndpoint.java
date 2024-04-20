@@ -8,11 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 import studybuddy.api.utils.JwtUtil;
 import studybuddy.api.utils.TokenStore;
 
+import java.io.IOException;
+import java.sql.Types;
 import java.util.*;
 
 @RestController
@@ -110,38 +113,6 @@ public class AuthEndpoint {
     }
 
 
-    @PutMapping("/updateProfile/{userId}")
-    public boolean updateProfile(@PathVariable Long userId, @RequestBody UserReq userRequest) {
-        //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        //String hashedPassword = encoder.encode(userRequest.getPassword());
-
-        log.info("Update user using: {}", userRequest);
-        log.info("Updating user profile with userId={}, areaofstudy={}, email={}, firstName={}, lastName={}, username={}",
-                userId, userRequest.getCourses(), userRequest.getEmail(), userRequest.getFirstName(),
-                userRequest.getLastName(), userRequest.getUsername());
-
-
-
-        jdbcTemplate.update("UPDATE users SET " +
-                        "email_address = ?, " +
-                        //"password = ?, " +
-                        "areaofstudy = ?, " +
-                        "namefirst = ?, " +
-                        "namelast = ?, " +
-                        //"istutor = ?, " +
-                        "username = ? " +
-                        "WHERE user_id = ?",
-                userRequest.getEmail(),
-                //hashedPassword,
-                userRequest.getCourses(),
-                userRequest.getFirstName(),
-                userRequest.getLastName(),
-                //userRequest.getIsTutor(),
-                userRequest.getUsername(),
-                userId);
-
-        return true;
-    }
 
     @GetMapping("/validateToken")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String tokenHeader) {
@@ -184,6 +155,8 @@ public class AuthEndpoint {
         private String email;
         private Boolean isTutor;
         private String courses;
+        private String prefTime;
+        private String prefMeetingType;
 
         public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
             this.username = username;
@@ -220,5 +193,8 @@ public class AuthEndpoint {
 
         public String getCourses() { return courses; }
 
+        public String getPrefTime() { return prefTime; }
+
+        public String getPrefMeetingType() { return prefMeetingType; }
     }
 }
