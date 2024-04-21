@@ -1,23 +1,14 @@
-import React from "react"
+import React from "react";
 import styles from "@/styles/Chat.module.css";
-const Message = ({ isOwner }) => {
+
+const Message = ({ isOwner, content }) => {
   return (
     <div className={`${styles.message} ${isOwner ? styles.owner : styles.nonOwner}`}>
-      <div className={styles.messageInfo}>
-        <img
-          src="/StudyBuddyLogo.png"
-          alt="Profile Picture"
-        />
-        {/*<span>just now</span>*/}
-      </div>
       <div className={styles.messageContent}>
-        <p>hello</p>
-        {/*{<img*/}
-        {/*  src="/StudyBuddyLogo Background Removed.png"*/}
-        {/*  alt="Logo"*/}
-        {/*/>}*/}
+        <p>{content}</p>
       </div>
     </div>
-  )
-}
-export default Message
+  );
+};
+
+export default Message;

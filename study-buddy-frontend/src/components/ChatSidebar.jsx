@@ -32,7 +32,7 @@ const ChatSidebar = ({ user, onUserSelect }) => {
   return (
     <div className={styles.ChatSidebar}>
       <ChatNavbar user={user} />
-      <ChatSearch user={user} />
+      {/*<ChatSearch user={user} />*/}
       {/* Pass the onUserSelect callback prop to Chats */}
       <Chats user={user} friends={friends} onUserSelect={onUserSelect} />
     </div>

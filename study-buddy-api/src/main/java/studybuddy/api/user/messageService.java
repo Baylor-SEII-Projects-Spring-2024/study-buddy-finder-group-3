@@ -1,9 +1,13 @@
 package studybuddy.api.user;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -11,6 +15,9 @@ public class messageService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private MessageRepository messageRepository;
@@ -35,13 +42,26 @@ public class messageService {
         System.out.println("Message sent: " + message);
     }
 
-//    public ResponseEntity<?> findMessageByUser(User senderUser, User receiverUser) {
-//        User sender = userRepository.findByUsername(senderUser.username)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        User receiver = userRepository.findByUsername(receiverUser.username)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        return messageRepository.getByUser_idAndReceiver(senderUser.id, receiver.id);
-//    }
+
+    public List<Messages> findMessageByUsers(Long senderId, Long receiverId) {
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+
+        User receiver = userRepository.findById(receiverId)
+                .orElseThrow(() -> new RuntimeException("Receiver not found"));
+
+        List<Messages> messages = new ArrayList<>();
+        String sql = "SELECT * FROM messages WHERE (to_user_id = ? AND from_user_id = ?) OR (to_user_id = ? AND from_user_id = ?)";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, senderId, receiverId, receiverId, senderId);
+
+        for (Map<String, Object> row : rows) {
+            Messages message = new Messages();
+            message.setUser(userService.findUser((Long) row.get("to_user_id")).orElse(null));
+            message.setReceiver(userService.findUser((Long) row.get("from_user_id")).orElse(null));
+            message.setContent((String) row.get("content"));
+            messages.add(message);
+        }
+
+        return messages;
+    }
 }
