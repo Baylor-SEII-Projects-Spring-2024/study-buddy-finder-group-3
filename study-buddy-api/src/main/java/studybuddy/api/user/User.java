@@ -92,6 +92,8 @@ public class User {
         this.nameFirst = other.nameFirst;
         this.nameLast = other.nameLast;
         this.areaOfStudy = other.areaOfStudy;
-
+        this.prefMeetingType = other.prefMeetingType;
+        this.prefTime = other.prefTime;
+        this.profilePic = other.profilePic;
     }
 }

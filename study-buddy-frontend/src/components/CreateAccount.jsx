@@ -19,6 +19,7 @@ function CreateAccount({ open, onClose }) {
   const [isTutor, setIsTutor] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [areaOfStudy, setAreaOfStudy] = useState("");
   const router = useRouter()
 
   const handleFirstNameChange = (event) => {
