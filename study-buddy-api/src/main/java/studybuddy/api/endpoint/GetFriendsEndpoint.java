@@ -106,6 +106,19 @@ public class GetFriendsEndpoint {
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
+    //Gets all friendRequests the user sent
+    @GetMapping("/{userId}/getOutgoingRequests")
+    public ResponseEntity<List<User>> getOutgoingRequests(@PathVariable Long userId)
+    {
+
+        String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
+                "WHERE fr.userfrom_id = ?";
+
+        List<User> friends = jdbcTemplate.query(sql, new UserRowMapper(), userId);
+
+        return new ResponseEntity<>(friends, HttpStatus.OK);
+    }
+
     //Add friend
     @PostMapping("/{idFrom}/add/{idTo}")
     public boolean addFriend(@PathVariable Long idTo, @PathVariable Long idFrom)
