@@ -11,18 +11,18 @@ import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
 import { API_URL } from "@/utils/config"
 
-export default function FriendsRequest({ onUpdate }) {
+export default function FriendsCancel({ onUpdate }) {
   const token = useSelector(selectToken)
   const user = useSelector(selectUser)
   const router = useRouter()
   const [friends, setFriendsList] = useState([])
   const [userId, setUserid] = useState("")
 
-  // useEffect(() => {
-  //   if (!token || !user) {
-  //     router.push("/")
-  //   }
-  // }, [token, router])
+  useEffect(() => {
+    if (!token || !user) {
+      router.push("/")
+    }
+  }, [token, router])
 
   useEffect(() => {
     if (user) {
@@ -35,7 +35,7 @@ export default function FriendsRequest({ onUpdate }) {
   const fetchAllInfo = async () => {
     try {
       const response = await axios.get(
-        `${API_URL}/friends/${user.id}/getRequests`
+        `${API_URL}/friends/${user.id}/getOutgoingRequests`
       )
       setFriendsList(response.data)
     } catch (error) {
@@ -46,7 +46,7 @@ export default function FriendsRequest({ onUpdate }) {
   const removeRequest = (user1) => {
     try {
       axios
-        .post(`${API_URL}/friends/${user1.id}/delete/${user.id}`)
+        .post(`${API_URL}/friends/${user.id}/delete/${user1.id}`)
         .then((response) => {
           console.log(response)
         })
@@ -58,19 +58,6 @@ export default function FriendsRequest({ onUpdate }) {
     onUpdate()
   }
 
-  const handleListItemClick = (event, user2) => {
-    try {
-      axios
-        .post(`${API_URL}/friends/${user.id}/add/${user2.id}`)
-        .then((response) => {
-          console.log(response)
-        })
-    } catch (error) {
-      console.error("Error adding friend:", error)
-    }
-    removeRequest(user2)
-  }
-
   return (
     <div>
       {friends.length === 0 ? (
@@ -80,19 +67,16 @@ export default function FriendsRequest({ onUpdate }) {
           style={{ textAlign: "center" }}
           color={"gray"}
         >
-          No new requests.
+          No outgoing requests.
         </Typography>
       ) : (
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
           <List>
             {friends.map((user) => (
-              <ListItem key={user.id}>
+              <ListItem key={user.id} sx={{ boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.1)" }}>
                 <ListItemText primary={user.username} />
-                <Button onClick={(event) => handleListItemClick(event, user)}>
-                  Accept
-                </Button>
                 <Button onClick={(event) => removeRequest(user)}>
-                  Decline
+                  Cancel
                 </Button>
               </ListItem>
             ))}

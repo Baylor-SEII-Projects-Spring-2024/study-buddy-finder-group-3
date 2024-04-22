@@ -1,0 +1,21 @@
+/* ProfilePage.module.css */
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    flex: 1;
+    padding: 20px;
+    /* Style your sidebar as needed */
+}
+
+.profileDisplayContainer {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Style your ProfileDisplay component as needed */
