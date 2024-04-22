@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Box, Typography, Avatar, Select, MenuItem, Link, Switch, Divider } from '@mui/material';
+import { Box, Typography, Avatar, Select, MenuItem, Link, Switch, Divider, Container } from '@mui/material';
 import styles from "@/styles/ProfileDisplay.module.css";
 import axios from "axios";
 import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material";
@@ -9,6 +9,9 @@ import { useRouter } from "next/router"
 import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
 import {Title} from "@mui/icons-material";
+import ProfileDisplay from "@/components/ProfileDisplay";
+import {useTheme} from "@mui/material/styles";
+
 
 
 function SettingsMain() {
@@ -110,6 +113,7 @@ function SettingsMain() {
     return (
 
 
+        <Container style={{ overflowY: "auto", maxHeight: "calc(100vh - 64px)" }}>
         <Box
         id="home-section"
         sx={{
@@ -118,7 +122,8 @@ function SettingsMain() {
             alignItems: "flex-start",
             justifyContent: "center",
             marginLeft: '25vw',
-            height: "80vh",
+            marginTop: '10vh',
+            height: "100vh",
             padding: 2,
         }}>
             <Typography variant="h4" gutterBottom>
@@ -232,7 +237,7 @@ function SettingsMain() {
                     justifyContent: 'space-between'
                 }}>
                     <Typography variant="h8" gutterBottom style={{marginLeft: '5vh'}}>
-                        Profile
+                        Change Password
                     </Typography>
                     <Button
                         variant="contained"
@@ -260,6 +265,7 @@ function SettingsMain() {
             </Box>
 
         </Box>
+        </Container>
 
 
     );
@@ -300,7 +306,7 @@ const SettingsOption = ({title, description, value, onChange}) => {
 function SettingsSidebar({ onSettingClick }) {
     return (
         <Box
-            sx={{ width: "10vw", minHeight: "100vh", borderRight: "1px solid #ddd" }}
+            sx={{ /* width: "10vw", */ minHeight: "100vh", borderRight: "1px solid #ddd" }}
         >
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <h3>Settings</h3>
@@ -315,13 +321,37 @@ function SettingsSidebar({ onSettingClick }) {
 
 
 function AccountSettings() {
+    const theme = useTheme()
+
     return (
         <Box
-            sx={{width: "75vw"}}
+            sx={{
+                width: "75vw",
+                padding: "15px",
+                pt:"64px"
+        }}
         >
-            <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
-                <h3> Account Information</h3>
-            </div>
+            {/*<div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>*/}
+            {/*    <h3> Account Information</h3>*/}
+            {/*</div>*/}
+            <Box
+                sx={{
+                    pt:"64px",
+                    marginTop: "15px",
+                    marginLeft: "80px",
+                    padding: "20px",
+                    border: "1px solid #ddd",
+                    borderRadius: "10px",
+                    minWidth: "30vw",
+                    display: "inline-block",
+                    width: "fit-content",
+                    height: "fit-content",
+                    backgroundColor: theme.palette.background.default,
+                    borderColor: theme.palette.primary.main
+                }}
+            >
+                <ProfileDisplay />
+            </Box>
             <div>
                 <Button
                     fullWidth style={{justifyContent: 'left', paddingLeft: "5vw" }}

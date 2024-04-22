@@ -1,7 +1,8 @@
+import React from "react";
 import { useState } from "react";
 import AWS from "aws-sdk"
 
-function App() {
+function TempAws() {
   const [file, setFile] = useState(null);
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -9,12 +10,12 @@ function App() {
   };
 
   const uploadFile = async () => {
-    const S3_BUCKET = "studybuddy-bucket";
+    const S3_BUCKET = "studybuddy-bucket1";
     const REGION = "us-east-2";
 
     AWS.config.update({
-      accessKeyId: "youraccesskeyhere",
-      secretAccessKey: "yoursecretaccesskeyhere",
+      accessKeyId: `${process.env.AWS_ACCESS_KEY}`,
+      secretAccessKey: `${process.env.AWS_ACCESS_KEY_SECRET}`,
     });
     const s3 = new AWS.S3({
       params: { Bucket: S3_BUCKET },
@@ -52,4 +53,4 @@ function App() {
   );
 }
 
-export default App;
+export default TempAws;

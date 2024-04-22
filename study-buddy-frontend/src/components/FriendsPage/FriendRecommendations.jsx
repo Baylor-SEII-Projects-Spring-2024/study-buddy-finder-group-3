@@ -42,11 +42,11 @@ export default function FriendsList() {
     setOpen(true)
   }
 
-  useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
-  }, [token, router])
+  // useEffect(() => {
+  //   if (!token || !user) {
+  //     router.push("/")
+  //   }
+  // }, [token, router])
 
   useEffect(() => {
     if (user) {
@@ -199,7 +199,7 @@ export default function FriendsList() {
                     sx={{
                       maxWidth: 345,
                       flexBasis: "100%",
-                      background: "#f7f0fa",
+                      background: "",
                       maxHeight: 496,
                     }}
                   >

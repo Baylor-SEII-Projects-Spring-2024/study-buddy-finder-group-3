@@ -57,35 +57,10 @@ function DisplayCourses() {
         //dispatch(fetchCourseByUserId(user.id));
     }, [user.id]);
 
-    /*
-    const fetchCourseByUserId = createAsyncThunk(
-
-        'courses/fetchByUserId',
-        async (userId) => {
-            const response = await axios.get(`${API_URL}/user/{userId}/courses`);
-            return response.data;
-        }
-    );
-
-    useEffect(() => {
-        const fetchRecommendedMeetings = async () => {
-            try {
-                const response = await axios.get(
-                    `${API_URL}/recommendations/meetings/${user.id}`
-                )
-                setRecommendedMeetings(response.data)
-            } catch (error) {
-                console.error("Error fetching recommended meetings:", error)
-            }
-        }
-
-        fetchRecommendedMeetings() // Call the function to fetch recommended meetings
-    }, [user])*/
-
 
 
     return (
-        <Container>
+        <Container style={{ overflowY: "auto", maxHeight: "calc(100vh - 64px)" }}>
             <Header />
             <Box
                 id="home-section"
@@ -94,7 +69,7 @@ function DisplayCourses() {
                     flexDirection: "column",
                     alignItems: "flex-start",
                     justifyContent: "center",
-                    height: "50vh",
+                    height: "40vh",
                     padding: 2,
                     boxSizing: "border-box",
                     backgroundImage: "url('/home-gradient.webp')",
@@ -117,7 +92,7 @@ function DisplayCourses() {
                 </Box>
             </Box>
 
-            <Box id="courses-section" sx={{ height: "100vh", pt: "64px" }}>
+            <Box id="courses-section" >
                 <Grid container spacing={4} sx={{ mt: 4 }}>
                     {courses.map((course) => (
                         <Grid

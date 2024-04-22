@@ -41,11 +41,11 @@ export default function FriendsList() {
     setOpen(true)
   }
 
-  useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
-  }, [token, router])
+  // useEffect(() => {
+  //   if (!token || !user) {
+  //     router.push("/")
+  //   }
+  // }, [token, router])
 
   useEffect(() => {
     if (user) {
@@ -194,7 +194,7 @@ export default function FriendsList() {
               {friends.map((user, index) => (
                 <Grid item key={user.id}>
                   
-                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "#f7f0fa", maxHeight: 496 }}>
+                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "", maxHeight: 496 }}>
                     <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
                     <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
                       {/* <CardMedia

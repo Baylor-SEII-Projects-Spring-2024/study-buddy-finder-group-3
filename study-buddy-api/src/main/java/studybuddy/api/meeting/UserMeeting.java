@@ -3,6 +3,7 @@ package studybuddy.api.meeting;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import studybuddy.api.user.User;
 
 @Data
@@ -28,6 +29,11 @@ public class UserMeeting {
     @Getter
     @Column(name = "invite_status")
     private String inviteStatus;
+
+//    @Setter
+//    @Getter
+//    @Column(name = "MEETING_DATE")
+//    private boolean isHost;
 
     public void setInviteStatus(String inviteStatus) {
         this.inviteStatus = inviteStatus;
