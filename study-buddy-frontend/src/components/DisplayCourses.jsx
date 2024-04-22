@@ -13,17 +13,18 @@ import {
     Container,
     Box,
     CardMedia,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    IconButton
 } from "@mui/material"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
 import VideocamIcon from "@mui/icons-material/Videocam"
 import axios from "axios"
 import DeleteIcon from "@mui/icons-material/Delete"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogContentText from "@mui/material/DialogContentText"
-import DialogTitle from "@mui/material/DialogTitle"
 import Button from "@mui/material/Button"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
@@ -32,13 +33,12 @@ import Header from "./Header.jsx"
 import courses from "@/pages/courses";
 
 function DisplayCourses() {
-    const dispatch = useDispatch()
     const user = useSelector(selectUser)
     const [courses, setCourses] = useState([]);
-    //const courses = useSelector((state) => state.courses.courses);
-    //const coursesStatus = useSelector((state) => state.courses.status);
-    //const meetings = useSelector((state) => state.meetings.meetings)
     const router = useRouter()
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
 
     useEffect(() => {
         const fetchCourseByUserId = async () => {
@@ -58,10 +58,40 @@ function DisplayCourses() {
     }, [user.id]);
 
 
+    const handleDeleteCourse = async () => {
+        try {
+            await axios.delete(`${API_URL}/courses/user/${user.id}/courses/${selectedCourse.id}`);
+            setCourses(courses.filter(course => course.id !== selectedCourse.id));
+            setOpenDeleteDialog(false);
+        } catch (error) {
+            console.error("Error deleting course:", error);
+        }
+    };
+
+    const handleDeleteIconClick = (course) => {
+        setSelectedCourse(course);
+        setOpenDeleteDialog(true);
+    };
+
+
 
     return (
         <Container style={{ overflowY: "auto", maxHeight: "calc(100vh - 64px)" }}>
             <Header />
+
+                <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+                    <DialogTitle>Delete Course</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Are you sure you want to delete the course "{selectedCourse && selectedCourse.name}"?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+                        <Button onClick={handleDeleteCourse} color="error">Delete</Button>
+                    </DialogActions>
+                </Dialog>
+
             <Box
                 id="home-section"
                 sx={{
@@ -121,6 +151,12 @@ function DisplayCourses() {
                                         <Typography variant="body2" color="text.secondary">
                                             {course.description}
                                         </Typography>
+                                        <IconButton
+                                            style={{ position: "absolute", top: 5, right: 5 }}
+                                            onClick={() => handleDeleteIconClick(course)}
+                                        >
+                                            <DeleteIcon color="error" />
+                                        </IconButton>
                                     </CardContent>
                             </Card>
                         </Grid>

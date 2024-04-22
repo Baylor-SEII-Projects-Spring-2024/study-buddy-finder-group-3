@@ -173,6 +173,26 @@ public class CourseEndpoint {
     }
 
 
+    @DeleteMapping("/user/{userId}/courses/{courseId}")
+    public ResponseEntity<Void> deleteUserCourse(@PathVariable Long userId, @PathVariable Long courseId) {
+        try {
+            int rowsAffected = jdbcTemplate.update(
+                    "DELETE FROM usercourses WHERE user_id = ? AND course_id = ?",
+                    userId, courseId
+            );
+
+            if (rowsAffected > 0) {
+                return ResponseEntity.noContent().build(); // 204 No Content
+            } else {
+                return ResponseEntity.notFound().build(); // 404 Not Found
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
 
     /*
     public boolean addFriendRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
