@@ -4,10 +4,14 @@ package studybuddy.api.endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.meeting.Meeting;
 import studybuddy.api.user.Courses;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,18 +112,68 @@ public class CourseEndpoint {
         }
     }
     @PostMapping("/courses")
-    public ResponseEntity<Void> addCourse(@RequestBody Courses c) {
+    public ResponseEntity<Long> addCourse(@RequestBody Courses c) {
         try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement(
+                        "INSERT INTO courses (c_description, c_name, subject_area) VALUES (?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, c.getDescription());
+                ps.setString(2, c.getName());
+                ps.setString(3, c.getSubjectArea());
+                return ps;
+            }, keyHolder);
+
+            Long courseId = keyHolder.getKey().longValue();
+            return ResponseEntity.status(HttpStatus.CREATED).body(courseId);
+
+
+            /*
             jdbcTemplate.update(
                     "INSERT INTO courses (c_description, c_name, subject_area) VALUES (?, ?, ?)",
                     c.getDescription(), c.getName(), c.getSubjectArea());
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();*/
         } catch (Exception e) {
             //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get courses for user");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PostMapping("/user/{userId}/newCourseforUser")
+    public ResponseEntity<Void> addNewCourseForUser(@PathVariable Long userId, @RequestBody Courses c) {
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(con -> {
+                PreparedStatement ps = con.prepareStatement(
+                        "INSERT INTO courses (c_description, c_name, subject_area) VALUES (?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, c.getDescription());
+                ps.setString(2, c.getName());
+                ps.setString(3, c.getSubjectArea());
+                return ps;
+            }, keyHolder);
+
+            Long courseId = keyHolder.getKey().longValue();
+
+            jdbcTemplate.update(
+                    "INSERT INTO usercourses (course_id, istutored, user_id) VALUES(?, ?, ?)",
+                    courseId, false, userId
+            );
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
     /*
     public boolean addFriendRequest(@PathVariable Long idTo, @PathVariable Long idFrom)
     {

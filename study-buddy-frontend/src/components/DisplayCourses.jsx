@@ -86,7 +86,8 @@ function DisplayCourses() {
                         },
                     }}
                 >
-                    <Button variant="contained" color="primary">
+                    <Button variant="contained" color="primary"
+                            onClick={() => router.push("/addCourse")}>
                         Add Course
                     </Button>
                 </Box>
