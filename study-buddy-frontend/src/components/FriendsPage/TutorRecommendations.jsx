@@ -36,19 +36,19 @@ export default function FriendsList() {
   const [selectedUser, setSelectedUser] = useState({})
   const [profilePics, setProfilePics] = useState([])
   const [triggerUpdate, setTriggerUpdate] = useState(false)
+  const [triggerUpdate2ElectricBoogaloo, setTriggerUpdate2ElectricBoogaloo] = useState(false)
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user)
     setOpen(true)
   }
 
-  // useEffect(() => {
-  //   if (!token || !user) {
-  //     router.push("/")
-  //   }
-  // }, [token, router])
-
   useEffect(() => {
+
+    if (!token || !user) {
+      router.push("/")
+    }
+
     if (user) {
       console.log("useEffect: FriendsList")
       setUserid(user.id)
@@ -86,7 +86,7 @@ export default function FriendsList() {
       console.error("Error adding friend:", error)
     }
 
-    toast.success("Friend request sent!")
+    toast.success("Friend request sent!", {position: "top-center"})
 
     setTriggerUpdate(!triggerUpdate)
   }

@@ -25,8 +25,6 @@ import MenuItem from "@mui/material/MenuItem"
 import MenuList from "@mui/material/MenuList"
 import CancelIcon from "@mui/icons-material/Cancel"
 
-const options = ["Unblock", "option2", "option3"]
-
 export default function FriendsBlocked() {
   const token = useSelector(selectToken)
   const user = useSelector(selectUser)
@@ -39,24 +37,25 @@ export default function FriendsBlocked() {
   const anchorRef = React.useRef(null)
   const [selectedIndex, setSelectedIndex] = React.useState(1)
   const [refresh, setRefresh] = useState(false)
+  const [loadingPics, setLoadingPics] = useState(true)
+  const [profilePics, setProfilePics] = useState([])
 
   const handleListItemClick = (event, user) => {
     setOpen(true)
   }
 
-  // useEffect(() => {
-  //   if (!token || !user) {
-  //     router.push("/")
-  //   }
-  // }, [token, router])
-
   useEffect(() => {
+    if (!token || !user) {
+      router.push("/")
+    }
+
     if (user) {
       console.log("here")
       setUserid(user.id)
     }
     fetchAllInfo()
-  }, [user, refresh])
+    getProfilePics(friends)
+  }, [user, refresh, loadingPics, loading])
 
   const fetchAllInfo = async () => {
     try {
@@ -94,7 +93,50 @@ export default function FriendsBlocked() {
     setOpenMenu(false)
   }
 
-  if (loading) {
+  const getProfilePics = async (users) => {
+    try {
+      const config = {
+        responseType: "blob",
+      }
+      console.log("Fetching profile pics...")
+      const promises = []
+
+      for (let i = 0; i < users.length; i++) {
+        promises.push(
+          new Promise((resolve, reject) => {
+            axios
+              .get(`${API_URL}/friends/${users[i].id}/pic`, config)
+              .then((response) => {
+                const reader = new FileReader()
+                reader.readAsDataURL(response.data)
+                reader.onload = () => {
+                  resolve({ id: users[i].id, pic: reader.result })
+                }
+                reader.onloadend = () => {
+                  if (i === friends.length - 1) {
+                    setLoadingPics(false)
+                  }
+                }
+              })
+              .catch((error) => {
+                reject(error)
+                if (i === users.length - 1) {
+                  setLoadingPics(false)
+                }
+              })
+          })
+        )
+      }
+
+      const profilePicsArray = await Promise.all(promises)
+
+      setProfilePics(profilePicsArray)
+    } catch (error) {
+      console.error("Error fetching profile pics:", error)
+    }
+  }
+
+  if (loading || loadingPics) {
     return (
       <Box
         sx={{
@@ -123,13 +165,20 @@ export default function FriendsBlocked() {
       ) : (
         <Box sx={{ flexGrow: 1, maxWidth: 752 }}>
           <List>
-            {friends.map((user) => (
+            {friends.map((user, index) => (
               <ListItem key={user.id}>
                 <ListItemButton
                   onClick={(event) => handleListItemClick(event, user)}
                   sx={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" }}
                 >
-                  <Avatar alt={user.username} src={"/green_iguana.jpg"} />
+                  <Avatar
+                    alt="Profile Picture"
+                    src={
+                      profilePics[index]?.pic === "data:text/xml;base64,"
+                        ? null
+                        : profilePics[index]?.pic
+                    }
+                  />
                   <ListItemText
                     primary={user.username}
                     sx={{ marginLeft: "10px" }}

@@ -75,46 +75,55 @@ function Header() {
   }
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
     if (token) {
-        await axios.post(`${API_URL}/auth/invalidateToken`, {}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        localStorage.removeItem("token");
-        dispatch(logout());
-        router.push("/");
+      await axios.post(
+        `${API_URL}/auth/invalidateToken`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      localStorage.removeItem("token")
+      dispatch(logout())
+      router.push("/")
     }
-};
-
+  }
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId)
 
-    if (section) {
-      handleCloseMeetingsMenu()
-      handleCloseSettingsMenu()
-      const offset = 64
-      const position =
-        section.getBoundingClientRect().top + window.pageYOffset - offset
-      window.scrollTo({
-        top: position,
-        behavior: "smooth",
-      })
+    if (sectionId === "friends-section") {
+      router.push("/friends")
     } else {
-      router.push("/home").then(() => {
-        window.requestAnimationFrame(() => {
-          const section = document.getElementById(sectionId)
-          if (section) {
-            const offset = 64
-            const position =
-              section.getBoundingClientRect().top + window.pageYOffset - offset
-            window.scrollTo({
-              top: position,
-              behavior: "smooth",
-            })
-          }
+      if (section) {
+        handleCloseMeetingsMenu()
+        handleCloseSettingsMenu()
+        const offset = 64
+        const position =
+          section.getBoundingClientRect().top + window.pageYOffset - offset
+        window.scrollTo({
+          top: position,
+          behavior: "smooth",
         })
-      })
+      } else {
+        router.push("/home").then(() => {
+          window.requestAnimationFrame(() => {
+            const section = document.getElementById(sectionId)
+            if (section) {
+              const offset = 64
+              const position =
+                section.getBoundingClientRect().top +
+                window.pageYOffset -
+                offset
+              window.scrollTo({
+                top: position,
+                behavior: "smooth",
+              })
+            }
+          })
+        })
+      }
     }
   }
 
@@ -158,8 +167,8 @@ function Header() {
               onClose={handleCloseMeetingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd", 
-                  color: "white", 
+                  backgroundColor: "#628dbd",
+                  color: "white",
                 },
               }}
             >
@@ -199,8 +208,8 @@ function Header() {
               onClose={handleCloseSettingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd", 
-                  color: "white", 
+                  backgroundColor: "#628dbd",
+                  color: "white",
                 },
               }}
             >
