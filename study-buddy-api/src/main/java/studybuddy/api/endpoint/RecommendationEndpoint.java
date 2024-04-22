@@ -326,11 +326,30 @@ public class RecommendationEndpoint {
             });
 
             if (!(userTime == null || otherUserTime == null)){
-                if(userTime.equals("morning")){
+                //if(userTime.equals("morning")){
                     if(userTime.equalsIgnoreCase(otherUserTime)){
                         ur.addTimePts();
                     }
+                //}
+            }
+
+            // Pref Meeting Type
+            String otherUserMeetingType = ur.getUser().getPrefMeetingType();
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userMeetingType = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_meeting_type");
                 }
+                else{
+                    return "none";
+                }
+            });
+            if (!(userMeetingType == null || otherUserMeetingType == null)){
+                //if(userMeetingType.equals("morning")){
+                if(userMeetingType.equalsIgnoreCase(otherUserMeetingType)){
+                    ur.addTimePts();
+                }
+                //}
             }
             ur.totalPoints();
 
@@ -458,11 +477,30 @@ public class RecommendationEndpoint {
             });
 
             if (!(userTime == null || otherUserTime == null)){
-                if(userTime.equals("morning")){
+                //if(userTime.equals("morning")){
                     if(userTime.equalsIgnoreCase(otherUserTime)){
                         ur.addTimePts();
                     }
+                //}
+            }
+
+            // Pref Meeting Type
+            String otherUserMeetingType = ur.getUser().getPrefMeetingType();
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userMeetingType = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_meeting_type");
                 }
+                else{
+                    return "none";
+                }
+            });
+            if (!(userMeetingType == null || otherUserMeetingType == null)){
+                //if(userMeetingType.equals("morning")){
+                    if(userMeetingType.equalsIgnoreCase(otherUserMeetingType)){
+                    ur.addTimePts();
+                    }
+                //}
             }
 
             // Tutor Rating
