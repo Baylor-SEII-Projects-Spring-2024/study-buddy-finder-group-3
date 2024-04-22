@@ -35,6 +35,7 @@ export default function FriendsList() {
   const [selectedUser, setSelectedUser] = useState({})
   const [profilePics, setProfilePics] = useState([])
   const [triggerUpdate, setTriggerUpdate] = useState(false)
+  const [triggerUpdate2ElectricBoogaloo, setTriggerUpdate2ElectricBoogaloo] = useState(false)
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user)
@@ -54,7 +55,7 @@ export default function FriendsList() {
     getProfilePics(friends)
 
     console.log(loadingPics)
-  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics])
+  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics, triggerUpdate2ElectricBoogaloo])
 
   const fetchAllInfo = async () => {
     try {
@@ -65,6 +66,7 @@ export default function FriendsList() {
     } finally {
       getProfilePics(friends)
       setLoadingFriendsList(false)
+      setTriggerUpdate2ElectricBoogaloo(true)
     }
   }
 
@@ -75,6 +77,7 @@ export default function FriendsList() {
       console.error("Error removing friend:", error)
     } finally {
       setLoadingPics(true)
+      setTriggerUpdate2ElectricBoogaloo(false)
     }
   }
 

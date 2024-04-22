@@ -6,23 +6,18 @@ import { useRouter } from "next/router"
 import axios from "axios"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
-import ListItemText from "@mui/material/ListItemText"
 import Typography from "@mui/material/Typography"
-import { ListItemButton, CircularProgress } from "@mui/material"
-import FriendProfile from "./FriendProfile"
+import { CircularProgress } from "@mui/material"
 import { API_URL } from "@/utils/config"
 import { Grid } from "@mui/material"
 import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
 import CardActionArea from "@mui/material/CardActionArea"
-import CardMedia from "@mui/material/CardMedia"
 import CardContent from "@mui/material/CardContent"
 import CardActions from "@mui/material/CardActions"
 import Button from "@mui/material/Button"
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 import { toast } from "react-toastify"
-
-const fallbackPic = "profilePicture.png"
+import { set } from "lodash"
 
 export default function FriendsList() {
   const token = useSelector(selectToken)
@@ -57,7 +52,7 @@ export default function FriendsList() {
     getProfilePics(friends)
 
     console.log(loadingPics)
-  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics])
+  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics, triggerUpdate2ElectricBoogaloo])
 
   const fetchAllInfo = async () => {
     try {
@@ -70,6 +65,7 @@ export default function FriendsList() {
     } finally {
       getProfilePics(friends)
       setLoadingFriendsList(false)
+      setTriggerUpdate2ElectricBoogaloo(true)
     }
   }
 
@@ -88,6 +84,7 @@ export default function FriendsList() {
 
     toast.success("Friend request sent!", {position: "top-center"})
 
+    setTriggerUpdate2ElectricBoogaloo(false)
     setTriggerUpdate(!triggerUpdate)
   }
 

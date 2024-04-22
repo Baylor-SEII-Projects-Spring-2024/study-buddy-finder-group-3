@@ -39,6 +39,7 @@ export default function FriendsBlocked() {
   const [refresh, setRefresh] = useState(false)
   const [loadingPics, setLoadingPics] = useState(true)
   const [profilePics, setProfilePics] = useState([])
+  const [triggerUpdate2ElectricBoogaloo, setTriggerUpdate2ElectricBoogaloo] = useState(false)
 
   const handleListItemClick = (event, user) => {
     setOpen(true)
@@ -55,7 +56,7 @@ export default function FriendsBlocked() {
     }
     fetchAllInfo()
     getProfilePics(friends)
-  }, [user, refresh, loadingPics, loading])
+  }, [user, refresh, loadingPics, loading, triggerUpdate2ElectricBoogaloo])
 
   const fetchAllInfo = async () => {
     try {
@@ -68,6 +69,7 @@ export default function FriendsBlocked() {
       console.error("Error fetching blocked users info:", error)
     } finally {
       setLoading(false)
+      setTriggerUpdate2ElectricBoogaloo(true)
     }
   }
 
@@ -81,6 +83,8 @@ export default function FriendsBlocked() {
         })
     } catch (error) {
       console.error("Error unblocking user:", error)
+    } finally {
+      setTriggerUpdate2ElectricBoogaloo(false)
     }
   }
 
@@ -115,6 +119,7 @@ export default function FriendsBlocked() {
                 reader.onloadend = () => {
                   if (i === friends.length - 1) {
                     setLoadingPics(false)
+                    setTriggerUpdate2ElectricBoogaloo(!triggerUpdate2ElectricBoogaloo)
                   }
                 }
               })
@@ -136,7 +141,19 @@ export default function FriendsBlocked() {
     }
   }
 
-  if (loading || loadingPics) {
+  if (loading) {
+    if (friends.length === 0 && !loadingPics) {
+      return (
+        <Typography
+          variant="h3"
+          padding={20}
+          style={{ textAlign: "center" }}
+          color={"gray"}
+        >
+          OH NO! You have no friends!
+        </Typography>
+      )
+    }
     return (
       <Box
         sx={{
