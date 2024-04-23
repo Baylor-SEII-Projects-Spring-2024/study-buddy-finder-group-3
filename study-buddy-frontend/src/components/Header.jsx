@@ -20,6 +20,7 @@ import { setNotifications } from "@/utils/notificationSlice"
 import axios from "axios"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import MeetingModal from "./MeetingModal"
+import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 
 const sections = [
   { title: "Home", id: "home-section" },
@@ -39,41 +40,36 @@ function Header() {
   const user = useSelector(selectUser)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (user && user.id) {// check if user and user.id exist
-        try {
-          const response = await axios.get(
-            `${API_URL}/user/${user.id}/notifications`
-          )
-          if (response.status === 200) {
-            dispatch(setNotifications(response.data))
-          }
-        } catch (error) {
-          console.error("Failed to fetch notifications:", error)
+  const fetchNotifications = async () => {
+    if (user && user.id) {
+      // check if user and user.id exist
+      try {
+        const response = await axios.get(
+          `${API_URL}/user/${user.id}/notifications`
+        )
+        if (response.status === 200) {
+          dispatch(setNotifications(response.data))
         }
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error)
       }
     }
+  }
+  const updateMeetingInState = () => {
+    dispatch(fetchMeetingsByUserId(user.id))
+  }
 
+
+  useEffect(() => {
     fetchNotifications()
   }, [dispatch, user])
 
-  // useEffect(() => {
-  //   fetchPendingInvitations()
-  // }, [])
+  
+  // to handle meeting accept and refresh notifications
+  const handleAcceptMeeting = () => {
+    fetchNotifications(); 
+  };
 
-  // const fetchPendingInvitations = async () => {
-  //   try {
-  //     // Fetch pending invitations from backend API
-  //     const response = await fetch(
-  //       `${API_URL}/meeting/user/${user.id}/pending-invitations`
-  //     )
-  //     const data = await response.json()
-  //     setPendingInvitations(data)
-  //   } catch (error) {
-  //     console.error("Error fetching pending invitations:", error)
-  //   }
-  // }
 
   const handleSettingsClick = (event) => {
     setSettingsAnchorEl(event.currentTarget)
@@ -89,6 +85,11 @@ function Header() {
 
   const handleCloseMeetingsMenu = () => {
     setMeetingsAnchorEl(null)
+  }
+
+  const openMeetingModal = (meeting) => {
+    setSelectedMeeting(meeting)
+    setAnchorEl(null) // close menu when open modal
   }
 
   const navigateToSetting = (settingPath) => {
@@ -288,7 +289,7 @@ function Header() {
             pendingInvitations.map((invitation) => (
               <MenuItem
                 key={invitation.id}
-                onClick={(event) => handleNotificationClick(event, invitation)}
+                onClick={() => openMeetingModal(invitation)}
               >
                 Meeting invite: {invitation.title}
               </MenuItem>
@@ -308,6 +309,9 @@ function Header() {
         meeting={selectedMeeting}
         open={Boolean(selectedMeeting)}
         handleClose={() => setSelectedMeeting(null)}
+        isInvitation={true}
+        onMeetingAccepted={handleAcceptMeeting}
+        updateMeetingInParent={updateMeetingInState}
       />
     </>
   )

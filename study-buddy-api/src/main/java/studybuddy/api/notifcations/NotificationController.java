@@ -25,6 +25,7 @@ public class NotificationController {
         this.userService = userService;
     }
 
+    //TODO: Add chat notifs
     @GetMapping("/user/{userId}/notifications")
     public ResponseEntity<?> getNotifications(@PathVariable Long userId) {
         try {
