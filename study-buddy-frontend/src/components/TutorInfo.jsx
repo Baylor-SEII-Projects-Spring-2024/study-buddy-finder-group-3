@@ -50,8 +50,9 @@ function TutorInfo() {
             console.log("Tutor Status:", profileResponse.data.userType);
 
             if (profileResponse.data.userType) {
-                const tutorRatingResponse = await axios.get(`${API_URL}/tutor_ratings/${userId}`);
+                const tutorRatingResponse = await axios.get(`${API_URL}/profile/tutor_ratings/${userId}`);
                 setTutorRatings(tutorRatingResponse.data);
+                console.log(tutorRatings);
             }
         } catch (error) {
             console.error("Error fetching profile info:", error);
