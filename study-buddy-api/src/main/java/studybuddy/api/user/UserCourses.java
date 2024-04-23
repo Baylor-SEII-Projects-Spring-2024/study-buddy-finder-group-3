@@ -2,6 +2,7 @@ package studybuddy.api.user;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import studybuddy.api.courses.Courses;
 
 @Data
 @Entity

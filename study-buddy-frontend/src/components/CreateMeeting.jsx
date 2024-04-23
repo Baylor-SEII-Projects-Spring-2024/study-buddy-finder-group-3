@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Modal from "@mui/material/Modal"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
@@ -15,7 +15,7 @@ import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
-import { API_URL } from "@/utils/config";
+import { API_URL } from "@/utils/config"
 
 const style = {
   position: "absolute",
@@ -40,23 +40,47 @@ function CreateMeeting({ open, onClose }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [selectedInvites, setSelectedInvites] = useState([])
+  const [courseSearchTerm, setCourseSearchTerm] = useState("")
+  const [courseResults, setCourseResults] = useState([])
+  const [selectedCourse, setSelectedCourse] = useState(null)
 
   const handleSearchChange = async (event) => {
-    const newSearchTerm = event.target.value;
-    setSearchTerm(newSearchTerm);
-    if (newSearchTerm.length > 1) { 
+    const newSearchTerm = event.target.value
+    setSearchTerm(newSearchTerm)
+    if (newSearchTerm.length > 1) {
       try {
-        const response = await axios.get(`${API_URL}/friends/${user.id}/get/${newSearchTerm}`);
-        setSearchResults(response.data);
+        const response = await axios.get(
+          `${API_URL}/friends/${user.id}/get/${newSearchTerm}`
+        )
+        setSearchResults(response.data)
       } catch (error) {
-        console.error("Failed to search users", error);
-        setSearchResults([]); 
+        console.error("Failed to search users", error)
+        setSearchResults([])
       }
     } else {
-      setSearchResults([]); // clear if too shirt
+      setSearchResults([]) // clear if too shirt
     }
-  };
-  
+  }
+  const handleCourseSearchChange = async (event) => {
+    const newSearchTerm = event.target.value
+    setCourseSearchTerm(newSearchTerm)
+    console.log(newSearchTerm)
+    if (newSearchTerm.length > 1) {
+      try {
+        const response = await axios.get(`${API_URL}/courses/names`, {
+          params: { search: newSearchTerm },
+        })
+        console.log("response", response)
+        setCourseResults(response.data)
+        console.log("courseResults", courseResults)
+      } catch (error) {
+        console.error("Failed to fetch courses", error)
+        setCourseResults([]) // clear results on error
+      }
+    } else {
+      setCourseResults([]) // clear results if search term is too short
+    }
+  }
 
   const handleOnlineMeetingChange = (event) => {
     setIsOnlineMeeting(event.target.checked)
@@ -88,39 +112,44 @@ function CreateMeeting({ open, onClose }) {
   }
   const handleSaveMeeting = async () => {
     if (!meetingTitle) {
-        toast.error("Title cannot be empty")
-        return;
+      toast.error("Title cannot be empty")
+      return
     }
 
     try {
-        const invitedUserIds = selectedInvites.map(invite => invite.id); 
+      const invitedUserIds = selectedInvites.map((invite) => invite.id)
 
-        const response = await axios.post(
-            `${API_URL}/meeting/createMeeting`,
-            {
-                title: meetingTitle,
-                description: meetingDescription,
-                date: meetingDate,
-                link: meetingLink,
-                location: meetingLocation,
-                creatorUsername: user.username,
-                invitedUserIds
-            }
-        );
+      const response = await axios.post(`${API_URL}/meeting/createMeeting`, {
+        title: meetingTitle,
+        description: meetingDescription,
+        date: meetingDate,
+        link: meetingLink,
+        location: meetingLocation,
+        creatorUsername: user.username,
+        course: { id: selectedCourse.id },
+        invitedUserIds,
+      })
 
-        if (response.status === 200) {
-            toast.success("Meeting created successfully!");
-            dispatch(fetchMeetingsByUserId(user.id));
-            onClose();
-        } else {
-            toast.error("Failed to create meeting");
-            console.error("Failed to create meeting", response);
-        }
+      if (response.status === 200) {
+        toast.success("Meeting created successfully!")
+        dispatch(fetchMeetingsByUserId(user.id))
+        onClose()
+      } else {
+        toast.error("Failed to create meeting")
+        console.error("Failed to create meeting", response)
+      }
     } catch (error) {
-        toast.error("Failed to create meeting");
-        console.error("Error:", error);
+      toast.error("Failed to create meeting")
+      console.error("Error:", error)
     }
-};
+  }
+
+  const handleCourseSelect = (course) => {
+    setSelectedCourse(course)
+    setCourseSearchTerm(course.name)
+    setCourseResults([])
+  }
+
   return (
     <Modal
       open={open}
@@ -162,6 +191,25 @@ function CreateMeeting({ open, onClose }) {
             sx={{ ml: 2 }}
           />
         </Box>
+        <TextField
+          label="Search Courses"
+          type="text"
+          fullWidth
+          value={courseSearchTerm}
+          onChange={handleCourseSearchChange}
+          sx={{ mt: 2 }}
+        />
+        <List dense>
+          {courseResults.map((course) => (
+            <ListItem
+              key={course.id}
+              button
+              onClick={() => handleCourseSelect(course)}
+            >
+              <ListItemText primary={course.name} />
+            </ListItem>
+          ))}
+        </List>
 
         <TextField
           margin="dense"
