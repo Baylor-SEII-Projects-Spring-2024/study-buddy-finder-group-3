@@ -17,6 +17,9 @@ function addCourse() {
                     <UserCourses />
                 </div>
             </div>
+            {/*<Box display="flex" flexDirection="column" alignItems="center" justifyContent="flex-start">
+                <UserCourses />
+            </Box>*/}
         </>
     )
 }

@@ -28,6 +28,8 @@ function SettingsMain() {
     const [notifications, setNotifications] = useState(false);
     const [emails, setEmailUpdates] = useState(false);
     const [accountType, setAccountType] = useState('Student'); // change to current type
+    const [openChangePasswordModal, setChangePasswordModal] = useState(false);
+
 
 
 

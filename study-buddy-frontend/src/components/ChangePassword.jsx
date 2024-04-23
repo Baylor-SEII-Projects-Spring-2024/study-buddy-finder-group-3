@@ -14,7 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { API_URL } from "@/utils/config";
 import {selectUser} from "@/utils/authSlice";
 
-function CreateCourse({ open, onClose }) {
+function ChangePassword({ open, onClose }) {
     const dispatch = useDispatch();
     const [c_name, setCourseName] = useState("");
     const [description , setDescription] = useState("");
@@ -73,42 +73,17 @@ function CreateCourse({ open, onClose }) {
             open={open}
             onClose={handleClose}
         >
-            <Box className={styles.loginCreate} >
+            <Box className={styles.loginCreate}>
                 <Typography variant="h6" component="h2">
                     New Course
                 </Typography>
                 <br/>
                 <Box component="form" sx={{ mt: 1 }} onSubmit={handleNewCourse}>
 
-                    <Select
-                        fullWidth
-                        label="Subject Area"
-                        name="subject_area"
-                        autoComplete="subject_area"
-                        value={subjectArea}
-                        onChange={handleSubjectAreaChange}
-
-                    >
-                        <MenuItem value="Math">Math</MenuItem>
-                        <MenuItem value="Biology">Biology</MenuItem>
-                        <MenuItem value="Physics">Physics</MenuItem>
-                        <MenuItem value="Chemistry">Chemistry</MenuItem>
-                        <MenuItem value="Science">Science</MenuItem>
-                        <MenuItem value="Fine Arts">Fine Arts</MenuItem>
-                        <MenuItem value="Languages">Languages</MenuItem>
-                        <MenuItem value="Literature">Literature</MenuItem>
-                        <MenuItem value="Computer Science">Computer Science</MenuItem>
-                        <MenuItem value="Engineering">Engineering</MenuItem>
-                        <MenuItem value="Business">Business</MenuItem>
-                        <MenuItem value="Political Science">Political Science</MenuItem>
-                        <MenuItem value="Education">Education</MenuItem>
-                        <MenuItem value="Social Science">Social Science</MenuItem>
-                    </Select>
-
                     <TextField
                         margin="normal"
                         fullWidth
-                        label="Course Name"
+                        label="Old Password"
                         name="c_name"
                         autoComplete="c_name"
                         autoFocus
@@ -119,7 +94,16 @@ function CreateCourse({ open, onClose }) {
                         margin="normal"
                         fullWidth
                         name="Description"
-                        label="Description"
+                        label="New Password"
+                        autoComplete="current-password"
+                        onChange={handleDescriptionChange}
+                        value={description}
+                    />
+                    <TextField
+                        margin="normal"
+                        fullWidth
+                        name="Description"
+                        label="Verify New Password"
                         autoComplete="current-password"
                         onChange={handleDescriptionChange}
                         value={description}
@@ -137,7 +121,7 @@ function CreateCourse({ open, onClose }) {
                             },
                         }}
                     >
-                        Add Course
+                        Change Password
                     </Button>
                     <Button fullWidth variant="text" onClick={handleClose}>
                         Cancel
@@ -148,4 +132,4 @@ function CreateCourse({ open, onClose }) {
     );
 }
 
-export default CreateCourse;
+export default ChangePassword;

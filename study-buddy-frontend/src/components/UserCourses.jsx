@@ -13,23 +13,62 @@ import {Title} from "@mui/icons-material";
 import ProfileDisplay from "@/components/ProfileDisplay";
 import {useTheme} from "@mui/material/styles";
 
+import {
+    List,
+    ListItem,
+    Card,
+    CardContent,
+    Grid,
+    CardMedia,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    IconButton
+} from "@mui/material"
+
+
 
 
 function UserCourses() {
-    const [receiveEmails, setReceiveEmails] = useState(true);
-    const [darkMode, setDarkMode] = useState(false);
+
     const token = useSelector(selectToken);
     const user = useSelector(selectUser);
     const router = useRouter();
     const [profile, setProfile] = useState('');
-    const [userId, setUserId] = useState('');
-    const [editMode, setEditMode] = useState(false);
-    const [selectedCourses, setSelectedCourses] = useState([]);
-    const [theme, setTheme] = useState('light'); // State to track selected theme
-    const [notifications, setNotifications] = useState(false);
-    const [emails, setEmailUpdates] = useState(false);
-    const [accountType, setAccountType] = useState('Student'); // change to current type
     const [openCreateCourseModal, setOpenCreateCourseModal] = useState(false);
+    //const [courses, setCourses] = useState([]);
+    const [selectedCourses, setSelectedCourses] = useState([]);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/courses/allCourses`);
+                setCourses(response.data);
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+            }
+        };
+        fetchCourses();
+    }, []);
+
+    const handleCheckboxChange = (courseId) => {
+        if (selectedCourses.includes(courseId)) {
+            setSelectedCourses(selectedCourses.filter((id) => id !== courseId));
+        } else {
+            setSelectedCourses([...selectedCourses, courseId]);
+        }
+    };
+
+    const handleAddCourses = async () => {
+        try {
+            await axios.post(`${API_URL}/courses/user/${user.id}/addCourses`, selectedCourses);
+            router.push("/courses");
+        } catch (error) {
+            console.error("Error adding courses:", error);
+        }
+    };
 
 
     const handleOpenCreateCourseModal = () => {
@@ -46,47 +85,173 @@ function UserCourses() {
         }
     }, [token, router]);
 
-    useEffect(() => {
-        if (user) {
-            setUserId(user.id);
-            fetchProfileInfo(user.id);
-        }
-    }, [user]);
 
-    const fetchProfileInfo = async (userId) => {
-        try {
-            const response = await axios.get(`${API_URL}/profile/${userId}`);
+    /*
+    <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
+        <Box border={1} borderColor="primary.main" borderRadius={6} padding={2} display="flex" flexDirection="row" display= 'flex'>
+            <Typography>Pre-Calculus</Typography>
+            <Checkbox></Checkbox>
+        </Box>
+    </div>*/
 
-            // Log the entire response data object
-            console.log("Response data:", response.data);
+    const renderCourseList = (courses) => {
+        return (
+            <>
+                <div style={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
+                    {courses.map((course) => (
+                            <div key={course.id}>
+                            <Box border={2} borderColor="primary.main" borderRadius={6} padding={2} display="flex"
+                                 flexDirection="row" display='flex' marginRight={1} marginLeft={1}
+                                  marginBottom={1}>
+                                <Typography>{course.name}</Typography>
+                                <Checkbox
+                                    checked={selectedCourses.includes(course.id)}
+                                    onChange={() => handleCheckboxChange(course.id)}
+                                />
+                            </Box>
+                        </div>
+                    ))}
+                </div>
 
-            setProfile(response.data);
-
-            // Extract courses from the areaOfStudy field
-            let coursesArray = [];
-            if (response.data.areaOfStudy) {
-                if (typeof response.data.areaOfStudy === 'string') {
-                    // If areaOfStudy is a string, split it into an array
-                    coursesArray = response.data.areaOfStudy.split(',').map(course => course.trim());
-                } else if (Array.isArray(response.data.areaOfStudy)) {
-                    // If areaOfStudy is already an array, use it directly
-                    coursesArray = response.data.areaOfStudy;
-                }
-            }
-
-            setSelectedCourses(coursesArray);
-            console.log("User's initial courses are: ", response.data.areaOfStudy);
-            console.log(`Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
-        } catch (error) {
-            console.error("Error fetching profile info:", error);
-        }
+            </>
+        );
     };
+
+    const renderSubjectBox = (subjectName, courses) => {
+        return (
+            <Box
+                border={3}
+                borderColor="primary.main"
+                borderRadius={8}
+                padding={2}
+                display="flex"
+                flexDirection="column"
+                width={"50vw"}
+            >
+                <Typography variant="h8" gutterBottom>
+                    {subjectName}
+                </Typography>
+                <Divider />
+                <br />
+                {renderCourseList(courses)}
+            </Box>
+        );
+    };
+
+
+
+    const bioCourses = [
+        { id: 1, name: "Biology I", data: { "course_id": 1} },
+        { id: 2, name: "Biology II", data: { "course_id": 2 } },
+        { id: 3, name: "Anatomy", data: { "course_id": 3 } },
+        { id: 4, name: "Microbiology", data: { "course_id": 4} },
+        { id: 5, name: "Genetics", data: { "course_id": 5} },
+        { id: 6, name: "Physiology", data: { "course_id": 6 } },
+    ];
+
+    const mathCourses = [
+        { id: 7, name: "Pre-Calculus", data: {"course_id": 7} },
+        { id: 8, name: "Calculus I", data: {"course_id": 8} },
+        { id: 9, name: "Calculus II", data: { "course_id": 9} },
+        { id: 10, name: "Calculus III", data: { "course_id": 10 } },
+        { id: 11, name: "Statistics", data: { "course_id": 11 } },
+        { id: 12, name: "Linear Algebra", data: { "course_id": 12 } },
+    ];
+
+    const physCourses = [
+        { id: 13, name: "Physics I", data: {"course_id": 13} },
+        { id: 14, name: "Physics II", data: {"course_id": 14} },
+        { id: 15, name: "Quantum Mechanics", data: { "course_id": 15} },
+        { id: 16, name: "Astrophysics", data: { "course_id": 16 } },
+        { id: 17, name: "Optics", data: { "course_id": 17 } },
+        { id: 18, name: "Nuclear Physics", data: { "course_id": 18 } },
+    ];
+
+    const chemCourses = [
+        { id: 19, name: "Organic Chemistry", data: {"course_id": 19} },
+        { id: 20, name: "General Chemistry", data: {"course_id": 20} },
+        { id: 21, name: "Analytical Chemistry", data: { "course_id": 21} },
+        { id: 22, name: "Biochemistry", data: { "course_id": 22 } },
+        { id: 23, name: "Environmental Chemistry", data: { "course_id": 23 } },
+        { id: 24, name: "Physical Chemistry", data: { "course_id": 24 } },
+    ];
+    const scienceCourses = [
+        { id: 25, name: "Geology", data: { "course_id": 25 } },
+        { id: 26, name: "Astronomy", data: { "course_id": 26 } },
+        { id: 27, name: "Neuroscience", data: { "course_id": 27 } },
+        { id: 28, name: "Environmental Science", data: { "course_id": 28 } },
+    ];
+
+    const fineArtsCourses = [
+        { id: 29, name: "Drawing", data: { "course_id": 29 } },
+        { id: 30, name: "Painting", data: { "course_id": 30 } },
+        { id: 31, name: "Sculpture", data: { "course_id": 31 } },
+        { id: 32, name: "Photography", data: { "course_id": 32 } },
+        { id: 33, name: "Art History", data: { "course_id": 33 } },
+    ];
+
+    const LanguageCourses = [
+        { id: 34, name: "Spanish", data: { "course_id": 34 } },
+        { id: 35, name: "French", data: { "course_id": 35 } },
+        { id: 36, name: "German", data: { "course_id": 36 } },
+        { id: 37, name: "Chinese", data: { "course_id": 37 } },
+    ];
+
+    const LitCourses = [
+        { id: 38, name: "English Literature", data: { "course_id": 38 } },
+        { id: 39, name: "World Literature", data: { "course_id": 39 } },
+        { id: 40, name: "American Literature", data: { "course_id": 40 } },
+        { id: 41, name: "Comparative Literature", data: { "course_id": 41 } },
+    ];
+
+    const CompSciCourses = [
+        { id: 42, name: "Introduction to Computer Science", data: { "course_id": 42 } },
+        { id: 43, name: "Data Structures and Algorithms", data: { "course_id": 43 } },
+        { id: 44, name: "Database Systems", data: { "course_id": 44 } },
+        { id: 45, name: "Operating Systems", data: { "course_id": 45 } },
+    ];
+
+    const EngineerCourses = [
+        { id: 46, name: "Introduction to Engineering", data: { "course_id": 46 } },
+        { id: 47, name: "Mechanical Engineering", data: { "course_id": 47 } },
+        { id: 48, name: "Electrical Engineering", data: { "course_id": 48 } },
+        { id: 49, name: "Civil Engineering", data: { "course_id": 49 } },
+    ];
+
+    const BusinessCourses = [
+        { id: 50, name: "Introduction to Business", data: { "course_id": 50 } },
+        { id: 51, name: "Marketing", data: { "course_id": 51 } },
+        { id: 52, name: "Finance", data: { "course_id": 52 } },
+        { id: 53, name: "Management", data: { "course_id": 53 } },
+    ];
+
+
+    const PoliSciCourses = [
+        { id: 54, name: "Introduction to Political Science", data: { "course_id": 54 } },
+        { id: 55, name: "Comparative Politics", data: { "course_id": 55 } },
+        { id: 56, name: "International Relations", data: { "course_id": 56 } },
+        { id: 57, name: "Public Policy", data: { "course_id": 57 } },
+    ];
+
+    const EducationCourses = [
+        { id: 58, name: "Introduction to Education", data: { "course_id": 58 } },
+        { id: 59, name: "Educational Psychology", data: { "course_id": 59 } },
+        { id: 60, name: "Curriculum and Instruction", data: { "course_id": 60 } },
+        { id: 61, name: "Special Education", data: { "course_id": 61 } },
+    ];
+
+    const SocialCourses = [
+        { id: 62, name: "Sociology", data: { "course_id": 62 } },
+        { id: 63, name: "Anthropology", data: { "course_id": 63 } },
+        { id: 64, name: "Psychology", data: { "course_id": 64 } },
+        { id: 65, name: "Economics", data: { "course_id": 65 } },
+    ];
 
 
     return (
 
 
-        <Container style={{ overflowY: "auto", maxHeight: "calc(100vh - 64px)" }}>
+        <Container style={{ overflowY: "auto", maxHeight: "calc(100vh - 64px)"}}>
             <Box
                 id="home-section"
                 sx={{
@@ -95,8 +260,8 @@ function UserCourses() {
                     alignItems: "flex-start",
                     justifyContent: "center",
                     marginLeft: '25vw',
-                    marginTop: '10vh',
-                    height: "100vh",
+                    height: "75vh",
+                    marginTop: "1900px",
                     padding: 2,
                 }}>
                 <Typography variant="h4" gutterBottom>
@@ -119,67 +284,60 @@ function UserCourses() {
                         Back
                     </Button>
                 </Container>
+                <br/>
 
                 <CreateCourse open={openCreateCourseModal} onClose={handleCloseCreateCourseModal} />
 
-                {/* Math  section */}
-                <Box
-                    border={1}
-                    borderColor="primary.main"
-                    borderRadius={8}
-                    padding={2}
-                    display="flex"
-                    flexDirection="column"
-                    width={"50vw"}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddCourses}
                 >
-                    <Typography variant="h8" gutterBottom>
-                        Math
-                    </Typography>
-                    <Divider/>
-                    <br/>
-                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    Add Selected Courses
+                </Button>
 
-                    </div>
-                </Box>
+                {renderSubjectBox("Math", mathCourses)}<br/>
+                {renderSubjectBox("Biology", bioCourses)}
+                <br/>
+                {renderSubjectBox("Physics", physCourses)}
+                <br/>
+                {renderSubjectBox("Chemistry", chemCourses)}
+                <br/>
+                {renderSubjectBox("Science", scienceCourses)}
+                <br/>
+                {renderSubjectBox("Fine Arts", fineArtsCourses)}
+                <br/>
+                {renderSubjectBox("Languages", LanguageCourses)}
+                <br/>
+                {renderSubjectBox("Literature", LitCourses)}
                 <br/>
 
-                {/* Science section */}
-                <Box
-                    border={1}
-                    borderColor="primary.main"
-                    borderRadius={8}
-                    padding={2}
-                    display="flex"
-                    flexDirection="column"
-                    width={"50vw"}
+                {renderSubjectBox("Computer Science", CompSciCourses)}
+                <br/>
 
-                >
-                    <Typography variant="h8" gutterBottom>
-                        Sciences
-                    </Typography>
-                    <Divider/>
+                {renderSubjectBox("Engineering", EngineerCourses)}
+                <br/>
 
-                </Box>
+                {renderSubjectBox("Business", BusinessCourses)}
+                <br/>
+
+                {renderSubjectBox("Political Science", PoliSciCourses)}
+                <br/>
+
+                {renderSubjectBox("Education", EducationCourses)}
+                <br/>
+
+                {renderSubjectBox("Social Science", SocialCourses)}
                 <br/>
 
 
-                {/* Social Sciences section */}
-                <Box
-                    border={1}
-                    borderColor="primary.main"
-                    borderRadius={8}
-                    padding={2}
-                    display="flex"
-                    flexDirection="column"
-                    width={"50vw"}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddCourses}
                 >
-                    <Typography variant="h8" gutterBottom>
-                        Social Sciences
-                    </Typography>
-                    <Divider/>
-
-
-                </Box>
+                    Add Selected Courses
+                </Button>
 
             </Box>
         </Container>

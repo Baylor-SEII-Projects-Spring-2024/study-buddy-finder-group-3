@@ -86,6 +86,26 @@ public class CourseEndpoint {
         }
     }
 
+    @GetMapping("/allCourses")
+    public ResponseEntity<List<Courses>> getAllCourses() {
+        List<Courses> courses = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM courses ";
+            courses = jdbcTemplate.query(sql, (rs, rowNum) ->
+                    new Courses(
+                            rs.getLong("course_id"),
+                            rs.getString("c_name"),
+                            rs.getString("c_description"),
+                            rs.getString("subject_area")
+                    )
+            );
+            return ResponseEntity.ok(courses);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(courses);
+            //return ResponseEntity.ok(courses);
+        }
+    }
+
     @PostMapping("/user/{userId}/courses")
     public ResponseEntity<Void> addUserCourse(@PathVariable Long userId, @RequestBody Courses c) {
         try {
@@ -165,6 +185,24 @@ public class CourseEndpoint {
                     "INSERT INTO usercourses (course_id, istutored, user_id) VALUES(?, ?, ?)",
                     courseId, false, userId
             );
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @PostMapping("/user/{userId}/addCourses")
+    public ResponseEntity<Void> addCoursesForUser(@PathVariable Long userId, @RequestBody List<Long> courseIds) {
+        try {
+            for (Long courseId : courseIds) {
+
+                jdbcTemplate.update(
+                        "INSERT INTO usercourses (course_id, istutored, user_id) VALUES (?, ?, ?)",
+                        courseId, false, userId
+                );
+            }
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
