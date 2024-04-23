@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.meeting.Meeting;
+import studybuddy.api.meeting.MeetingService;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class MeetingEndpoint {
 
     @Autowired
-    public studybuddy.api.meeting.meetingService meetingService;
+    public MeetingService meetingService;
 
     @PostMapping("/createMeeting")
     public ResponseEntity<?> createMeeting(@RequestBody Meeting meeting) {

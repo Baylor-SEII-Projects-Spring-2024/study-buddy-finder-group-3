@@ -1,10 +1,13 @@
 package studybuddy.api.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // bcrypt import >:)
+import studybuddy.api.endpoint.GetFriendsEndpoint;
 
-
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,15 +19,31 @@ public class UserService {
     @Autowired
     private TutorRatingRepository tutorRatingRepository;
 
-    //TODO: hash password with bcrypt when user created
-    //public User encryptPassword(User user) {
-    public String encryptPassword(String pass) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(pass);
-        return hashedPassword;
-        //String hashedPassword = encoder.encode(user.getPassword());
-        //user.setPassword(hashedPassword);
-        //return userRepository.save(user);
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public List<User> getFriendRequests(Long userId) {
+        String sql = "SELECT u.* FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id WHERE fr.userto_id = ?";
+        return jdbcTemplate.query(sql, new GetFriendsEndpoint.UserRowMapper(), userId);
+    }
+
+    public static class UserRowMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+
+            user.setId(rs.getLong("user_id"));
+            user.setAreaOfStudy(rs.getString("areaofstudy"));
+            user.setEmailAddress(rs.getString("email_address"));
+            user.setNameFirst(rs.getString("namefirst"));
+            user.setNameLast(rs.getString("namelast"));
+            user.setPassword(rs.getString("password"));
+            user.setUserType(rs.getBoolean("istutor"));
+            user.setUsername(rs.getString("username"));
+            user.setProfilePic(rs.getBytes("profilepic"));
+
+            return user;
+        }
     }
 
 
@@ -72,10 +91,6 @@ public class UserService {
             return false;
         }
 
-    }
-
-    public Optional<List<TutorRating>> getTutorReviews(Long tutorId) {
-        return tutorRatingRepository.findByUserId(tutorId);
     }
 
 }

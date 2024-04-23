@@ -1,10 +1,11 @@
 package studybuddy.api.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TutorRatingRepository extends JpaRepository<TutorRating, Long> {
-    Optional<List<TutorRating>> findByUserId(Long userId);
+    @Query("SELECT tr.comment, tr.rating FROM TutorRating tr WHERE tr.user.id = ?1")
+    List<String> findByUserId(Long user_id);
 }

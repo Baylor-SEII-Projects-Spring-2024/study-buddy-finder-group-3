@@ -38,6 +38,7 @@ import RecommendIcon from "@mui/icons-material/Recommend"
 import FriendProfile from "./FriendProfile"
 import FriendRecommendations from "./FriendRecommendations"
 import TutorRecommendations from "./TutorRecommendations"
+import FriendsCancel from "./FriendsCancel"
 
 const drawerWidth = 240
 
@@ -133,6 +134,7 @@ export default function FriendsSidebar() {
   const [userId, setUserid] = useState("")
   const [loggingOut, setLoggingOut] = useState(false)
   const [count, setCount] = useState(0)
+  const [requestsValue, setRequestsValue] = useState(0)
 
   const navigateToProfile = () => {
     router.push("/profile")
@@ -370,7 +372,7 @@ export default function FriendsSidebar() {
                 <RecommendIcon />
               </ListItemIcon>
               <ListItemText
-                primary={"Recomendation"}
+                primary={"Recommendations"}
                 sx={{ opacity: open ? 1 : 0 }}
               />
             </ListItemButton>
@@ -386,8 +388,19 @@ export default function FriendsSidebar() {
         {activePage === "list" ? <FriendsList /> : null}
         {activePage === "requests" ? (
           <Box>
-            <FriendsAdd />
-            <FriendsRequest onUpdate={handleMessageUpdate} />
+            <Button onClick={() => setRequestsValue(0)}>Add Friends</Button>
+            <Button onClick={() => setRequestsValue(1)}>
+              Outgoing Requests
+            </Button>
+            {requestsValue === 0 ? (
+              <Box>
+                <FriendsAdd />
+                <FriendsRequest onUpdate={handleMessageUpdate} />
+              </Box>
+            ) : null}
+            {requestsValue === 1 ? (
+              <FriendsCancel onUpdate={handleMessageUpdate} />
+            ) : null}
           </Box>
         ) : null}
         {activePage === "blocked" ? <FriendsBlocked /> : null}

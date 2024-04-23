@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import axios from "axios"
 import Box from "@mui/material/Box"
 import TextField from "@mui/material/TextField"
@@ -10,7 +10,7 @@ import { selectToken, selectUser } from "@/utils/authSlice.js"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import ListItemText from "@mui/material/ListItemText"
-import { ListItemButton } from "@mui/material"
+import { ListItemButton, Menu, Typography } from "@mui/material"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
@@ -24,10 +24,22 @@ function FriendsAdd() {
   const [friends, setFriendsList] = useState([])
   const [userId, setUserid] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
-  const [open, setOpen] = React.useState(false)
   const anchorRef = React.useRef(null)
-
   const token = useSelector(selectToken)
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const open = Boolean(anchorEl)
+  const textFieldRef = useRef(null)
+  const textFieldWidth = textFieldRef.current
+    ? textFieldRef.current.getBoundingClientRect().width
+    : 0
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget)
+    handleSearch()
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
   useEffect(() => {
     if (user) {
@@ -52,16 +64,13 @@ function FriendsAdd() {
   }
 
   const handleSearch = async () => {
-    setOpen((prevOpen) => !prevOpen)
     try {
       fetchAddInfo()
     } catch (error) {
       console.error("Search failed:", error)
+    } finally {
+      console.log(friends.length)
     }
-  }
-
-  const handleClose = (event) => {
-    setOpen(false)
   }
 
   const handleListItemClick = (event, user2) => {
@@ -75,7 +84,7 @@ function FriendsAdd() {
       console.error("Error adding friend:", error)
     }
 
-    toast.success("Friend request sent!")
+    toast.success("Friend request sent!", {position: "top-center"})
 
     const updatedFriends = friends.filter((user3) => user3.id !== user2.id)
     setFriendsList(updatedFriends)
@@ -91,10 +100,11 @@ function FriendsAdd() {
           padding: "10px",
         }}
       >
-        <IconButton onClick={handleSearch}>
+        <IconButton onClick={handleClick}>
           <SearchIcon />
         </IconButton>
         <TextField
+          ref={textFieldRef}
           placeholder="Search for friends..."
           value={searchTerm}
           onChange={handleSearchChange}
@@ -103,33 +113,40 @@ function FriendsAdd() {
           style={{ flex: 1, margin: "0 10px" }}
         />
       </Box>
-      <Popper open={open} disablePortal anchorEl={anchorRef.current} transition>
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin:
-                placement === "bottom" ? "center top" : "center bottom",
-            }}
-          >
-            <Paper style={{ backgroundColor: "" }}>
-              <ClickAwayListener onClickAway={handleClose}>
-                <List>
-                  {friends.map((user) => (
-                    <ListItem key={user.id}>
-                      <ListItemButton
-                        onClick={(event) => handleListItemClick(event, user)}
-                      >
-                        <ListItemText primary={user.username} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
+      <Menu
+        open={open}
+        onClose={handleClose}
+        anchorEl={textFieldRef.current}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        PaperProps={{
+          style: {
+            width: textFieldWidth,
+          },
+        }}
+      >
+        {friends.length === 0 ? (
+          <Typography marginLeft={1}>No Users Found</Typography>
+        ) : (
+          <List>
+          {friends.map((user) => (
+            <ListItem key={user.id}>
+              <ListItemButton
+                onClick={(event) => handleListItemClick(event, user)}
+              >
+                <ListItemText primary={user.username} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
         )}
-      </Popper>
+      </Menu>
     </Box>
   )
 }
