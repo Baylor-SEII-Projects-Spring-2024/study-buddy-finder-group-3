@@ -76,15 +76,17 @@ public class AuthEndpoint {
         parameters.add(new Object[]{
                 userRequest.getEmail(),
                 hashedPassword,
-                "Computer Science",
+                userRequest.getAreaOfStudy(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 userRequest.getIsTutor(),
-                userRequest.getUsername()
+                userRequest.getUsername(),
+                userRequest.getPrefTime(),
+                userRequest.getPrefMeetingType()
         });
 
         jdbcTemplate.batchUpdate("INSERT INTO users (email_address, password, areaofstudy, namefirst, " +
-                "namelast, istutor, username) VALUES(?,?,?,?,?,?,?)", parameters);
+                "namelast, istutor, username, pref_time, pref_meeting_type) VALUES(?,?,?,?,?,?,?,?,?)", parameters);
         return true;
     }
 
@@ -154,7 +156,7 @@ public class AuthEndpoint {
         private String lastName;
         private String email;
         private Boolean isTutor;
-        private String courses;
+        private String areaOfStudy;
         private String prefTime;
         private String prefMeetingType;
 
@@ -165,6 +167,22 @@ public class AuthEndpoint {
             this.lastName = lastName;
             this.email = email;
             this.isTutor = isTutor;
+        }
+
+        public UserReq(){
+
+        }
+
+        public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor, String areaOfStudy, String prefTime, String prefMeetingType) {
+            this.username = username;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.isTutor = isTutor;
+            this.areaOfStudy = areaOfStudy;
+            this.prefTime = prefTime;
+            this.prefMeetingType = prefMeetingType;
         }
 
         public String getUsername() {
@@ -191,7 +209,7 @@ public class AuthEndpoint {
             return isTutor;
         }
 
-        public String getCourses() { return courses; }
+        public String getAreaOfStudy() { return areaOfStudy; }
 
         public String getPrefTime() { return prefTime; }
 
