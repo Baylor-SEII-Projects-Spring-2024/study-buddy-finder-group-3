@@ -41,6 +41,7 @@ public class UserService {
             user.setUserType(rs.getBoolean("istutor"));
             user.setUsername(rs.getString("username"));
             user.setProfilePic(rs.getBytes("profilepic"));
+            user.setAboutMe(rs.getString("about_me"));
 
             return user;
         }

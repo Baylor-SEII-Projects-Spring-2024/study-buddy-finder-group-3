@@ -36,6 +36,7 @@ function ProfileDisplay() {
     const [triggerUpdate, setTriggerUpdate] = useState(false)
     const [emailError, setEmailError] = useState('');
     const [usernameError, setUsernameError] = useState('');
+
     // console.log(avatarImage);
 
     useEffect(() => {
@@ -102,6 +103,7 @@ function ProfileDisplay() {
                 courses: selectedCourses.join(', '),
                 prefTime: selectedTime,
                 prefMeetingType: selectedMeetingType,
+                aboutMe: profile.aboutMe,
             };
             console.log(updatedProfile);
 
@@ -430,6 +432,19 @@ function ProfileDisplay() {
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="About Me"
+                    name="aboutMe"
+                    value={profile.aboutMe || ''}
+                    multiline // Allow multiple lines of text
+                    rows={4} // Set the number of visible rows
+                    // inputProps={{ maxLength: 255 }} // Set the maximum character limit
+                    // maxLength={255}
+                    disabled={!editMode}
+                    onChange={handleInputChange}
+                />
             </Box>
             <Box
                 sx={{
@@ -491,8 +506,18 @@ function ProfileDisplay() {
                         disabled={!editMode}
                     />
                     <FormControlLabel
+                        control={<Checkbox checked={selectedTime === "afternoon"} onChange={handlePrefTimeChange} name="afternoon" />}
+                        label="Afternoon"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
                         control={<Checkbox checked={selectedTime === "evening"} onChange={handlePrefTimeChange} name="evening" />}
                         label="Evening"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedTime === "night"} onChange={handlePrefTimeChange} name="night" />}
+                        label="Night"
                         disabled={!editMode}
                     />
                 </div>

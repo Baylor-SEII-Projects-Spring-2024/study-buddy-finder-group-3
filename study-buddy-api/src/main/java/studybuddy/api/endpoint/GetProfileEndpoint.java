@@ -23,6 +23,7 @@ public class GetProfileEndpoint {
     private static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
     @Autowired
     private UserService userService;
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -59,7 +60,8 @@ public class GetProfileEndpoint {
                         //"istutor = ?, " +
                         "username = ?, " +
                         "pref_meeting_type = ?, " +
-                        "pref_time = ? " +
+                        "pref_time = ?, " +
+                        "about_me = ? " +
                         "WHERE user_id = ?",
                 userRequest.getEmail(),
                 //hashedPassword,
@@ -70,6 +72,7 @@ public class GetProfileEndpoint {
                 userRequest.getUsername(),
                 userRequest.getPrefMeetingType(),
                 userRequest.getPrefTime(),
+                userRequest.getAboutMe(),
                 userId);
 
         return true;
@@ -103,21 +106,6 @@ public class GetProfileEndpoint {
         } catch (IOException e) {
             e.printStackTrace();
             return false; // Error occurred while processing the photo
-        }
-    }
-
-
-    @GetMapping("/tutor_ratings/{tutorId}")
-    public ResponseEntity<List<TutorRating>> getTutorRatings(@PathVariable Long tutorId) {
-        try {
-            log.info("retrieving tutor ratings...");
-
-            return userService.getTutorReviews(tutorId)
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            log.error("Error occurred while retrieving tutor ratings for tutor ID: {}", tutorId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
