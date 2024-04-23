@@ -35,19 +35,18 @@ export default function FriendsList() {
   const [selectedUser, setSelectedUser] = useState({})
   const [profilePics, setProfilePics] = useState([])
   const [triggerUpdate, setTriggerUpdate] = useState(false)
+  const [triggerUpdate2ElectricBoogaloo, setTriggerUpdate2ElectricBoogaloo] = useState(false)
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user)
     setOpen(true)
   }
 
-  // useEffect(() => {
-  //   if (!token || !user) {
-  //     router.push("/")
-  //   }
-  // }, [token, router])
-
   useEffect(() => {
+    if (!token || !user) {
+      router.push("/")
+    }
+
     if (user) {
       console.log("useEffect: FriendsList")
       setUserid(user.id)
@@ -56,7 +55,7 @@ export default function FriendsList() {
     getProfilePics(friends)
 
     console.log(loadingPics)
-  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics])
+  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics, triggerUpdate2ElectricBoogaloo])
 
   const fetchAllInfo = async () => {
     try {
@@ -67,6 +66,7 @@ export default function FriendsList() {
     } finally {
       getProfilePics(friends)
       setLoadingFriendsList(false)
+      setTriggerUpdate2ElectricBoogaloo(true)
     }
   }
 
@@ -77,6 +77,7 @@ export default function FriendsList() {
       console.error("Error removing friend:", error)
     } finally {
       setLoadingPics(true)
+      setTriggerUpdate2ElectricBoogaloo(false)
     }
   }
 
@@ -95,7 +96,6 @@ export default function FriendsList() {
         responseType: "blob",
       }
       console.log("Fetching profile pics...")
-      // Create an array to store promises
       const promises = []
 
       for (let i = 0; i < users.length; i++) {
@@ -112,8 +112,6 @@ export default function FriendsList() {
                 reader.onloadend = () => {
                   if (i === friends.length - 1) {
                     setLoadingPics(false)
-
-                    //setTriggerUpdate(!triggerUpdate);
                   }
                 }
               })
@@ -121,9 +119,6 @@ export default function FriendsList() {
                 reject(error)
                 if (i === users.length - 1) {
                   setLoadingPics(false)
-
-                  console.log("Loading pics set to false")
-                  //setTriggerUpdate(!triggerUpdate);
                 }
               })
           })
@@ -193,43 +188,61 @@ export default function FriendsList() {
             <Grid container spacing={5} justifyContent={"center"}>
               {friends.map((user, index) => (
                 <Grid item key={user.id}>
-                  
-                  <Card sx={{ maxWidth: 345, flexBasis: '100%', background: "", maxHeight: 496 }}>
-                    <ListItem direction="row" alignItems="center" disablePadding sx={{ display: 'block' }}>
-                    <CardActionArea onClick={(event) => handleListItemClick(event, user)}>
-                      {/* <CardMedia
-                        component="img"
-                        image={profilePics[index]?.pic}
-                        alt="profile picture"
-                        width={345}
-                        height={230}
-                      /> */}
-                      {/* <Avatar alt="Profile Picture" src={profilePics[index]?.pic} style={{ width: 345, height: 230 }} variant="square"
-                      /> */}
-                      <Avatar alt="Profile Picture" src={profilePics[index]?.pic === "data:text/xml;base64," ? null : profilePics[index]?.pic
-                      } style={{ width: 345, height: 230 }} variant="square"
-                      />
-                      
-                      <CardContent sx={{width: 345, height: 206, overflow: 'auto'}}>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {user.nameFirst} {user.nameLast}
-                        </Typography>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {user.userType ? "Tutor" : "Student"}
-                        </Typography>
-                        <Typography variant="h6" color="text.secondary">
-                          {user.areaOfStudy}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Lizards are a widespread group of squamate reptiles, with over 6,000
-                          species, ranging across all continents except Antarctica
-                        </Typography>
-                      </CardContent>
-                      
-                    </CardActionArea>
-                    
-                      <CardActions >
-                        <Button size="small" color="primary" onClick={(event) => removeFriend(user.id)} height={60}>
+                  <Card
+                    sx={{
+                      maxWidth: 345,
+                      flexBasis: "100%",
+                      background: "",
+                      maxHeight: 496,
+                    }}
+                  >
+                    <ListItem
+                      direction="row"
+                      alignItems="center"
+                      disablePadding
+                      sx={{ display: "block" }}
+                    >
+                      <CardActionArea
+                        onClick={(event) => handleListItemClick(event, user)}
+                      >
+                        <Avatar
+                          alt="Profile Picture"
+                          src={
+                            profilePics[index]?.pic === "data:text/xml;base64,"
+                              ? null
+                              : profilePics[index]?.pic
+                          }
+                          style={{ width: 345, height: 230 }}
+                          variant="square"
+                        />
+
+                        <CardContent
+                          sx={{ width: 345, height: 206, overflow: "auto" }}
+                        >
+                          <Typography gutterBottom variant="h5" component="div">
+                            {user.nameFirst} {user.nameLast}
+                          </Typography>
+                          <Typography gutterBottom variant="h5" component="div">
+                            {user.userType ? "Tutor" : "Student"}
+                          </Typography>
+                          <Typography variant="h6" color="text.secondary">
+                            {user.areaOfStudy}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Lizards are a widespread group of squamate reptiles,
+                            with over 6,000 species, ranging across all
+                            continents except Antarctica
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+
+                      <CardActions>
+                        <Button
+                          size="small"
+                          color="primary"
+                          onClick={(event) => removeFriend(user.id)}
+                          height={60}
+                        >
                           Remove
                         </Button>
                         <Button

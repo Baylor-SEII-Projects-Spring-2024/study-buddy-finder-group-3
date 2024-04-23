@@ -34,7 +34,8 @@ function MeetingModal({
   handleClose,
   updateMeetingInParent,
   isInvitation = false,
-  tutorId
+  tutorId,
+  onMeetingAccepted
 }) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
@@ -152,9 +153,10 @@ function MeetingModal({
       )
 
       const updatedMeeting = response.data
-      // updateMeetingInParent(updatedMeeting)
+      updateMeetingInParent(updatedMeeting)
       handleClose()
       toast.success("Meeting accepted successfully")
+      onMeetingAccepted()
     } catch (error) {
       console.error("Failed to accept meeting:", error)
     }
@@ -168,7 +170,7 @@ function MeetingModal({
       )
 
       const updatedMeeting = response.data
-      // updateMeetingInParent(updatedMeeting)
+      updateMeetingInParent(updatedMeeting)
       handleClose()
       toast.success("Meeting rejected successfully")
     } catch (error) {
