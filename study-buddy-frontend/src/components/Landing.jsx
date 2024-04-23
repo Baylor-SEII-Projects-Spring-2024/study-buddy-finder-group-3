@@ -364,7 +364,7 @@ const LandingPage = () => {
       </div>
 
       {/* Unlock Potential section */}
-      <Parallax bgImage={"./splash-art.png"} strength={300}>
+      <Parallax bgImage={"./unlock-potential.png"} strength={300}>
         <div
           data-aos="fade-up" //  fade-up animation
           data-aos-delay="100" //  delay in milliseconds
