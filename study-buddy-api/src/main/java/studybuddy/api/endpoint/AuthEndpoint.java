@@ -157,6 +157,7 @@ public class AuthEndpoint {
         private String courses;
         private String prefTime;
         private String prefMeetingType;
+        private String aboutMe;
 
         public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
             this.username = username;
@@ -196,5 +197,7 @@ public class AuthEndpoint {
         public String getPrefTime() { return prefTime; }
 
         public String getPrefMeetingType() { return prefMeetingType; }
+
+        public String getAboutMe() { return aboutMe; }
     }
 }
