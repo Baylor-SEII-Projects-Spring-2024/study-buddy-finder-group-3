@@ -16,46 +16,55 @@ import {selectUser} from "@/utils/authSlice";
 
 function ChangePassword({ open, onClose }) {
     const dispatch = useDispatch();
-    const [c_name, setCourseName] = useState("");
-    const [description , setDescription] = useState("");
-    const [subjectArea , setSubjectArea] = useState("");
+    //const [c_name, setCourseName] = useState("");
+    //const [description , setDescription] = useState("");
+    //const [subjectArea , setSubjectArea] = useState("");
+    const [old_password, setOldPassword] = useState("");
+    const [new_password , setNewPassword] = useState("");
+    const [v_password , setVerifiedPassword] = useState("");
     const user = useSelector(selectUser)
     const router = useRouter()
 
 
-    const handleCourseNameChange = (event) => {
-        setCourseName(event.target.value);
+    const handleOldPasswordChange = (event) => {
+        setOldPassword(event.target.value);
     };
 
-    const handleDescriptionChange = (event) => {
-        setDescription(event.target.value);
+    const handleNewPasswordChange = (event) => {
+        setNewPassword(event.target.value);
     };
-    const handleSubjectAreaChange = (event) => {
-        setSubjectArea(event.target.value);
+    const handleVerifiedPasswordChange = (event) => {
+        setVerifiedPassword(event.target.value);
     };
 
-    const handleClose = () => {
-        setCourseName("")
-        setDescription("")
-        setSubjectArea("")
-        onClose()
+    const handleClose = (e) => {
+        e.preventDefault();
+        setOldPassword("");
+        setNewPassword("");
+        setVerifiedPassword("");
+        onClose();
     }
 
-    const handleNewCourse = async (e) => {
+    const handleNewPassword = async (e) => {
         e.preventDefault();
-        if (!c_name) {
-            toast.error("Course name cannot be empty");
+        if (!old_password) {
+            toast.error("Type Old Password");
             return;
         }
-        if (!description) {
-            toast.error("Description cannot be empty");
+        if (!new_password) {
+            toast.error("Type new password");
+            return;
+        }
+        if (!v_password) {
+            toast.error("Type new password");
             return;
         }
 
+        /*
         try {
             const response = await axios.post(`${API_URL}/courses/user/${user.id}/newCourseforUser`, {
-                name: c_name,
-                description,
+                name: old_password,
+                new_password,
                 subjectArea
             });
             console.log(response);
@@ -64,7 +73,7 @@ function ChangePassword({ open, onClose }) {
         } catch (error){
             toast.error("Invalid Course");
             console.error(error);
-        }
+        }*/
 
     };
 
@@ -78,35 +87,35 @@ function ChangePassword({ open, onClose }) {
                     New Course
                 </Typography>
                 <br/>
-                <Box component="form" sx={{ mt: 1 }} onSubmit={handleNewCourse}>
+                <Box component="form" sx={{ mt: 1 }} onSubmit={handleNewPassword}>
 
                     <TextField
                         margin="normal"
                         fullWidth
                         label="Old Password"
-                        name="c_name"
-                        autoComplete="c_name"
+                        name="old_password"
+                        autoComplete="old_password"
                         autoFocus
-                        onChange={handleCourseNameChange}
-                        value={c_name}
+                        onChange={handleOldPasswordChange}
+                        value={old_password}
                     />
                     <TextField
                         margin="normal"
                         fullWidth
-                        name="Description"
+                        name="new_password"
                         label="New Password"
-                        autoComplete="current-password"
-                        onChange={handleDescriptionChange}
-                        value={description}
+                        autoComplete="new_password"
+                        onChange={handleNewPasswordChange}
+                        value={new_password}
                     />
                     <TextField
                         margin="normal"
                         fullWidth
-                        name="Description"
+                        name="v_password"
                         label="Verify New Password"
                         autoComplete="current-password"
-                        onChange={handleDescriptionChange}
-                        value={description}
+                        onChange={handleVerifiedPasswordChange}
+                        value={v_password}
                     />
                     <Button
                         type="submit"

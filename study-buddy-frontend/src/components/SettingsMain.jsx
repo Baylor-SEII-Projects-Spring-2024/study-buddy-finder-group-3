@@ -7,10 +7,12 @@ import { useSelector } from "react-redux"
 import { selectToken, selectUser } from "@/utils/authSlice.js"
 import { useRouter } from "next/router"
 import { API_URL } from "@/utils/config";
+import ChangePassword from "@/components/ChangePassword";
 import { toast } from "react-toastify";
 import {Title} from "@mui/icons-material";
 import ProfileDisplay from "@/components/ProfileDisplay";
 import {useTheme} from "@mui/material/styles";
+import CreateCourse from "@/components/CreateCourse";
 
 
 
@@ -22,12 +24,13 @@ function SettingsMain() {
     const router = useRouter();
     const [profile, setProfile] = useState('');
     const [userId, setUserId] = useState('');
-    const [editMode, setEditMode] = useState(false);
-    const [selectedCourses, setSelectedCourses] = useState([]);
+    const [userIsTutor, setUserIsTutor] = useState(false);
+    const [selectedAccountType, setSelectedAccountType] = useState("Student");
+
     const [theme, setTheme] = useState('light'); // State to track selected theme
     const [notifications, setNotifications] = useState(false);
     const [emails, setEmailUpdates] = useState(false);
-    const [accountType, setAccountType] = useState('Student'); // change to current type
+    const [newUserTypeIsTutor, setNewUserTypeIsTutor] = useState(false); // change to current type
     const [openChangePasswordModal, setChangePasswordModal] = useState(false);
 
 
@@ -45,6 +48,23 @@ function SettingsMain() {
             fetchProfileInfo(user.id);
         }
     }, [user]);
+    /*
+
+    useEffect(() => {
+        if (user) {
+            setUserIsTutor(user.accountType === "Tutor");
+            setSelectedAccountType(user.accountType);
+            setProfile(user.profile); // Assuming user.profile contains profile information
+        }
+    }, [user]);*/
+
+
+    const handleNewAccountTypeChange = (event) => {
+        const newAccountType = event.target.value;
+        setUserIsTutor(newAccountType === "Tutor");
+        setSelectedAccountType(newAccountType);
+    };
+
 
     const fetchProfileInfo = async (userId) => {
         try {
@@ -97,20 +117,32 @@ function SettingsMain() {
         //  add logic here to handle email updates setting change
     };
 
-    const handleAccountTypeChange = (event) => {
-        setAccountType(event.target.checked);
-        //  add logic here to handle email updates setting change
+
+    const handleOpenChangePasswordModal = () => {
+        setChangePasswordModal(true);
+    };
+
+    const handleCloseChangePasswordModal = () => {
+        setChangePasswordModal(false);
     };
 
 
-    {/*
-        overflowY: 'auto',
-        marginLeft: '20vw',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '5px',
-        justifyContent: 'center',
-        height: '80vh',*/}
+    const handleSubmit = async () => {
+
+    try {
+        const data = {
+            isTutor: selectedAccountType === "Tutor" ? true : false,
+        };
+
+
+        // Send a request to update the user's account type
+        await axios.put(`${API_URL}/users/${user.id}/changeAccountType`, data);
+        toast.success("Account type updated successfully!");
+    } catch (error) {
+        console.error("Error updating account type:", error);
+        toast.error("Failed to update account type. Please try again later.");
+    }
+};
 
     return (
 
@@ -144,13 +176,49 @@ function SettingsMain() {
                     Personal Information
                 </Typography>
                 <Divider/>
-                <div style={{display: 'flex', alignItems: 'flex-start'}}>
+                {/*
+                <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between'}}>
                     <Avatar alt="Profile Picture" src={profile.profilePictureUrl}
-                            style={{marginTop: '10px', marginBottom: '10px', marginRight: '10px'}}/>
-                    <Typography id="profile-container-title" variant="h6" component={"h2"}>
-                        {profile.nameFirst} {profile.nameLast}
-                    </Typography>
+                            style={{marginTop: '10px', marginBottom: '10px', marginLeft: '25px',  width: '100px', height: '100px'}}/>
+                    <div style={{textAlign: 'right', marginRight: '25px'}}>
+                        <Typography id="profile-container-title" variant="h4" component={"h2"}
+                                    style={{marginTop: '10px', marginBottom: '10px'}}>
+                            {profile.nameFirst} {profile.nameLast}
+                        </Typography>
+                        <Typography id="profile-container-title" variant="h5" component={"h2"}>
+                            {profile.username}
+                        </Typography>
+                    </div>
+                </div>*/}
+                <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between'}}>
+                    {profile && profile.profilePictureUrl && (
+                        <Avatar
+                            alt="Profile Picture"
+                            src={profile.profilePictureUrl}
+                            style={{
+                                marginTop: '10px',
+                                marginBottom: '10px',
+                                marginLeft: '25px',
+                                width: '100px',
+                                height: '100px'
+                            }}
+                        />
+                    )}
+                    <div style={{textAlign: 'right', marginRight: '25px', flex: 1 }}>
+                        <Typography id="profile-container-title" variant="h4" component={"h2"}
+                                    style={{marginTop: '10px', marginBottom: '10px'}}>
+                            {profile && `${profile.nameFirst} ${profile.nameLast}`}
+                        </Typography>
+                        <Typography id="profile-container-title" variant="h5" component={"h2"}>
+                            {profile && profile.username}
+                        </Typography>
+                        <Typography variant="body1" gutterBottom>
+                            {userIsTutor ? "Tutor" : "Student"}
+                        </Typography>
+                    </div>
                 </div>
+
+
             </Box>
             <br/>
 
@@ -245,24 +313,28 @@ function SettingsMain() {
                         variant="contained"
                         color="primary"
                         style={{marginRight: '5vh'}}
-                        onClick={() => router.push("/profile/")}
+                        onClick={handleOpenChangePasswordModal}
                     >
                         Edit
                     </Button>
                 </div>
+                <ChangePassword open={openChangePasswordModal} onClose={handleCloseChangePasswordModal} />
 
                 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                     <Typography variant="h8" gutterBottom style={{marginLeft: '5vh'}}>
                         Account type
                     </Typography>
                     <Select
-                        value={theme}
-                        onChange={handleAccountTypeChange}
+                        value={userIsTutor ? "Tutor" : "Student"}
+                        onChange={handleNewAccountTypeChange}
                         style={{width: '150px', marginRight: '5vh'}}
                     >
                         <MenuItem value="Tutor">Tutor</MenuItem>
                         <MenuItem value="Student">Student</MenuItem>
                     </Select>
+                    <Button variant="contained" color="primary" onClick={handleSubmit}>
+                        Save
+                    </Button>
                 </div>
             </Box>
 
@@ -275,136 +347,5 @@ function SettingsMain() {
 
 }
 
-/*
-function SettingsMain() {
-    const [selectedSetting, setSelectedSetting] = useState("Account");
 
-    const handleSettingClick = (setting) => {
-        setSelectedSetting(setting);
-    };
-
-    return (
-        <div style={{ display: 'flex' }}>
-            <SettingsSidebar onSettingClick={handleSettingClick} />
-            {selectedSetting === "Account" && <AccountSettings />}
-            {selectedSetting === "Courses" && <CourseSettings />}
-            {selectedSetting === "Help" && <HelpSettings />}
-        </div>
-    );
-}*/
-
-const SettingsOption = ({title, description, value, onChange}) => {
-    return (
-        <div className="settings-option">
-            <h3>{title}</h3>
-            <p>{description}</p>
-            <input type="checkbox" checked={value} onChange={onChange} />
-        </div>
-    );
-};
-
-
-
-function SettingsSidebar({ onSettingClick }) {
-    return (
-        <Box
-            sx={{ /* width: "10vw", */ minHeight: "100vh", borderRight: "1px solid #ddd" }}
-        >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <h3>Settings</h3>
-            </div>
-            <Button fullWidth onClick={() => onSettingClick("Account")}>Account</Button>
-            <Button fullWidth onClick={() => onSettingClick("Courses")}>Courses</Button>
-            <Button fullWidth onClick={() => onSettingClick("Help")}>Help</Button>
-        </Box>
-    );
-}
-
-
-
-function AccountSettings() {
-    const theme = useTheme()
-
-    return (
-        <Box
-            sx={{
-                width: "75vw",
-                padding: "15px",
-                pt:"64px"
-        }}
-        >
-            {/*<div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>*/}
-            {/*    <h3> Account Information</h3>*/}
-            {/*</div>*/}
-            <Box
-                sx={{
-                    pt:"64px",
-                    marginTop: "15px",
-                    marginLeft: "80px",
-                    padding: "20px",
-                    border: "1px solid #ddd",
-                    borderRadius: "10px",
-                    minWidth: "30vw",
-                    display: "inline-block",
-                    width: "fit-content",
-                    height: "fit-content",
-                    backgroundColor: theme.palette.background.default,
-                    borderColor: theme.palette.primary.main
-                }}
-            >
-                <ProfileDisplay />
-            </Box>
-            <div>
-                <Button
-                    fullWidth style={{justifyContent: 'left', paddingLeft: "5vw" }}
-                >Change Password</Button>
-            </div>
-        </Box>
-    )
-}
-
-function CourseSettings() {
-    return (
-        <Box
-            sx={{width: "75vw"}}
-        >
-            <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
-                <h3> Course Information</h3>
-            </div>
-            <div>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Courses</Button>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Change Interests</Button>
-            </div>
-        </Box>
-    )
-}
-function PrivacySettings() {
-    return (
-        <Box
-            sx={{width: "75vw"}}
-        >
-            <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
-                <h3> Privacy and Safety</h3>
-            </div>
-            <div>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Block Accounts</Button>
-            </div>
-        </Box>
-    )
-}
-
-function HelpSettings() {
-    return (
-        <Box
-            sx={{width: "75vw"}}
-        >
-            <div style={{display: 'flex', justifyContent: 'left', paddingLeft: "5vw"}}>
-                <h3> What can we help you with?</h3>
-            </div>
-            <div>
-                <Button fullWidth style={{ justifyContent: 'left', paddingLeft: "5vw" }}>Additional Resources</Button>
-            </div>
-        </Box>
-    )
-}
 export default SettingsMain;

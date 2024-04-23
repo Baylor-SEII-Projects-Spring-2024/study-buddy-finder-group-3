@@ -124,44 +124,50 @@ function DisplayCourses() {
             </Box>
 
             <Box id="courses-section" >
-                <Grid container spacing={4} sx={{ mt: 4 }}>
-                    {courses.map((course) => (
-                        <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            md={4}
-                            key={course.id}
-                        >
-                            <Card style={{ position: "relative" }}>
-                                {" "}
+                {courses.length === 0 ? (
+                    <Typography variant="h4" gutterBottom style={{ textAlign: "center", marginTop: "2rem" }}>
+                        No courses
+                    </Typography>
+                ) : (
+                    <Grid container spacing={4} sx={{ mt: 4 }}>
+                        {courses.map((course) => (
+                            <Grid
+                                item
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                key={course.id}
+                            >
+                                <Card style={{ position: "relative" }}>
+                                    {" "}
 
-                                    <CardMedia
-                                        component="img"
-                                        height="140"
-                                        image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
-                                    />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h5" component="div">
-                                            {course.name}
-                                        </Typography>
-                                        <Typography gutterBottom variant="body2" component="div">
-                                            {course.subjectArea}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {course.description}
-                                        </Typography>
-                                        <IconButton
-                                            style={{ position: "absolute", top: 5, right: 5 }}
-                                            onClick={() => handleDeleteIconClick(course)}
-                                        >
-                                            <DeleteIcon color="error" />
-                                        </IconButton>
-                                    </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
+                                        />
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h5" component="div">
+                                                {course.name}
+                                            </Typography>
+                                            <Typography gutterBottom variant="body2" component="div">
+                                                {course.subjectArea}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                {course.description}
+                                            </Typography>
+                                            <IconButton
+                                                style={{ position: "absolute", top: 5, right: 5 }}
+                                                onClick={() => handleDeleteIconClick(course)}
+                                            >
+                                                <DeleteIcon color="error" />
+                                            </IconButton>
+                                        </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                    )}
             </Box>
         </Container>
     )
