@@ -42,13 +42,17 @@ function TutorInfo() {
 
     const fetchProfileInfo = async (userId) => {
         try {
-            // console.log("API_URL: ", API_URL);
-            const response = await axios.get(`${API_URL}/profile/${userId}`);
-            setProfile(response.data);
-            // console.log("USER:", response.data)
+            const profileResponse = await axios.get(`${API_URL}/profile/${userId}`);
+            setProfile(profileResponse.data);
 
-            console.log("Tutor Status: ", response.data.userType)
-            console.log("Is Tutor: ", profile.userType)
+            console.log("USER:", profileResponse.data);
+
+            console.log("Tutor Status:", profileResponse.data.userType);
+
+            if (profileResponse.data.userType) {
+                const tutorRatingResponse = await axios.get(`${API_URL}/tutor_ratings/${userId}`);
+                setTutorRatings(tutorRatingResponse.data);
+            }
         } catch (error) {
             console.error("Error fetching profile info:", error);
         }
@@ -70,6 +74,21 @@ function TutorInfo() {
                  borderColor: theme.palette.primary.main
              }}
         >
+            <Typography variant="h4">Tutor Information</Typography>
+            <Typography variant="h6">Name: {profile.nameFirst} {profile.nameLast}</Typography>
+            <Typography variant="body1">Email: {profile.emailAddress}</Typography>
+            <Typography variant="body1">Username: {profile.username}</Typography>
+            {tutorRatings.length > 0 && (
+                <Box mt={2}>
+                    <Typography variant="h5">Tutor Ratings:</Typography>
+                    {tutorRatings.map((rating, index) => (
+                        <Box key={index} mt={1}>
+                            <Typography variant="body1">Rating: {rating.rating}</Typography>
+                            <Typography variant="body1">Comment: {rating.comment}</Typography>
+                        </Box>
+                    ))}
+                </Box>
+            )}
         </Box>
     );
 }
