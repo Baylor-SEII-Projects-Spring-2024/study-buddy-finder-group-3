@@ -3,9 +3,12 @@ package studybuddy.api.endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import studybuddy.api.user.TutorRatingService;
 import studybuddy.api.user.UserService;
 import studybuddy.api.user.TutorRating;
 import studybuddy.api.user.User;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tutor")
@@ -13,6 +16,9 @@ public class TutorEndpoint {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TutorRatingService tutorRatingService;
 
     @PostMapping("/{tutorId}/review")
     public ResponseEntity<?> submitReview(@PathVariable Long tutorId, @RequestBody ReviewRequest reviewRequest) {
@@ -24,6 +30,16 @@ public class TutorEndpoint {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.badRequest().body("Could not submit the review");
+        }
+    }
+
+    @GetMapping("/{tutorId}/rating")
+    public ResponseEntity<?> getRating(@PathVariable Long tutorId) {
+        List<String> ratings = tutorRatingService.getTutorRatingByUserId(tutorId);
+        if (ratings.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(ratings);
         }
     }
 
