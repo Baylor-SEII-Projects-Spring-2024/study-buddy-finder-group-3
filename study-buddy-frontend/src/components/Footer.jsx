@@ -1,13 +1,41 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
+import axios from "axios"
 import { Box, Divider, TextField, Button, Link } from "@mui/material"
 import Typography from "@mui/material/Typography"
+import { toast } from "react-toastify"
+import { API_URL } from "@/utils/config"
 
 const Itemspacing = 20
 const textSpacing = 2
 const textAllign = "left"
 
+const mailRequest = {
+  to: "",
+  subject: "Welcome to StudyBuddy!",
+  text: "Thank you for subscribing to StudyBuddy!",
+}
+
 export default function Footer() {
-  const handleClick = () => {}
+  const [email, setEmail] = useState("")
+
+  const handleClick = () => {
+    toast.success("Subscribed!")
+  }
+
+  const handleChange = (event) => {
+    setEmail(event.target.value)
+    mailRequest.to = event.target.value
+  }
+
+  const sendEmail = () => {
+    try {
+      const response = axios.post(`${API_URL}/send-email`, mailRequest);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      toast.success("Subscribed!");
+    }
+  }
 
   return (
     <>
@@ -155,9 +183,10 @@ export default function Footer() {
                 id="subscribe-field"
                 label="Enter your email"
                 variant="outlined"
+                onChange={handleChange}
                 sx={{ width: "20vw" }}
               />
-              <Button style={{ marginLeft: 20, color: "black" }}>
+              <Button style={{ marginLeft: 20, color: "black" }} onClick={() => {sendEmail()}}>
                 Subscribe
               </Button>
             </Box>
@@ -188,7 +217,7 @@ export default function Footer() {
             marginRight={3}
             sx={{ textDecoration: "underline" }}
           >
-            <Link href="">Privacy Policy</Link>
+            <Link href="privacyPolicy">Privacy Policy</Link>
           </Typography>
           <Typography
             variant="subtitle1"
@@ -197,14 +226,6 @@ export default function Footer() {
             sx={{ textDecoration: "underline" }}
           >
             <Link href="terms">Terms of Service</Link>
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            align="center"
-            marginRight={3}
-            sx={{ textDecoration: "underline" }}
-          >
-            <Link href="">Cookie Settings</Link>
           </Typography>
         </Box>
       </Box>
