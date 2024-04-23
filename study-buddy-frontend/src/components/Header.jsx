@@ -116,31 +116,37 @@ function Header() {
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId)
 
-    if (section) {
-      handleCloseMeetingsMenu()
-      handleCloseSettingsMenu()
-      const offset = 64
-      const position =
-        section.getBoundingClientRect().top + window.pageYOffset - offset
-      window.scrollTo({
-        top: position,
-        behavior: "smooth",
-      })
+    if (sectionId === "friends-section") {
+      router.push("/friends")
     } else {
-      router.push("/home").then(() => {
-        window.requestAnimationFrame(() => {
-          const section = document.getElementById(sectionId)
-          if (section) {
-            const offset = 64
-            const position =
-              section.getBoundingClientRect().top + window.pageYOffset - offset
-            window.scrollTo({
-              top: position,
-              behavior: "smooth",
-            })
-          }
+      if (section) {
+        handleCloseMeetingsMenu()
+        handleCloseSettingsMenu()
+        const offset = 64
+        const position =
+          section.getBoundingClientRect().top + window.pageYOffset - offset
+        window.scrollTo({
+          top: position,
+          behavior: "smooth",
         })
-      })
+      } else {
+        router.push("/home").then(() => {
+          window.requestAnimationFrame(() => {
+            const section = document.getElementById(sectionId)
+            if (section) {
+              const offset = 64
+              const position =
+                section.getBoundingClientRect().top +
+                window.pageYOffset -
+                offset
+              window.scrollTo({
+                top: position,
+                behavior: "smooth",
+              })
+            }
+          })
+        })
+      }
     }
   }
 
