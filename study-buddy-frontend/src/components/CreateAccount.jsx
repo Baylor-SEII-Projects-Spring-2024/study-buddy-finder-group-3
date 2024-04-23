@@ -87,7 +87,7 @@ function CreateAccount({ open, onClose }) {
     }
     const lowercaseRegex = /[a-z]/;
     if (!lowercaseRegex.test(password)) {
-      toast.error("Password must contain at least one uppercase character");
+      toast.error("Password must contain at least one lowercase character");
       return;
     }
     const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
@@ -126,15 +126,15 @@ function CreateAccount({ open, onClose }) {
       })
       console.log(response)
       if (response.status === 200){
-        toast.success("Account created successfully!")
+        toast.success("Account created successfully!", { position: "top-center" })
         router.push('/home')
       } else {
-        toast.error("Failed to create account")
+        toast.error("Failed to create account", { position: "top-center" })
         console.log("Failed to create account")
       }
 
     } catch (error){
-      toast.error("Failed to create account")
+      toast.error("Failed to create account", { position: "top-center" })
       console.error(error)
     }
 

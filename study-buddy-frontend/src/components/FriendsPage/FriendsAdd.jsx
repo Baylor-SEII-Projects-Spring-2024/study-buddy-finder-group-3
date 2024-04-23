@@ -64,7 +64,6 @@ function FriendsAdd() {
   }
 
   const handleSearch = async () => {
-    //setOpen((prevOpen) => !prevOpen)
     try {
       fetchAddInfo()
     } catch (error) {
@@ -85,7 +84,7 @@ function FriendsAdd() {
       console.error("Error adding friend:", error)
     }
 
-    toast.success("Friend request sent!")
+    toast.success("Friend request sent!", {position: "top-center"})
 
     const updatedFriends = friends.filter((user3) => user3.id !== user2.id)
     setFriendsList(updatedFriends)
