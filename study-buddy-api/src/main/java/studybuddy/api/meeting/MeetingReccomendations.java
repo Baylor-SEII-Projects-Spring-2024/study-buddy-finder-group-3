@@ -20,6 +20,8 @@ public class MeetingReccomendations {
     private int friendPts;
     @Getter @Setter
     private int areaOfStudyPts;
+    @Getter @Setter
+    private int blockedPts;
     @Getter
     private int totalPts;
     @Getter
@@ -33,6 +35,7 @@ public class MeetingReccomendations {
         meetingTypePts = 0;
         friendPts = 0;
         totalPts = 0;
+        blockedPts = 0;
         meeting = m;
     }
 
@@ -59,6 +62,10 @@ public class MeetingReccomendations {
         }
     }
 
+    public void addBlockedPts(){
+        this.blockedPts -= 3;
+    }
+
     public void addMeetingTypePts(){
         this.meetingTypePts += 2;
     }
@@ -69,7 +76,7 @@ public class MeetingReccomendations {
 
     public int totalPoints(){
         totalPts = coursePts + areaOfStudyPts + timePts + tutorRatingPts + meetingTypePts + friendPts;
-        System.out.println(totalPts + " - " + meeting.getTitle());
+        System.out.println("Total Points: " + totalPts + " - " + meeting.getTitle());
         return totalPts;
     }
 }

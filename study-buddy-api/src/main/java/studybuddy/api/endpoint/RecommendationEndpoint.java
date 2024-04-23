@@ -53,13 +53,27 @@ public class RecommendationEndpoint {
                 )
         );
 
+        // Gets all the user's blocked people
+        sql = "SELECT user_id FROM users " +
+                "WHERE user_id != ? AND user_id IN(" +
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)";
+        List<Long> blockedUsers = jdbcTemplate.query(sql, new Object[]{userId, userId}, new RowMapper<Long>() {
+            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getLong("user_id");
+            }
+        });
+
+        //System.out.println("Blocked Users: " + blockedUsers);
+
+
         for(MeetingReccomendations mr : recList){
             Long meetingId = mr.getMeeting().getId();
             // Implementation for course
             // Gets meeting course ID
             sql = "SELECT course_id FROM meeting WHERE meeting_id = ?";
             Long meetingCourse = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, Long.class);
-            System.out.println(meetingCourse);
+            System.out.println("Course ID: " + meetingCourse);
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
                     + " WHERE user_id = ?";
@@ -110,6 +124,23 @@ public class RecommendationEndpoint {
             }
 
             // TODO: Implementation for blocked users
+            sql = "SELECT user_id FROM user_meeting WHERE meeting_id = ? AND user_id != ?";
+            List<Long> meetingUsers = jdbcTemplate.query(sql, new Object[]{meetingId, userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("user_id");
+                }
+            });
+
+            for(Long l1 : meetingUsers){
+                for(Long l2 : blockedUsers){
+                    if(Objects.equals(l1, l2)){
+                        mr.addBlockedPts();
+                        System.out.println("Blocked user");
+                    }
+                    break;
+                }
+                break;
+            }
 
             // Gets time of meeting and checks to see if it is within the user's time preference
             Date date = mr.getMeeting().getDate();
@@ -242,9 +273,21 @@ public class RecommendationEndpoint {
                 //Gets all friend requests from user
 
                 "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
-                "WHERE fr.userfrom_id = ?)";
+                "WHERE fr.userfrom_id = ?)"
 
-        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId);
+                + "AND user_id NOT IN (" +
+                //Gets all blocked users
+
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)"
+
+                + "AND user_id NOT IN (" +
+                //Gets all blocked users
+
+                "SELECT bl.blocker_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE u.user_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId, userId, userId);
 
         List<UserRecommendations> recList = new ArrayList<>();
 
@@ -393,9 +436,21 @@ public class RecommendationEndpoint {
                 //Gets all friend requests from user
 
                 "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
-                "WHERE fr.userfrom_id = ?)";
+                "WHERE fr.userfrom_id = ?)"
 
-        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId);
+                + " AND user_id NOT IN (" +
+
+                //Gets all user that are blocked
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all user that are blocked
+                "SELECT bl.blocker_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE u.user_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId, userId, userId);
 
         List<UserRecommendations> recList = new ArrayList<>();
 
