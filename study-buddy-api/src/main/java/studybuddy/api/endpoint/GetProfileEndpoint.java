@@ -2,15 +2,19 @@ package studybuddy.api.endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import studybuddy.api.user.TutorRating;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 
 import java.io.IOException;
 import java.sql.Types;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/profile")
@@ -99,6 +103,21 @@ public class GetProfileEndpoint {
         } catch (IOException e) {
             e.printStackTrace();
             return false; // Error occurred while processing the photo
+        }
+    }
+
+
+    @GetMapping("/tutor_ratings/{tutorId}")
+    public ResponseEntity<List<TutorRating>> getTutorRatings(@PathVariable Long tutorId) {
+        try {
+            log.info("retrieving tutor ratings...");
+
+            return userService.getTutorReviews(tutorId)
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            log.error("Error occurred while retrieving tutor ratings for tutor ID: {}", tutorId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

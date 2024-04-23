@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // bcrypt import >:)
 
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -71,6 +72,10 @@ public class UserService {
             return false;
         }
 
+    }
+
+    public Optional<List<TutorRating>> getTutorReviews(Long tutorId) {
+        return tutorRatingRepository.findByUserId(tutorId);
     }
 
 }
