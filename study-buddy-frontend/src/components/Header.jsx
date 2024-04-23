@@ -13,11 +13,12 @@ import {
   Badge,
   Divider,
 } from "@mui/material"
-import axios from "axios"
-import NotificationsIcon from "@mui/icons-material/Notifications"
 import { useRouter } from "next/router"
 import { logout } from "@/utils/authSlice.js"
 import { API_URL } from "@/utils/config"
+import { setNotifications } from "@/utils/notificationSlice"
+import axios from "axios"
+import NotificationsIcon from "@mui/icons-material/Notifications"
 import MeetingModal from "./MeetingModal"
 
 const sections = [
@@ -31,27 +32,48 @@ function Header() {
   const [anchorEl, setAnchorEl] = useState(null)
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null)
   const [meetingsAnchorEl, setMeetingsAnchorEl] = useState(null)
-
-  const [pendingInvitations, setPendingInvitations] = useState([])
+  const { notificationCount } = useSelector((state) => state.notifications)
+  const { pendingInvitations, friendRequests } = useSelector(
+    (state) => state.notifications
+  )
   const user = useSelector(selectUser)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
 
   useEffect(() => {
-    fetchPendingInvitations()
-  }, [])
-
-  const fetchPendingInvitations = async () => {
-    try {
-      // Fetch pending invitations from backend API
-      const response = await fetch(
-        `${API_URL}/meeting/user/${user.id}/pending-invitations`
-      )
-      const data = await response.json()
-      setPendingInvitations(data)
-    } catch (error) {
-      console.error("Error fetching pending invitations:", error)
+    const fetchNotifications = async () => {
+      if (user && user.id) {// check if user and user.id exist
+        try {
+          const response = await axios.get(
+            `${API_URL}/user/${user.id}/notifications`
+          )
+          if (response.status === 200) {
+            dispatch(setNotifications(response.data))
+          }
+        } catch (error) {
+          console.error("Failed to fetch notifications:", error)
+        }
+      }
     }
-  }
+
+    fetchNotifications()
+  }, [dispatch, user])
+
+  // useEffect(() => {
+  //   fetchPendingInvitations()
+  // }, [])
+
+  // const fetchPendingInvitations = async () => {
+  //   try {
+  //     // Fetch pending invitations from backend API
+  //     const response = await fetch(
+  //       `${API_URL}/meeting/user/${user.id}/pending-invitations`
+  //     )
+  //     const data = await response.json()
+  //     setPendingInvitations(data)
+  //   } catch (error) {
+  //     console.error("Error fetching pending invitations:", error)
+  //   }
+  // }
 
   const handleSettingsClick = (event) => {
     setSettingsAnchorEl(event.currentTarget)
@@ -75,17 +97,20 @@ function Header() {
   }
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token")
     if (token) {
-        await axios.post(`${API_URL}/auth/invalidateToken`, {}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        localStorage.removeItem("token");
-        dispatch(logout());
-        router.push("/");
+      await axios.post(
+        `${API_URL}/auth/invalidateToken`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      localStorage.removeItem("token")
+      dispatch(logout())
+      router.push("/")
     }
-};
-
+  }
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId)
@@ -158,8 +183,8 @@ function Header() {
               onClose={handleCloseMeetingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd", 
-                  color: "white", 
+                  backgroundColor: "#628dbd",
+                  color: "white",
                 },
               }}
             >
@@ -199,8 +224,8 @@ function Header() {
               onClose={handleCloseSettingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd", 
-                  color: "white", 
+                  backgroundColor: "#628dbd",
+                  color: "white",
                 },
               }}
             >
@@ -243,7 +268,7 @@ function Header() {
               aria-haspopup="true"
               onClick={handleNotificationClick}
             >
-              <Badge badgeContent={pendingInvitations.length} color="error">
+              <Badge badgeContent={notificationCount} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -265,12 +290,18 @@ function Header() {
                 key={invitation.id}
                 onClick={(event) => handleNotificationClick(event, invitation)}
               >
-                Meeting invite for meeting: {invitation.title}
+                Meeting invite: {invitation.title}
               </MenuItem>
             ))
           ) : (
             <MenuItem>No pending invitations</MenuItem>
           )}
+          {friendRequests.length > 0 &&
+            friendRequests.map((request) => (
+              <MenuItem key={request.id}>
+                Friend request from: {request.username}
+              </MenuItem>
+            ))}
         </Menu>
       </AppBar>
       <MeetingModal

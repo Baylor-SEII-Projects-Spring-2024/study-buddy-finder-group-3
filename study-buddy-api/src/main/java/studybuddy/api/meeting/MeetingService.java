@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class meetingService {
+public class MeetingService {
 
     @Autowired
     public MeetingRepository meetingRepository;
