@@ -7,19 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
-import studybuddy.api.meeting.Meeting;
-import studybuddy.api.meeting.MeetingReccomendations;
+import studybuddy.api.meeting.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import studybuddy.api.user.User;
-import studybuddy.api.user.UserRecommendations;
+import studybuddy.api.user.*;
 import studybuddy.api.utils.JwtUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/recommendations")
@@ -28,6 +27,12 @@ public class RecommendationEndpoint {
     private JwtUtil jwtUtil;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    public MeetingRepository meetingRepository;
+    @Autowired
+    public UserRepository userService;
+    @Autowired
+    public CoursesRepository courseService;
 
     @GetMapping("/meetings/{userId}")
     public ResponseEntity<List<Meeting>> getReccomendationList(@PathVariable Long userId)
@@ -48,7 +53,9 @@ public class RecommendationEndpoint {
                                 rs.getString("description"),
                                 rs.getString("meeting_link"),
                                 rs.getString("meeting_location"),
-                                rs.getString("meeting_title")
+                                rs.getString("meeting_title"),
+                                new User(userService.findAllById(rs.getLong("user_id"))),
+                                new Courses((courseService.findAllById(rs.getLong("course_id"))))
                         )
                 )
         );
@@ -135,6 +142,7 @@ public class RecommendationEndpoint {
                 for(Long l2 : blockedUsers){
                     if(Objects.equals(l1, l2)){
                         mr.addBlockedPts();
+                        mr.getMeeting().setBlockedUser(true);
                         System.out.println("Blocked user");
                     }
                     break;
@@ -199,6 +207,18 @@ public class RecommendationEndpoint {
                 mr.addFriendPts();
             }
 
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userPrefType = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
+            if(userPrefType != null){
+                if(mr.getMeeting().getLocation() == null && userPrefType.equalsIgnoreCase("virtual")){
+                    mr.addMeetingTypePts();
+                }
+                else if (mr.getMeeting().getLocation() != null && userPrefType.equalsIgnoreCase("physical")){
+                    mr.addMeetingTypePts();
+                }
+            }
+
+
             // Get tutor rating
             sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
                     "WHERE user_id = " +
@@ -242,9 +262,12 @@ public class RecommendationEndpoint {
             count++;
         }
 
-        /*for(Meeting m : meetings){
-            System.out.println(m.getId());
-        }*/
+        meetings.forEach(meeting -> {
+            String course_name = meeting.getCourse().getName();
+            String areaOfStudy = meeting.getCourse().getSubjectArea();
+            meeting.setCourseName(course_name);
+            meeting.setAreaOfStudy(areaOfStudy);
+        });
 
         return new ResponseEntity<>(meetings, HttpStatus.OK);
     }

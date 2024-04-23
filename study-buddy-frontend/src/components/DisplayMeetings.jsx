@@ -389,13 +389,16 @@ function DisplayMeetings() {
                   >
                     {meeting.description}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {meeting.areaOfStudy} - {meeting.course} - {meeting.mode}
-                  </Typography>
+                  {meeting.blockedUser ? (
+                      <Typography variant="body2" color="text.secondary" style={{ fontWeight: 'bold', color: 'red' }}>
+                        BLOCKED USER ATTENDING MEETING
+                      </Typography>
+                  ) : (
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        {meeting.areaOfStudy} - {meeting.courseName}
+                      </Typography>
+                  )}
+
                   <Button endIcon={<ArrowForwardIosIcon />} sx={{ mt: 2 }}>
                     View Meeting
                   </Button>
