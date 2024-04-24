@@ -34,8 +34,6 @@ const sections = [
   { title: "About", id: "about-us-section" },
   { title: "Potential", id: "unlock-potential-section" },
   { title: "Customers", id: "customers-section" },
-  { title: "Our Mission", id: "mission-section" },
-  { title: "Contact", id: "contact-section" },
 ]
 
 const testimonials = [
