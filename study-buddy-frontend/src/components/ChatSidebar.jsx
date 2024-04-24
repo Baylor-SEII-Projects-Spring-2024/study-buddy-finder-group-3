@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/Chat.module.css";
 import ChatNavbar from "@/components/ChatNavbar";
-import ChatSearch from "@/components/ChatSearch";
 import Chats from "@/components/Chats"; // Import Chats component
 import axios from "axios";
 import { API_URL } from "@/utils/config";
