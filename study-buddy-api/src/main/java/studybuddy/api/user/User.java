@@ -50,7 +50,7 @@ public class User {
     String areaOfStudy;
 
     @Lob
-    @Column(name = "PROFILEPIC",  columnDefinition = "BLOB")
+    @Column(name = "PROFILEPIC",  columnDefinition = "MEDIUMBLOB")
     byte[] profilePic;
 
     @Column(name = "PREF_TIME")
