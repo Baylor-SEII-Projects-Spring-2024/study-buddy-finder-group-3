@@ -16,13 +16,19 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(String to, String subject, String text) {
+    public boolean sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         log.debug("vibe check");
         message.setFrom("studdybuddyofficialsite@gmail.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+        return true;
     }
 }

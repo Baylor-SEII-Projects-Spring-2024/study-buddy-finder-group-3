@@ -27,13 +27,12 @@ export default function Footer() {
     mailRequest.to = event.target.value
   }
 
-  const sendEmail = () => {
+  const sendEmail = async () => {
     try {
-      const response = axios.post(`${API_URL}/send-email`, mailRequest);
-    } catch (error) {
-      console.log(error);
-    } finally {
+      const response = await axios.post(`${API_URL}/send-email`, mailRequest);
       toast.success("Subscribed!");
+    } catch (error) {
+      toast.error("Invalid email");
     }
   }
 
@@ -184,6 +183,7 @@ export default function Footer() {
                 label="Enter your email"
                 variant="outlined"
                 onChange={handleChange}
+                fullWidth
                 sx={{ width: "20vw" }}
               />
               <Button style={{ marginLeft: 20, color: "black" }} onClick={() => {sendEmail()}}>
