@@ -236,7 +236,7 @@ public class GetFriendsEndpoint {
         return new ResponseEntity<>(pic, HttpStatus.OK);
     }
 
-    public class UserRowMapper implements RowMapper<User> {
+    public static class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
             User user = new User();

@@ -1,4 +1,4 @@
-package studybuddy.api.user;
+package studybuddy.api.courses;
 
 import jakarta.persistence.*;
 import lombok.Data;

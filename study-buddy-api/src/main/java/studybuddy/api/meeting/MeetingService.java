@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class meetingService {
+public class MeetingService {
 
     @Autowired
     public MeetingRepository meetingRepository;
@@ -32,7 +32,7 @@ public class meetingService {
         User creator = userRepository.findByUsername(creatorUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-
+        log.info("Creating meeting: {}", meeting);
         Meeting newMeeting = meetingRepository.save(meeting);
 
         // meeting creator entry
@@ -40,7 +40,7 @@ public class meetingService {
         creatorMeeting.setUser(creator);
         creatorMeeting.setMeeting(newMeeting);
         creatorMeeting.setInviteStatus("Accepted");
-//        creatorMeeting.setHost(true);
+        // creatorMeeting.setHost(true);
         userMeetingRepository.save(creatorMeeting);
 
         // create link for each invited
@@ -52,7 +52,7 @@ public class meetingService {
             invitedUserMeeting.setUser(invitedUser);
             invitedUserMeeting.setMeeting(newMeeting);
             invitedUserMeeting.setInviteStatus("Pending");
-//            invitedUserMeeting.setHost(false);
+            //invitedUserMeeting.setHost(false);
             userMeetingRepository.save(invitedUserMeeting);
         }
     }
