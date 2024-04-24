@@ -7,19 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
-import studybuddy.api.meeting.Meeting;
-import studybuddy.api.meeting.MeetingReccomendations;
+import studybuddy.api.meeting.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import studybuddy.api.user.User;
-import studybuddy.api.user.UserRecommendations;
+import studybuddy.api.user.*;
 import studybuddy.api.utils.JwtUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/recommendations")
@@ -28,6 +27,12 @@ public class RecommendationEndpoint {
     private JwtUtil jwtUtil;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    public MeetingRepository meetingRepository;
+    @Autowired
+    public UserRepository userService;
+    @Autowired
+    public CoursesRepository courseService;
 
     @GetMapping("/meetings/{userId}")
     public ResponseEntity<List<Meeting>> getReccomendationList(@PathVariable Long userId)
@@ -48,10 +53,26 @@ public class RecommendationEndpoint {
                                 rs.getString("description"),
                                 rs.getString("meeting_link"),
                                 rs.getString("meeting_location"),
-                                rs.getString("meeting_title")
+                                rs.getString("meeting_title"),
+                                new User(userService.findAllById(rs.getLong("user_id"))),
+                                new Courses((courseService.findAllById(rs.getLong("course_id"))))
                         )
                 )
         );
+
+        // Gets all the user's blocked people
+        sql = "SELECT user_id FROM users " +
+                "WHERE user_id != ? AND user_id IN(" +
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)";
+        List<Long> blockedUsers = jdbcTemplate.query(sql, new Object[]{userId, userId}, new RowMapper<Long>() {
+            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getLong("user_id");
+            }
+        });
+
+        //System.out.println("Blocked Users: " + blockedUsers);
+
 
         for(MeetingReccomendations mr : recList){
             Long meetingId = mr.getMeeting().getId();
@@ -59,7 +80,7 @@ public class RecommendationEndpoint {
             // Gets meeting course ID
             sql = "SELECT course_id FROM meeting WHERE meeting_id = ?";
             Long meetingCourse = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, Long.class);
-            System.out.println(meetingCourse);
+            System.out.println("Course ID: " + meetingCourse);
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
                     + " WHERE user_id = ?";
@@ -110,6 +131,24 @@ public class RecommendationEndpoint {
             }
 
             // TODO: Implementation for blocked users
+            sql = "SELECT user_id FROM user_meeting WHERE meeting_id = ? AND user_id != ?";
+            List<Long> meetingUsers = jdbcTemplate.query(sql, new Object[]{meetingId, userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("user_id");
+                }
+            });
+
+            for(Long l1 : meetingUsers){
+                for(Long l2 : blockedUsers){
+                    if(Objects.equals(l1, l2)){
+                        mr.addBlockedPts();
+                        mr.getMeeting().setBlockedUser(true);
+                        System.out.println("Blocked user");
+                    }
+                    break;
+                }
+                break;
+            }
 
             // Gets time of meeting and checks to see if it is within the user's time preference
             Date date = mr.getMeeting().getDate();
@@ -168,6 +207,18 @@ public class RecommendationEndpoint {
                 mr.addFriendPts();
             }
 
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userPrefType = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
+            if(userPrefType != null){
+                if(mr.getMeeting().getLocation() == null && userPrefType.equalsIgnoreCase("virtual")){
+                    mr.addMeetingTypePts();
+                }
+                else if (mr.getMeeting().getLocation() != null && userPrefType.equalsIgnoreCase("physical")){
+                    mr.addMeetingTypePts();
+                }
+            }
+
+
             // Get tutor rating
             sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
                     "WHERE user_id = " +
@@ -211,9 +262,12 @@ public class RecommendationEndpoint {
             count++;
         }
 
-        /*for(Meeting m : meetings){
-            System.out.println(m.getId());
-        }*/
+        meetings.forEach(meeting -> {
+            String course_name = meeting.getCourse().getName();
+            String areaOfStudy = meeting.getCourse().getSubjectArea();
+            meeting.setCourseName(course_name);
+            meeting.setAreaOfStudy(areaOfStudy);
+        });
 
         return new ResponseEntity<>(meetings, HttpStatus.OK);
     }
@@ -242,9 +296,21 @@ public class RecommendationEndpoint {
                 //Gets all friend requests from user
 
                 "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
-                "WHERE fr.userfrom_id = ?)";
+                "WHERE fr.userfrom_id = ?)"
 
-        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId);
+                + "AND user_id NOT IN (" +
+                //Gets all blocked users
+
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)"
+
+                + "AND user_id NOT IN (" +
+                //Gets all blocked users
+
+                "SELECT bl.blocker_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE u.user_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId, userId, userId);
 
         List<UserRecommendations> recList = new ArrayList<>();
 
@@ -393,9 +459,21 @@ public class RecommendationEndpoint {
                 //Gets all friend requests from user
 
                 "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
-                "WHERE fr.userfrom_id = ?)";
+                "WHERE fr.userfrom_id = ?)"
 
-        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId);
+                + " AND user_id NOT IN (" +
+
+                //Gets all user that are blocked
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all user that are blocked
+                "SELECT bl.blocker_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE u.user_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId, userId, userId);
 
         List<UserRecommendations> recList = new ArrayList<>();
 

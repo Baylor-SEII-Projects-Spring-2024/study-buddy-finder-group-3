@@ -23,4 +23,14 @@ public class Courses {
     @Column(name = "SUBJECT_AREA")
     String subjectArea;
 
+    public Courses(Courses other){
+        this.id = other.id;
+        this.name = other.name;
+        this.description = other.description;
+        this.subjectArea = other.subjectArea;
+    }
+
+    public Courses(){
+
+    }
 }

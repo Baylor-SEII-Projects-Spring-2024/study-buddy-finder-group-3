@@ -46,7 +46,7 @@ public class GetProfileEndpoint {
 
         log.info("Update user using: {}", userRequest);
         log.info("Updating user profile with userId={}, areaofstudy={}, email={}, firstName={}, lastName={}, username={}",
-                userId, userRequest.getCourses(), userRequest.getEmail(), userRequest.getFirstName(),
+                userId, userRequest.getAreaOfStudy(), userRequest.getEmail(), userRequest.getFirstName(),
                 userRequest.getLastName(), userRequest.getUsername());
 
 
@@ -65,7 +65,7 @@ public class GetProfileEndpoint {
                         "WHERE user_id = ?",
                 userRequest.getEmail(),
                 //hashedPassword,
-                userRequest.getCourses(),
+                userRequest.getAreaOfStudy(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 //userRequest.getIsTutor(),
