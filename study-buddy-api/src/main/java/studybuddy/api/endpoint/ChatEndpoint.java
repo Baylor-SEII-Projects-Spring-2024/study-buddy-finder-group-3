@@ -64,6 +64,24 @@ public class ChatEndpoint {
         }
     }
 
+//    @GetMapping("/getChatSetRead")
+//    public ResponseEntity<List<Messages>> getChatSetRead(
+//            @RequestParam("senderId") Long senderId,
+//            @RequestParam("receiverId") Long receiverId
+//    ) {
+//        try {
+//            var sender = userService.findUser(senderId).orElse(null);
+//            var receiver = userService.findUser(receiverId).orElse(null);
+//
+//            List<Messages> messages = messageService.findMessageByUsers(sender.getId(), receiver.getId());
+//            messageService.setIsReadToTrue(messages);
+//
+//            return ResponseEntity.ok(messages);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//        }
+//    }
+
 
 
 }

@@ -33,8 +33,8 @@ public class Messages {
     @Column(name = "MESSAGE_ID")
     Long id;
 
-    @Column(name = "TIMESTAMP")
-    Date timestamp;
+    @Column(name = "IS_READ")
+    Boolean isRead;
 
     @Column(name = "CONTENT")
     String content;

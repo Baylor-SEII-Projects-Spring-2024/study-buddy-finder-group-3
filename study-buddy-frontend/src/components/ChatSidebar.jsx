@@ -8,7 +8,7 @@ import Chats from "@/components/Chats"; // Import Chats component
 import axios from "axios";
 import { API_URL } from "@/utils/config";
 
-const ChatSidebar = ({ user, onUserSelect }) => {
+const ChatSidebar = ({ user, onUserSelect, SelectedUser }) => {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const ChatSidebar = ({ user, onUserSelect }) => {
       <ChatNavbar user={user} />
       {/*<ChatSearch user={user} />*/}
       {/* Pass the onUserSelect callback prop to Chats */}
-      <Chats user={user} friends={friends} onUserSelect={onUserSelect} />
+      <Chats user={user} friends={friends} onUserSelect={onUserSelect} selectedUser={SelectedUser} />
     </div>
   );
 };

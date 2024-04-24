@@ -227,9 +227,6 @@
             background-color: #8da4f1;
             cursor: pointer;
         }
-
-
-
     }
 
 
@@ -244,4 +241,19 @@
     .rounded {
         border-radius: 15px;
     }
+
+    .UserChat {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .SelectedUser {
+        background-color: #2f2d52;
+    }
+
+
 }

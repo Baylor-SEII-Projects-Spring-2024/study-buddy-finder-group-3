@@ -16,6 +16,7 @@ const Messages = ({ user, selectedUser }) => {
       const response = await axios.get(`${API_URL}/chat/getChat?senderId=${user.id}&receiverId=${selectedUser.id}`);
       setMessages(response.data); // Replace existing messages with new ones
       setLoading(false);
+      scrollToBottom(); // Scroll to bottom after setting new messages
     } catch (error) {
       console.error("Error fetching messages:", error);
       setLoading(false);
@@ -49,7 +50,7 @@ const Messages = ({ user, selectedUser }) => {
         <Message key={msg.id} isOwner={msg.user.id !== user.id} content={msg.content} />
       ))}
       <div ref={messagesEndRef} />
-      {/* Dummy div for scrolling to bottom */}
+      {/* div for scrolling to bottom */}
     </div>
   );
 };

@@ -20,7 +20,7 @@ const ChatParentComponent = ({ user }) => {
       <div className={styles.container}>
         <ChatComp className={styles.ChatComp} user={user} selectedUser={chatData} />
         {/* Pass the handleUserSelect callback prop to ChatSidebar */}
-        <ChatSidebar className={styles.ChatSidebar} user={user} onUserSelect={handleUserSelect} />
+        <ChatSidebar className={styles.ChatSidebar} user={user} onUserSelect={handleUserSelect} SelectedUser={chatData} />
       </div>
     </div>
   );

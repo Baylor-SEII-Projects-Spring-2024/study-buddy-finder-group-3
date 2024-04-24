@@ -33,6 +33,7 @@ public class messageService {
 
         // Create a new message object
         Messages message = new Messages(messageContent, sender, receiver);
+        message.setIsRead(false);
         //message.setTimestamp();
 
         // Save the message
@@ -51,7 +52,7 @@ public class messageService {
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
         List<Messages> messages = new ArrayList<>();
-        String sql = "SELECT * FROM messages WHERE (to_user_id = ? AND from_user_id = ?) OR (to_user_id = ? AND from_user_id = ?)";
+        String sql = "SELECT * FROM messages WHERE (to_user_id = ? AND from_user_id = ?) OR (to_user_id = ? AND from_user_id = ?) ORDER BY message_id ASC ";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, senderId, receiverId, receiverId, senderId);
 
         for (Map<String, Object> row : rows) {
@@ -64,4 +65,13 @@ public class messageService {
 
         return messages;
     }
+
+//    public void setIsReadToTrue(List<Messages> messages) {
+//        for (Messages message : messages) {
+//            message.setIsRead(true);
+//            // Update the message in the database (assuming you have an update method in your repository)
+//            // messageRepository.update(message);
+//            messageRepository.updateMessages(message);        }
+//    }
+
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "@/styles/Chat.module.css";
 
-const Chats = ({ friends, onUserSelect }) => {
+const Chats = ({ friends, onUserSelect, selectedUser }) => {
   const handleUserClick = (selectedUser) => {
     // Call the onUserSelect callback with the selected user data
     onUserSelect(selectedUser);
@@ -12,12 +12,16 @@ const Chats = ({ friends, onUserSelect }) => {
       <h2>Your Friends</h2>
       <ul>
         {friends.map((friend) => (
-          <li key={friend.id} onClick={() => handleUserClick(friend)}>
+          <li
+            key={friend.id}
+            onClick={() => handleUserClick(friend)}
+            className={selectedUser && friend.id === selectedUser.id ? styles.SelectedUser : ""}
+          >
             <div className={styles.UserChat}>
-              {/*<img className={styles.img} src={friend.profilePic} alt={friend.username} />*/}
+              {/*<img className={styles.img} src={friend} alt={friend.username} />*/}
               <div className={styles.UserChatInfo}>
                 <span>{friend.username}</span>
-                <p>{friend.statusMessage}</p>
+                {/*<p>{friend.statusMessage}</p>*/}
               </div>
             </div>
           </li>
