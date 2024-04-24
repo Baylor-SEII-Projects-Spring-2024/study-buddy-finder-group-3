@@ -41,6 +41,8 @@ function DisplayCourses() {
 
 
     useEffect(() => {
+        if (user && user.id) {
+
         const fetchCourseByUserId = async () => {
                 try{
                     const response = await axios.get(
@@ -54,14 +56,15 @@ function DisplayCourses() {
 
             }
         fetchCourseByUserId(user.id);
+        }
         //dispatch(fetchCourseByUserId(user.id));
-    }, [user.id]);
+    }, [user?.id]);
 
 
     const handleDeleteCourse = async () => {
         try {
-            await axios.delete(`${API_URL}/courses/user/${user.id}/courses/${selectedCourse.id}`);
-            setCourses(courses.filter(course => course.id !== selectedCourse.id));
+            await axios.delete(`${API_URL}/courses/user/${user?.id}/courses/${selectedCourse?.id}`);
+            setCourses(courses.filter(course => course?.id !== selectedCourse?.id));
             setOpenDeleteDialog(false);
         } catch (error) {
             console.error("Error deleting course:", error);
@@ -136,7 +139,7 @@ function DisplayCourses() {
                                 xs={12}
                                 sm={6}
                                 md={4}
-                                key={course.id}
+                                key={course?.id}
                             >
                                 <Card style={{ position: "relative" }}>
                                     {" "}
