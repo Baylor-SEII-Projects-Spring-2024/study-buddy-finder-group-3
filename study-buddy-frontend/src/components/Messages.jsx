@@ -24,30 +24,30 @@ const Messages = ({ user, selectedUser }) => {
   };
 
   useEffect(() => {
-    if (selectedUser && user.id && selectedUser.id) {
+    if (user && selectedUser && user.id && selectedUser.id) {
       fetchMessages();
       intervalRef.current = setInterval(fetchMessages, 2000);
       return () => clearInterval(intervalRef.current);
     }
-  }, [user.id, selectedUser?.id]);
+  }, [user?.id, selectedUser?.id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    if (selectedUser && user.id && selectedUser.id) {
+    if (user && selectedUser && user.id && selectedUser.id) {
       fetchMessages();
       intervalRef.current = setInterval(fetchMessages, 2000);
       return () => clearInterval(intervalRef.current);
     }
-  }, [user.id, selectedUser?.id]);
+  }, [user?.id, selectedUser?.id]);
 
   return (
     <div className={styles.Messages}>
       {loading && <p></p>}
       {messages.map((msg) => (
-        <Message key={msg.id} isOwner={msg.user.id !== user.id} content={msg.content} />
+        user && <Message key={msg.id} isOwner={msg.user.id !== user.id} content={msg.content} />
       ))}
       <div ref={messagesEndRef} />
       {/* div for scrolling to bottom */}
