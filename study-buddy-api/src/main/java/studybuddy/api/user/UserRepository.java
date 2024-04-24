@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 //    User findAllById(Long user_id);
 
-    @Query("SELECT u FROM User u WHERE u.username LIKE %:searchTerm%")
-    List<User> findUsersContainingUsername(@Param("searchTerm") String searchTerm);
+    @Query("SELECT u FROM User u WHERE u.username LIKE %:searchTerm% AND u.id != :user_id")
+    List<User> findUsersContainingUsernameExcludingSearcher(@Param("searchTerm") String searchTerm, @Param("user_id") Long user_id);
 
 }

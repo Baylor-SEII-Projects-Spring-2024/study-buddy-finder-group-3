@@ -50,7 +50,7 @@ function CreateMeeting({ open, onClose }) {
     if (newSearchTerm.length > 1) {
       try {
         const response = await axios.get(
-          `${API_URL}/users/search/${newSearchTerm}`
+          `${API_URL}/users/${user.id}/search/${newSearchTerm}`
         )
         setSearchResults(response.data)
         console.log("response", response)

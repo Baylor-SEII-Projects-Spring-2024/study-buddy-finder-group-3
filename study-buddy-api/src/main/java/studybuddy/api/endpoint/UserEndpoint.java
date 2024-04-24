@@ -75,10 +75,11 @@ public class UserEndpoint {
         }
     }
 
-    @GetMapping("/users/search/{searchTerm}")
-    public ResponseEntity<?> findUsersContainingUsername(@PathVariable String searchTerm) {
+    //! Exclude user that is doing the searching
+    @GetMapping("/users/{userId}/search/{searchTerm}")
+    public ResponseEntity<?> findUsersContainingUsernameExcludingSearcher(@PathVariable String searchTerm, @PathVariable Long userId) {
         log.warn("Searching for users with username containing: {}", searchTerm);
-        List<User> usersFound = userService.findUsersContainingUsername(searchTerm);
+        List<User> usersFound = userService.findUsersContainingUsernameExcludingSearcher(searchTerm, userId);
         return ResponseEntity.ok(usersFound);
     }
 }
