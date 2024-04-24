@@ -1,10 +1,7 @@
 import React from "react"
-import Header from "@/components/Header"
-import Sidebar from "@/components/Sidebar"
-import SettingsMain from "@/components/SettingsMain"
-import ProfileDisplay from "@/components/ProfileDisplay"
-import landingstyles from "@/styles/landing.module.css"
-import Box from "@mui/material/Box"
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import SettingsMain from "@/components/SettingsMain";
 import styles from "@/styles/settings.module.css";
 
 function settings() {
@@ -13,6 +10,9 @@ function settings() {
             <Header/>
 
             <div className={styles.container}>
+                <div className={styles.sidebar}>
+                    <Sidebar/>
+                </div>'
                 <div className={styles.settingsMain}>
                     <SettingsMain />
                 </div>

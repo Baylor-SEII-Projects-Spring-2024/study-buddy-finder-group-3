@@ -236,16 +236,17 @@ function Header() {
                 },
               }}
             >
-
-              <MenuItem onClick={() => navigateToSetting("/settings")}>
-                General
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/profile/")}>
-
+              <MenuItem onClick={() => navigateToSetting("/profile")}>
                 Account
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/courses")}>
+              <MenuItem onClick={() => navigateToSetting("/settings/courses")}>
                 Courses
+              </MenuItem>
+              <MenuItem onClick={() => navigateToSetting("/settings/privacy")}>
+                Privacy
+              </MenuItem>
+              <MenuItem onClick={() => navigateToSetting("/settings/help")}>
+                Help
               </MenuItem>
             </Menu>
           </Box>
