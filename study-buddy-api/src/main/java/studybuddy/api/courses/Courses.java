@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.util.Optional;
 
 @Data
 @Entity
@@ -31,6 +31,16 @@ public class Courses {
     @Getter @Setter
     String subjectArea;
 
+    public Courses(Courses other){
+        this.id = other.id;
+        this.name = other.name;
+        this.description = other.description;
+        this.subjectArea = other.subjectArea;
+    }
+
+    public Courses(){
+
+    }
 
     public Courses(Long id, String name, String description, String subjectArea){
         this.id = id;
@@ -39,4 +49,12 @@ public class Courses {
         this.subjectArea = subjectArea;
     }
 
+    public Courses(Optional<Courses> course) {
+        this.description = course.get().description;
+        this.name = course.get().name;
+        this.subjectArea = course.get().subjectArea;
+
+
+
+    }
 }

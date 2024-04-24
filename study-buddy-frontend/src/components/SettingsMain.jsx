@@ -49,7 +49,6 @@ function SettingsMain() {
         }
     }, [user]);
     /*
-
     useEffect(() => {
         if (user) {
             setUserIsTutor(user.accountType === "Tutor");

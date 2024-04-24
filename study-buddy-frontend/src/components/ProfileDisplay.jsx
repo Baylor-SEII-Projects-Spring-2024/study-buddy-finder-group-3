@@ -34,6 +34,9 @@ function ProfileDisplay() {
     const inputRef = useRef(null);
     const [profilePic, setProfilePic] = useState(null);
     const [triggerUpdate, setTriggerUpdate] = useState(false)
+    const [emailError, setEmailError] = useState('');
+    const [usernameError, setUsernameError] = useState('');
+
     // console.log(avatarImage);
 
     useEffect(() => {
@@ -86,6 +89,12 @@ function ProfileDisplay() {
 
     const handleSaveClick = async () => {
         try {
+            // Check if any required fields are empty
+            if (!profile.emailAddress || !profile.username || !profile.nameFirst || !profile.nameLast) {
+                toast.error("Please fill in all required fields");
+                return;
+            }
+
             const updatedProfile = {
                 email: profile.emailAddress,
                 username: profile.username,
@@ -94,6 +103,7 @@ function ProfileDisplay() {
                 courses: selectedCourses.join(', '),
                 prefTime: selectedTime,
                 prefMeetingType: selectedMeetingType,
+                aboutMe: profile.aboutMe,
             };
             console.log(updatedProfile);
 
@@ -115,6 +125,25 @@ function ProfileDisplay() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // Validate email format
+        if (name === 'emailAddress') {
+            if (!/\S+@\S+\.\S+/.test(value)) {
+                setEmailError('Invalid email address');
+            } else {
+                setEmailError('');
+            }
+        }
+
+        // Validate username format
+        if (name === 'username') {
+            if (!/^[a-zA-Z0-9]+$/.test(value)) {
+                setUsernameError('Username can only contain letters and numbers');
+            } else {
+                setUsernameError('');
+            }
+        }
+
         setProfile((prevProfile) => ({
             ...prevProfile,
             [name]: value,
@@ -148,42 +177,6 @@ function ProfileDisplay() {
         }
     };
 
-    // const compressImage = async (file, maxSizeInBytes) => {
-    //     console.log("compressing...");
-    //     return new Promise((resolve, reject) => {
-    //         const reader = new FileReader();
-    //         reader.onload = async (event) => {
-    //             const img = new Image();
-    //             img.src = event.target.result;
-    //             img.onload = async () => {
-    //                 const canvas = document.createElement('canvas');
-    //                 const ctx = canvas.getContext('2d');
-    //                 canvas.width = img.width;
-    //                 canvas.height = img.height;
-    //                 ctx.drawImage(img, 0, 0);
-    //
-    //                 // Convert the image to JPEG format with specified quality (e.g., 0.7)
-    //                 const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.4);
-    //
-    //                 // Convert the data URL to a Blob
-    //                 const compressedBlob = await fetch(compressedDataUrl).then((res) => res.blob());
-    //
-    //                 // Check the size of the compressed image
-    //                 if (compressedBlob.size > maxSizeInBytes) {
-    //                     // If still too large, recursively call the function with lower quality
-    //                     resolve(compressImage(compressedBlob, maxSizeInBytes));
-    //                 } else {
-    //                     // If within the size limit, resolve with the compressed Blob
-    //                     console.log("resolved compressing...");
-    //                     resolve(compressedBlob);
-    //                 }
-    //             };
-    //         };
-    //         console.log("reject");
-    //         reader.onerror = reject;
-    //         reader.readAsDataURL(file);
-    //     });
-    // };
 
     const compressImage = async (file, maxSizeInBytes, quality = 0.9, maxAttempts = 9) => {
         console.log("compressing...");
@@ -322,7 +315,7 @@ function ProfileDisplay() {
                     // src="/_next/static/media/StudyBuddyLogo.4d4a46a7.png"
                     // alt="/StudyBuddyLogo.png"
                     src={profilePic || null}
-                    alt="Profile Picture"
+                    // alt="Profile Picture"
                     className={styles.avatar}
                     sx={{
                         width: "100px",
@@ -405,6 +398,8 @@ function ProfileDisplay() {
                     label="Email Address"
                     name="emailAddress"
                     value={profile.emailAddress || ''}
+                    error={Boolean(emailError)}
+                    helperText={emailError}
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
@@ -414,6 +409,8 @@ function ProfileDisplay() {
                     label="Username"
                     name="username"
                     value={profile.username || ''}
+                    error={Boolean(usernameError)}
+                    helperText={usernameError}
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
@@ -432,6 +429,19 @@ function ProfileDisplay() {
                     label="Last Name"
                     name="nameLast"
                     value={profile.nameLast || ''}
+                    disabled={!editMode}
+                    onChange={handleInputChange}
+                />
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    label="About Me"
+                    name="aboutMe"
+                    value={profile.aboutMe || ''}
+                    multiline // Allow multiple lines of text
+                    rows={4} // Set the number of visible rows
+                    // inputProps={{ maxLength: 255 }} // Set the maximum character limit
+                    // maxLength={255}
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
@@ -496,8 +506,18 @@ function ProfileDisplay() {
                         disabled={!editMode}
                     />
                     <FormControlLabel
+                        control={<Checkbox checked={selectedTime === "afternoon"} onChange={handlePrefTimeChange} name="afternoon" />}
+                        label="Afternoon"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
                         control={<Checkbox checked={selectedTime === "evening"} onChange={handlePrefTimeChange} name="evening" />}
                         label="Evening"
+                        disabled={!editMode}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={selectedTime === "night"} onChange={handlePrefTimeChange} name="night" />}
+                        label="Night"
                         disabled={!editMode}
                     />
                 </div>

@@ -57,6 +57,7 @@ function profiles() {
                 position: "absolute", // or "fixed" if needed
                 top: 50,
                 left: 300,
+                // left: "30%",
                 width: "73%",
                 height: "300px",
                 backgroundColor: theme.palette.secondary.main,
@@ -71,6 +72,7 @@ function profiles() {
           pt:"64px",
           marginTop: "15px",
           marginLeft: "80px",
+          // marginLeft: "10%",
           padding: "20px",
           border: "1px solid #ddd",
           borderRadius: "10px",

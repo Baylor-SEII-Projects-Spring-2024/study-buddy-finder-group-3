@@ -76,15 +76,17 @@ public class AuthEndpoint {
         parameters.add(new Object[]{
                 userRequest.getEmail(),
                 hashedPassword,
-                "Computer Science",
+                userRequest.getAreaOfStudy(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 userRequest.getIsTutor(),
-                userRequest.getUsername()
+                userRequest.getUsername(),
+                userRequest.getPrefTime(),
+                userRequest.getPrefMeetingType()
         });
 
         jdbcTemplate.batchUpdate("INSERT INTO users (email_address, password, areaofstudy, namefirst, " +
-                "namelast, istutor, username) VALUES(?,?,?,?,?,?,?)", parameters);
+                "namelast, istutor, username, pref_time, pref_meeting_type) VALUES(?,?,?,?,?,?,?,?,?)", parameters);
         return true;
     }
 
@@ -112,35 +114,6 @@ public class AuthEndpoint {
 
     }
 
-    /*
-    @GetMapping("/checkEmail/{email}")
-    public boolean verifyPassword(@PathVariable Long id, @PathVariable String password){
-        try{
-            Optional<User> user = userService.findUser(id);
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
-        }
-
-    }*/
-
-    /*
-    @PostMapping("/{id}/changePassword")
-    public boolean changePassword(@PathVariable Long id, @RequestBody UserReq userRequest) {
-        List<Object[]> parameters = new ArrayList<>();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(userRequest.getPassword());
-
-        parameters.add(new Object[]{
-                id,
-                hashedPassword,
-        });
-
-        jdbcTemplate.batchUpdate("UPDATE users password = ?  " +
-                "WHERE user_id = ?", parameters);
-        return true;
-    }*/
 
     @PostMapping("/{id}/changePassword")
     public boolean changePassword(@PathVariable Long id, @RequestBody UserReq userRequest) {
@@ -153,24 +126,6 @@ public class AuthEndpoint {
         return rowsAffected == 1;
     }
 
-    /*
-    @PostMapping("/verifyPassword/{id}")
-    public boolean verifyPassword(@PathVariable Long id, @RequestBody String password) {
-        try {
-            // Retrieve the stored hashed password from the database using the user's ID
-            String storedHashedPassword = jdbcTemplate.queryForObject(
-                    "SELECT password FROM users WHERE user_id = ?",
-                    new Object[]{id},
-                    String.class
-            );
-
-            // Use bcrypt to compare the input password with the stored hashed password
-            return passwordEncoder.matches(password, storedHashedPassword);
-        } catch (Exception e) {
-            log.error("Error verifying password: {}", e.getMessage());
-            return false;
-        }
-    }*/
 
     @PostMapping("/verifyPassword/{id}")
     public boolean verifyPassword(@PathVariable Long id, @RequestBody UserReq userReq) {
@@ -232,9 +187,10 @@ public class AuthEndpoint {
         private String lastName;
         private String email;
         private Boolean isTutor;
-        private String courses;
+        private String areaOfStudy;
         private String prefTime;
         private String prefMeetingType;
+        private String aboutMe;
 
         public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
             this.username = username;
@@ -243,6 +199,22 @@ public class AuthEndpoint {
             this.lastName = lastName;
             this.email = email;
             this.isTutor = isTutor;
+        }
+
+        public UserReq(){
+
+        }
+
+        public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor, String areaOfStudy, String prefTime, String prefMeetingType) {
+            this.username = username;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.isTutor = isTutor;
+            this.areaOfStudy = areaOfStudy;
+            this.prefTime = prefTime;
+            this.prefMeetingType = prefMeetingType;
         }
 
         public String getUsername() {
@@ -269,33 +241,14 @@ public class AuthEndpoint {
             return isTutor;
         }
 
-        public String getCourses() { return courses; }
+        public String getAreaOfStudy() { return areaOfStudy; }
 
         public String getPrefTime() { return prefTime; }
 
         public String getPrefMeetingType() { return prefMeetingType; }
+
+        public String getAboutMe() { return aboutMe; }
     }
 
 
 }
-
-/*
-
-    @GetMapping("/{id}/verifyPassword")
-    public boolean verifyPassword(@PathVariable Long id, @RequestParam String password) {
-        try {
-            // Retrieve the hashed password from the database based on the user's ID
-            String hashedPassword = jdbcTemplate.queryForObject(
-                    "SELECT password FROM users WHERE user_id = ?",
-                    new Object[]{id},
-                    String.class
-            );
-
-            // Compare the given password with the hashed password from the database
-            return passwordEncoder.matches(password, hashedPassword);
-        } catch (Exception e) {
-            log.error("Error verifying password:", e);
-            return false;
-        }
-    }
- */

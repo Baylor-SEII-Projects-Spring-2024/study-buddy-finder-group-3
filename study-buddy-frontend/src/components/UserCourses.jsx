@@ -101,7 +101,7 @@ function UserCourses() {
                     {courses.map((course) => (
                             <div key={course.id}>
                             <Box border={2} borderColor="primary.main" borderRadius={6} padding={2} display="flex"
-                                 flexDirection="row" display='flex' marginRight={1} marginLeft={1}
+                                 flexDirection="row" marginRight={1} marginLeft={1}
                                   marginBottom={1}>
                                 <Typography>{course.name}</Typography>
                                 <Checkbox

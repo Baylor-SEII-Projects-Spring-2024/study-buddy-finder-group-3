@@ -6,6 +6,17 @@ spring:
     username: root
     password: password
     driverClassName: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: studybuddyofficialsite@gmail.com
+    password: ujyv gklb jkem dbjs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     hibernate:
       ddl-auto: update

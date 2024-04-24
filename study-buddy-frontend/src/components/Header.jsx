@@ -59,17 +59,14 @@ function Header() {
     dispatch(fetchMeetingsByUserId(user.id))
   }
 
-
   useEffect(() => {
     fetchNotifications()
   }, [dispatch, user])
 
-  
   // to handle meeting accept and refresh notifications
   const handleAcceptMeeting = () => {
-    fetchNotifications(); 
-  };
-
+    fetchNotifications()
+  }
 
   const handleSettingsClick = (event) => {
     setSettingsAnchorEl(event.currentTarget)
@@ -236,12 +233,10 @@ function Header() {
                 },
               }}
             >
-
               <MenuItem onClick={() => navigateToSetting("/settings")}>
                 General
               </MenuItem>
               <MenuItem onClick={() => navigateToSetting("/profile/")}>
-
                 Account
               </MenuItem>
               <MenuItem onClick={() => navigateToSetting("/courses")}>
