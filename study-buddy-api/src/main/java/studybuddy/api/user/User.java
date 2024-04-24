@@ -3,6 +3,8 @@ package studybuddy.api.user;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Optional;
+
 @Data
 @Entity
 @Table(name = User.TABLE_NAME)
@@ -59,6 +61,9 @@ public class User {
 
     @Column(name = "ABOUT_ME")
     String aboutMe;
+
+    public User(Optional<User> userId) {
+    }
 
     public boolean getIsTutor() {
         return userType;
