@@ -111,6 +111,18 @@ public class AuthEndpoint {
         }
 
     }
+/*
+    @PostMapping("/checkEmail/{email}")
+    public boolean verifyPassword(@PathVariable Long id, @PathVariable String password){
+        try{
+            Optional<User> user = userService.findUser(id);
+            return user.;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+    }*/
 
 
 
@@ -142,6 +154,7 @@ public class AuthEndpoint {
         }
         return ResponseEntity.badRequest().body("Invalid Authorization header");
     }
+
 
 
 
