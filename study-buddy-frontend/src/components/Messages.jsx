@@ -24,6 +24,11 @@ const Messages = ({ user, selectedUser }) => {
   };
 
   useEffect(() => {
+    // Clear messages when selectedUser changes
+    setMessages([]);
+  }, [selectedUser]);
+
+  useEffect(() => {
     if (user && selectedUser && user.id && selectedUser.id) {
       fetchMessages();
       intervalRef.current = setInterval(fetchMessages, 2000);
@@ -35,13 +40,13 @@ const Messages = ({ user, selectedUser }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    if (user && selectedUser && user.id && selectedUser.id) {
-      fetchMessages();
-      intervalRef.current = setInterval(fetchMessages, 2000);
-      return () => clearInterval(intervalRef.current);
-    }
-  }, [user?.id, selectedUser?.id]);
+  // useEffect(() => {
+  //   if (user && selectedUser && user.id && selectedUser.id) {
+  //     fetchMessages();
+  //     intervalRef.current = setInterval(fetchMessages, 2000);
+  //     return () => clearInterval(intervalRef.current);
+  //   }
+  // }, [user?.id, selectedUser?.id]);
 
   return (
     <div className={styles.Messages}>
