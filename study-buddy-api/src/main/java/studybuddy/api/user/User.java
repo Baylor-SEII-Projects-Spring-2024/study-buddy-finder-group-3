@@ -57,6 +57,9 @@ public class User {
     @Column(name = "PREF_MEETING_TYPE")
     String prefMeetingType;
 
+    @Column(name = "ABOUT_ME")
+    String aboutMe;
+
     public boolean getIsTutor() {
         return userType;
     }
@@ -70,7 +73,7 @@ public class User {
 
     }
 
-    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy, String prefTime, String prefMeet) {
+    public User(Long id, String username, String emailAddress, String password, boolean userType, String nameFirst, String nameLast, String areaOfStudy, String prefTime, String prefMeet, String aboutMe) {
         this.id = id;
         this.username = username;
         this.emailAddress = emailAddress;
@@ -81,6 +84,7 @@ public class User {
         this.areaOfStudy = areaOfStudy;
         this.prefTime = prefTime;
         this.prefMeetingType = prefMeet;
+        this.aboutMe = aboutMe;
     }
 
     public User(User other){
@@ -95,5 +99,6 @@ public class User {
         this.prefMeetingType = other.prefMeetingType;
         this.prefTime = other.prefTime;
         this.profilePic = other.profilePic;
+        this.aboutMe = other.aboutMe;
     }
 }
