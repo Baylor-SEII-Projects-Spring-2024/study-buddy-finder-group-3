@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
+import studybuddy.api.courses.Courses;
+import studybuddy.api.courses.CoursesRepository;
+import studybuddy.api.courses.CoursesService;
 import studybuddy.api.meeting.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +35,7 @@ public class RecommendationEndpoint {
     @Autowired
     public UserRepository userService;
     @Autowired
-    public CoursesRepository courseService;
+    public CoursesService courseService;
 
     @GetMapping("/meetings/{userId}")
     public ResponseEntity<List<Meeting>> getReccomendationList(@PathVariable Long userId)
@@ -54,8 +57,7 @@ public class RecommendationEndpoint {
                                 rs.getString("meeting_link"),
                                 rs.getString("meeting_location"),
                                 rs.getString("meeting_title"),
-                                new User(userService.findAllById(rs.getLong("user_id"))),
-                                new Courses((courseService.findAllById(rs.getLong("course_id"))))
+                                new Courses((courseService.findCourse(rs.getLong("course_id"))))
                         )
                 )
         );

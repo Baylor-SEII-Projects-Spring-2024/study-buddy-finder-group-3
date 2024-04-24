@@ -5,6 +5,7 @@ import lombok.Data;
 import studybuddy.api.courses.Courses;
 import studybuddy.api.user.User;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -83,4 +84,14 @@ public class Meeting {
     }
 
 
+    public Meeting(long meetingId, Timestamp meetingDate, String description, String meetingLink, String meetingLocation, String meetingTitle, Courses courseId) {
+        this.id = meetingId;
+        this.date = meetingDate;
+        this.description = description;
+        this.link = meetingLink;
+        this.location = meetingLocation;
+        this.title = meetingTitle;
+        this.course = courseId;
+
+    }
 }

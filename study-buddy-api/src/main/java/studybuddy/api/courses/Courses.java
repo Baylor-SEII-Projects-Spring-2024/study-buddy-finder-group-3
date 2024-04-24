@@ -3,6 +3,8 @@ package studybuddy.api.courses;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Optional;
+
 @Data
 @Entity
 @Table(name = Courses.TABLE_NAME)
@@ -32,5 +34,8 @@ public class Courses {
 
     public Courses(){
 
+    }
+
+    public Courses(Optional<Courses> courseId) {
     }
 }
