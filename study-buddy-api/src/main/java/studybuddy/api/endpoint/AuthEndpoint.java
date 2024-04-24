@@ -1,15 +1,21 @@
 package studybuddy.api.endpoint;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 import studybuddy.api.utils.JwtUtil;
+import studybuddy.api.utils.TokenStore;
 
+import java.io.IOException;
+import java.sql.Types;
 import java.util.*;
 
 @RestController
@@ -24,6 +30,9 @@ public class AuthEndpoint {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private TokenStore tokenStore;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserReq loginRequest) {
@@ -67,15 +76,17 @@ public class AuthEndpoint {
         parameters.add(new Object[]{
                 userRequest.getEmail(),
                 hashedPassword,
-                "Computer Science",
+                userRequest.getAreaOfStudy(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 userRequest.getIsTutor(),
-                userRequest.getUsername()
+                userRequest.getUsername(),
+                userRequest.getPrefTime(),
+                userRequest.getPrefMeetingType()
         });
 
         jdbcTemplate.batchUpdate("INSERT INTO users (email_address, password, areaofstudy, namefirst, " +
-                "namelast, istutor, username) VALUES(?,?,?,?,?,?,?)", parameters);
+                "namelast, istutor, username, pref_time, pref_meeting_type) VALUES(?,?,?,?,?,?,?,?,?)", parameters);
         return true;
     }
 
@@ -104,38 +115,37 @@ public class AuthEndpoint {
     }
 
 
-    @PutMapping("/updateProfile/{userId}")
-    public boolean updateProfile(@PathVariable Long userId, @RequestBody UserReq userRequest) {
-        //BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        //String hashedPassword = encoder.encode(userRequest.getPassword());
 
-        log.info("Update user using: {}", userRequest);
-        log.info("Updating user profile with userId={}, areaofstudy={}, email={}, firstName={}, lastName={}, username={}",
-                userId, userRequest.getCourses(), userRequest.getEmail(), userRequest.getFirstName(),
-                userRequest.getLastName(), userRequest.getUsername());
-
-
-
-        jdbcTemplate.update("UPDATE users SET " +
-                        "email_address = ?, " +
-                        //"password = ?, " +
-                        "areaofstudy = ?, " +
-                        "namefirst = ?, " +
-                        "namelast = ?, " +
-                        //"istutor = ?, " +
-                        "username = ? " +
-                        "WHERE user_id = ?",
-                userRequest.getEmail(),
-                //hashedPassword,
-                userRequest.getCourses(),
-                userRequest.getFirstName(),
-                userRequest.getLastName(),
-                //userRequest.getIsTutor(),
-                userRequest.getUsername(),
-                userId);
-
-        return true;
+    @GetMapping("/validateToken")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String tokenHeader) {
+        String token = tokenHeader.replace("Bearer ", "");
+        try {
+            if (jwtUtil.validateToken(token)) {
+                String username = jwtUtil.extractUsername(token);
+                User user = userService.findByUsername(username).orElse(null);
+                if (user != null) {
+                    return ResponseEntity.ok(user);
+                }
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            log.error("Token validation error: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @PostMapping("/invalidateToken")
+    public ResponseEntity<?> invalidateToken(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenStore.invalidateToken(token);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body("Invalid Authorization header");
+    }
+
+
 
 
 
@@ -146,7 +156,10 @@ public class AuthEndpoint {
         private String lastName;
         private String email;
         private Boolean isTutor;
-        private String courses;
+        private String areaOfStudy;
+        private String prefTime;
+        private String prefMeetingType;
+        private String aboutMe;
 
         public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor) {
             this.username = username;
@@ -155,6 +168,22 @@ public class AuthEndpoint {
             this.lastName = lastName;
             this.email = email;
             this.isTutor = isTutor;
+        }
+
+        public UserReq(){
+
+        }
+
+        public UserReq(String username, String password, String firstName, String lastName, String email, boolean isTutor, String areaOfStudy, String prefTime, String prefMeetingType) {
+            this.username = username;
+            this.password = password;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.email = email;
+            this.isTutor = isTutor;
+            this.areaOfStudy = areaOfStudy;
+            this.prefTime = prefTime;
+            this.prefMeetingType = prefMeetingType;
         }
 
         public String getUsername() {
@@ -181,7 +210,12 @@ public class AuthEndpoint {
             return isTutor;
         }
 
-        public String getCourses() { return courses; }
+        public String getAreaOfStudy() { return areaOfStudy; }
 
+        public String getPrefTime() { return prefTime; }
+
+        public String getPrefMeetingType() { return prefMeetingType; }
+
+        public String getAboutMe() { return aboutMe; }
     }
 }

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect} from "react"
 import Head from "next/head"
 import { Provider as ReduxProvider } from "react-redux"
 
@@ -15,25 +15,33 @@ import "@/styles/globals.css"
 import { DevSupport } from "@react-buddy/ide-toolbox-next"
 import { ComponentPreviews, useInitial } from "@/dev"
 
+import '@/styles/globals.css'
+import CustomCursor from '@/utils/customCursor';
+import { useDispatch } from 'react-redux';
+import { setToken } from '@/utils/authSlice';
+import ValidateToken from '@/utils/validateToken';
 
 // Initialize Redux
 let initialState = {}
 let reduxStore = buildStore(initialState)
 
+
 export default function App({ Component, pageProps }) {
   return (
     <>
-      <ReduxProvider store={reduxStore}>
-        <AppCacheProvider>
-          <Head>
-            <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
-            <link rel="icon" href="/favicon.ico" />
-          </Head>
+    {/* <CustomCursor/> */}
+    <ReduxProvider store={reduxStore}>
+      <TokenValidator />
+      <AppCacheProvider>
+        <Head>
+          <meta name='viewport' content='minimum-scale=1, initial-scale=1, width=device-width' />
+          <link rel='icon' href='/StudyBuddyLogo Background Removed.png' />
+        </Head>
 
           <StudyBuddyThemeProvider>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
-
+          <ValidateToken/>
             <DevSupport ComponentPreviews={ComponentPreviews}
                         useInitialHook={useInitial}
             >
@@ -47,3 +55,9 @@ export default function App({ Component, pageProps }) {
     </>
   )
 }
+
+function TokenValidator() {
+  ValidateToken();
+  return null;
+}
+

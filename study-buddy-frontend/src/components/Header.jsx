@@ -11,16 +11,19 @@ import {
   MenuItem,
   IconButton,
   Badge,
+  Divider,
 } from "@mui/material"
-import NotificationsIcon from "@mui/icons-material/Notifications"
 import { useRouter } from "next/router"
 import { logout } from "@/utils/authSlice.js"
 import { API_URL } from "@/utils/config"
+import { setNotifications } from "@/utils/notificationSlice"
+import axios from "axios"
+import NotificationsIcon from "@mui/icons-material/Notifications"
 import MeetingModal from "./MeetingModal"
+import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 
 const sections = [
   { title: "Home", id: "home-section" },
-  { title: "Meetings", id: "meetings-section" },
   { title: "Friends", id: "friends-section" },
 ]
 
@@ -29,27 +32,40 @@ function Header() {
   const dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState(null)
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null)
-  const [pendingInvitations, setPendingInvitations] = useState([])
+  const [meetingsAnchorEl, setMeetingsAnchorEl] = useState(null)
+  const { notificationCount } = useSelector((state) => state.notifications)
+  const { pendingInvitations, friendRequests } = useSelector(
+    (state) => state.notifications
+  )
   const user = useSelector(selectUser)
-  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [selectedMeeting, setSelectedMeeting] = useState(null)
+
+  const fetchNotifications = async () => {
+    if (user && user.id) {
+      // check if user and user.id exist
+      try {
+        const response = await axios.get(
+          `${API_URL}/user/${user.id}/notifications`
+        )
+        if (response.status === 200) {
+          dispatch(setNotifications(response.data))
+        }
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error)
+      }
+    }
+  }
+  const updateMeetingInState = () => {
+    dispatch(fetchMeetingsByUserId(user.id))
+  }
 
   useEffect(() => {
-    fetchPendingInvitations()
-  }, [])
+    fetchNotifications()
+  }, [dispatch, user])
 
-
-  
-  const fetchPendingInvitations = async () => {
-    try {
-      // Fetch pending invitations from backend API
-      const response = await fetch(
-        `${API_URL}/meeting/user/${user.id}/pending-invitations`
-      )
-      const data = await response.json()
-      setPendingInvitations(data)
-    } catch (error) {
-      console.error("Error fetching pending invitations:", error)
-    }
+  // to handle meeting accept and refresh notifications
+  const handleAcceptMeeting = () => {
+    fetchNotifications()
   }
 
   const handleSettingsClick = (event) => {
@@ -60,50 +76,81 @@ function Header() {
     setSettingsAnchorEl(null)
   }
 
+  const handleMeetingsClick = (event) => {
+    setMeetingsAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseMeetingsMenu = () => {
+    setMeetingsAnchorEl(null)
+  }
+
+  const openMeetingModal = (meeting) => {
+    setSelectedMeeting(meeting)
+    setAnchorEl(null) // close menu when open modal
+  }
+
   const navigateToSetting = (settingPath) => {
     router.push(settingPath)
     handleCloseSettingsMenu() // close the menu after navigation
   }
 
   const handleLogout = async () => {
-    localStorage.removeItem("token")
-    dispatch(logout())
-    router.push("/")
+    const token = localStorage.getItem("token")
+    if (token) {
+      await axios.post(
+        `${API_URL}/auth/invalidateToken`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      localStorage.removeItem("token")
+      dispatch(logout())
+      router.push("/")
+    }
   }
 
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId)
 
-    if (section) {
-      const offset = 64
-      const position =
-        section.getBoundingClientRect().top + window.pageYOffset - offset
-      window.scrollTo({
-        top: position,
-        behavior: "smooth",
-      })
+    if (sectionId === "friends-section") {
+      router.push("/friends")
     } else {
-      router.push("/home").then(() => {
-        window.requestAnimationFrame(() => {
-          const section = document.getElementById(sectionId)
-          if (section) {
-            const offset = 64
-            const position =
-              section.getBoundingClientRect().top + window.pageYOffset - offset
-            window.scrollTo({
-              top: position,
-              behavior: "smooth",
-            })
-          }
+      if (section) {
+        handleCloseMeetingsMenu()
+        handleCloseSettingsMenu()
+        const offset = 64
+        const position =
+          section.getBoundingClientRect().top + window.pageYOffset - offset
+        window.scrollTo({
+          top: position,
+          behavior: "smooth",
         })
-      })
+      } else {
+        router.push("/home").then(() => {
+          window.requestAnimationFrame(() => {
+            const section = document.getElementById(sectionId)
+            if (section) {
+              const offset = 64
+              const position =
+                section.getBoundingClientRect().top +
+                window.pageYOffset -
+                offset
+              window.scrollTo({
+                top: position,
+                behavior: "smooth",
+              })
+            }
+          })
+        })
+      }
     }
   }
 
   const handleNotificationClick = (event, meeting) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedMeeting(meeting);
-  };
+    setAnchorEl(event.currentTarget)
+    setSelectedMeeting(meeting)
+  }
 
   const handleCloseNotificationMenu = () => {
     setAnchorEl(null)
@@ -127,6 +174,46 @@ function Header() {
             ))}
             <Button
               color="inherit"
+              aria-controls="meetings-menu"
+              aria-haspopup="true"
+              onClick={handleMeetingsClick}
+            >
+              Meetings
+            </Button>
+            <Menu
+              id="meetings-menu"
+              anchorEl={meetingsAnchorEl}
+              open={Boolean(meetingsAnchorEl)}
+              onClose={handleCloseMeetingsMenu}
+              PaperProps={{
+                style: {
+                  backgroundColor: "#628dbd",
+                  color: "white",
+                },
+              }}
+            >
+              <MenuItem
+                onClick={() => scrollToSection("meetings-section")}
+                sx={{ padding: "10px 20px" }}
+              >
+                <Typography variant="inherit">Upcoming Meetings</Typography>
+              </MenuItem>
+              <MenuItem
+                onClick={() => scrollToSection("recommended-meetings")}
+                sx={{ padding: "10px 20px" }}
+              >
+                <Typography variant="inherit">Recommended Meetings</Typography>
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => console.log("Navigate to settings/courses")}
+                sx={{ padding: "10px 20px" }}
+              >
+                <Typography variant="inherit">View All Meetings</Typography>
+              </MenuItem>
+            </Menu>
+            <Button
+              color="inherit"
               aria-controls="settings-menu"
               aria-haspopup="true"
               onClick={handleSettingsClick}
@@ -139,18 +226,21 @@ function Header() {
               keepMounted
               open={Boolean(settingsAnchorEl)}
               onClose={handleCloseSettingsMenu}
+              PaperProps={{
+                style: {
+                  backgroundColor: "#628dbd",
+                  color: "white",
+                },
+              }}
             >
-              <MenuItem onClick={() => navigateToSetting("/settings/account")}>
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
+                General
+              </MenuItem>
+              <MenuItem onClick={() => navigateToSetting("/profile/")}>
                 Account
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/courses")}>
+              <MenuItem onClick={() => navigateToSetting("/courses")}>
                 Courses
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/privacy")}>
-                Privacy
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/help")}>
-                Help
               </MenuItem>
             </Menu>
           </Box>
@@ -179,7 +269,7 @@ function Header() {
               aria-haspopup="true"
               onClick={handleNotificationClick}
             >
-              <Badge badgeContent={pendingInvitations.length} color="error">
+              <Badge badgeContent={notificationCount} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -199,20 +289,29 @@ function Header() {
             pendingInvitations.map((invitation) => (
               <MenuItem
                 key={invitation.id}
-                onClick={(event) => handleNotificationClick(event, invitation)}
+                onClick={() => openMeetingModal(invitation)}
               >
-                Meeting invite for meeting: {invitation.title}
+                Meeting invite: {invitation.title}
               </MenuItem>
             ))
           ) : (
             <MenuItem>No pending invitations</MenuItem>
           )}
+          {friendRequests.length > 0 &&
+            friendRequests.map((request) => (
+              <MenuItem key={request.id}>
+                Friend request from: {request.username}
+              </MenuItem>
+            ))}
         </Menu>
       </AppBar>
       <MeetingModal
         meeting={selectedMeeting}
         open={Boolean(selectedMeeting)}
         handleClose={() => setSelectedMeeting(null)}
+        isInvitation={true}
+        onMeetingAccepted={handleAcceptMeeting}
+        updateMeetingInParent={updateMeetingInState}
       />
     </>
   )

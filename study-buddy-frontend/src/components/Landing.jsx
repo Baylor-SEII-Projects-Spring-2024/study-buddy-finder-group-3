@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, containerRef } from "react"
+import { useRouter } from "next/router"
 import {
   AppBar,
   Toolbar,
@@ -8,6 +9,7 @@ import {
   Container,
   Grid,
   Paper,
+  styled,
 } from "@mui/material"
 import { Image as ImageIcon } from "@mui/icons-material"
 import {
@@ -19,6 +21,13 @@ import "aos/dist/aos.css"
 import { useTheme } from "@mui/material/styles"
 import Login from "./Login"
 import CreateAccount from "./CreateAccount"
+import Footer from "./Footer"
+import styles from "@/styles/landing.module.css"
+import CustomCursor from "@/utils/customCursor"
+import { useSelector } from "react-redux"
+import { selectToken } from "@/utils/authSlice"
+import ChaseButton from "./ChaseButton"
+import { Parallax } from "react-parallax"
 
 const sections = [
   { title: "Home", id: "home-section" },
@@ -48,6 +57,24 @@ const testimonials = [
   },
 ]
 
+const FillButton = styled(Button)(({ theme, width, height, x, y }) => ({
+  position: "relative",
+  overflow: "hidden",
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    top: 0,
+    left: 0,
+    background: `radial-gradient(circle closest-side at ${x}px ${y}px, ${theme.palette.primary.main}, transparent)`,
+    transition: "background 0.3s",
+  },
+  "&:hover::after": {
+    background: `radial-gradient(circle at ${x}px ${y}px, ${theme.palette.primary.dark}, transparent)`,
+  },
+}))
+
 const LandingPage = () => {
   const theme = useTheme()
   const [loginOpen, setLoginOpen] = useState(false)
@@ -58,10 +85,31 @@ const LandingPage = () => {
 
   const handleOpenCreateAccount = () => setCreateAccountOpen(true)
   const handleCloseCreateAccount = () => setCreateAccountOpen(false)
+  const [buttonProps, setButtonProps] = useState({ x: 0, y: 0 })
+
+  const [isHovered, setIsHovered] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const bgImage = document.querySelector(".bgImageContainer img")
+      if (bgImage) {
+        const scrollPosition = window.pageYOffset
+        const parallaxSpeed = 0.5
+        bgImage.style.transform = `translateY(${
+          scrollPosition * parallaxSpeed
+        }px)`
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
   useEffect(() => {
     AOS.init({})
-    // AOS.refresh()
   }, [])
 
   const scrollToSection = (sectionId) => {
@@ -79,6 +127,11 @@ const LandingPage = () => {
     }
   }
 
+  const handleMouseMove = (e) => {
+    const rect = e.target.getBoundingClientRect()
+    setButtonProps({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+  }
+
   const scrollToTop = () => {
     AOS.refreshHard()
     window.scrollTo({
@@ -93,6 +146,7 @@ const LandingPage = () => {
 
   return (
     <>
+      {/* <CustomCursor hover={isHovered} /> */}
       <AppBar position="fixed" color="primary">
         <Toolbar style={{ justifyContent: "center", alignItems: "center" }}>
           {/* left section */}
@@ -101,9 +155,25 @@ const LandingPage = () => {
           >
             {sections.map((section) => (
               <Button
+                onMouseEnter={() => {
+                  setIsHovered(true)
+                }}
+                onMouseLeave={() => {
+                  setIsHovered(false)
+                }}
                 key={section.title}
                 color="inherit"
+                className={styles.buttonUnderlineCenter}
                 onClick={() => scrollToSection(section.id)}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                    // cursor: 'none',
+                    "@media (hover: none)": {
+                      backgroundColor: "transparent",
+                    },
+                  },
+                }}
               >
                 {section.title}
               </Button>
@@ -130,69 +200,105 @@ const LandingPage = () => {
           <Box
             style={{ display: "flex", justifyContent: "flex-end", flex: "1" }}
           >
-            <Button color="inherit" onClick={handleOpenCreateAccount}>
+            <Button
+              color="inherit"
+              onClick={handleOpenCreateAccount}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  // cursor: 'none',
+                  "@media (hover: none)": {
+                    backgroundColor: "transparent",
+                  },
+                },
+              }}
+              className={styles.buttonUnderlineCenter}
+            >
               Create Account
             </Button>
-            <Button color="inherit" onClick={handleOpenLogin}>
+            <Button
+              color="inherit"
+              onMouseEnter={() => {
+                setIsHovered(true)
+              }}
+              onMouseLeave={() => {
+                setIsHovered(false)
+              }}
+              onClick={handleOpenLogin}
+              sx={{
+                "&:hover": {
+                  // cursor: 'none',
+                  backgroundColor: "transparent",
+                  "@media (hover: none)": {
+                    backgroundColor: "transparent",
+                  },
+                },
+              }}
+              className={styles.buttonUnderlineCenter}
+            >
               Login
             </Button>
           </Box>
         </Toolbar>
       </AppBar>
       {/* Home section */}
-      <div data-aos="zoom-out-left">
-        <div data-aos="fade-up" data-aos-duration="1000">
-          <Box
-            id="home-section"
-            sx={{
-              height: "100vh", //100% of view height
-              display: "flex", // flexbox
-              flexDirection: "column",
-              justifyContent: "center", // center to parent, verticle
-              alignItems: "center", // horizontal center
-              backgroundColor: theme.palette.background.default, //fetch from themes
-              color: theme.palette.fontColor.main, //fetch frome themes
-              textAlign: "center", // allign center to parent
-              p: 4, //padding
-            }}
-          >
-            <Typography
-              variant="h2"
-              component="h1"
-              gutterBottom
-              sx={{ fontWeight: "bold" }}
+      <Parallax bgImage={"./splash-art.png"} strength={300}>
+        <div style={{ height: "100vh" }} data-aos="zoom-out-left">
+          <div data-aos="fade-up" data-aos-duration="1000">
+            <Box
+              id="home-section"
+              sx={{
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+                p: 4,
+              }}
             >
-              Connect and study with Study Buddy
-            </Typography>
-            <Typography variant="h6" sx={{ mb: 4 }}>
-              Study Buddy is the perfect platform to find study partners,
-              schedule meetings, and ace your exams.
-            </Typography>
-            <Box>
-              <Button
-                variant="contained"
-                sx={{ bgcolor: "black", "&:hover": { bgcolor: "grey.900" } }}
-              >
-                Get Started
-              </Button>
-              <Button
-                variant="outlined"
+              <Box
                 sx={{
-                  color: "black",
-                  borderColor: "black",
-                  "&:hover": { borderColor: "grey.900" },
+                  backgroundColor: "rgba(255, 255, 255, 0)", // semi-transparent white background
+                  borderRadius: "10px",
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                  backdropFilter: "blur(10px)", // slight blur
+                  padding: "2rem",
                 }}
               >
-                Learn More
-              </Button>
+                <Typography
+                  variant="h2"
+                  component="h1"
+                  gutterBottom
+                  sx={{
+                    fontWeight: "bold",
+                    color: theme.palette.fontColor.main,
+                  }}
+                >
+                  Connect and study with Study Buddy
+                </Typography>
+                <Typography variant="h6" sx={{ mb: 4 }}>
+                  Study Buddy is the perfect platform to find study partners,
+                  schedule meetings, and ace your exams.
+                </Typography>
+                <Box>
+                  <ChaseButton onClick={handleOpenCreateAccount}>
+                    Get Started
+                  </ChaseButton>
+                  <ChaseButton
+                    onClick={scrollToSection.bind(null, "about-us-section")}
+                  >
+                    Learn More
+                  </ChaseButton>
+                </Box>
+              </Box>
             </Box>
-          </Box>
+          </div>
         </div>
-      </div>
-
+      </Parallax>
       {/* About Us section */}
       <div
-        data-aos-duration="1000" //  duration in milliseconds
+        data-aos-duration="1000" //durat  ion in milliseconds
       >
         <Box
           id="about-us-section"
@@ -243,10 +349,11 @@ const LandingPage = () => {
                     border: `1px solid ${theme.palette.primary.main}`,
                   }}
                 >
-                  <ImageIcon
-                    sx={{ fontSize: 100, color: theme.palette.grey[400] }}
-                  />{" "}
-                  {/* Placeholder for an image */}
+                  <img
+                    src="/group-study.webp"
+                    alt="Group Study"
+                    style={{ width: "100%", height: "100%" }}
+                  />
                 </Paper>
               </Grid>
             </Grid>
@@ -254,84 +361,122 @@ const LandingPage = () => {
         </Box>
       </div>
 
-      <div
-        data-aos="fade-up" //  fade-up animation
-        data-aos-delay="100" //  delay in milliseconds
-        data-aos-duration="1000" //  duration in milliseconds
-      >
-        <Box
-          id="unlock-potential-section"
-          sx={{
-            height: "100vh",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: theme.palette.background.main,
-            color: theme.palette.fontColor.main,
-            p: 4,
-          }}
+      {/* Unlock Potential section */}
+      <Parallax bgImage={"./unlock-potential.png"} strength={300}>
+        <div
+          data-aos="fade-up" //  fade-up animation
+          data-aos-delay="100" //  delay in milliseconds
+          data-aos-duration="1000" //  duration in milliseconds
         >
-          <Container maxWidth="lg" sx={{ overflowY: "auto" }}>
-            <Grid
-              container
-              spacing={8}
-              alignItems="center"
-              justifyContent="center"
+          <Box
+            id="unlock-potential-section"
+            sx={{
+              height: "100vh",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: theme.palette.background.main,
+              color: theme.palette.fontColor.main,
+              p: 4,
+              backgroundColor: "transparent",
+            }}
+          >
+            <Box
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.8)", // semi-transparent white background
+                  borderRadius: "10px",
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                  padding: "2rem",
+                }}
             >
-              <Grid item xs={12} md={6}>
-                <Typography variant="h4" component="h3" gutterBottom>
-                  Unlock Your Potential with Study Buddy
-                </Typography>
-                <Typography variant="subtitle1" gutterBottom>
-                  Study Buddy is the ultimate tool for effective learning and
-                  networking. With Study Buddy, you can easily set up meetings,
-                  join study sessions, and connect with like-minded individuals.
-                </Typography>
-                <Box sx={{ my: 4 }}>
-                  <Typography variant="h6" component="h4" gutterBottom>
-                    Efficient Learning
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Collaborate with peers, exchange knowledge, and enhance your
-                    understanding of subjects.
-                  </Typography>
-                  <Typography variant="h6" component="h4" gutterBottom>
-                    Network Building
-                  </Typography>
-                  <Typography variant="body1" gutterBottom>
-                    Expand your network, make valuable connections, and create
-                    lifelong study buddies.
-                  </Typography>
-                  <Button variant="contained" sx={{ mr: 2 }}>
-                    Learn More
-                  </Button>
-                  <Button variant="outlined">Sign Up</Button>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    height: 300,
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#fff",
-                    border: `1px solid ${theme.palette.primary.main}`,
-                  }}
+              <Container maxWidth="lg" sx={{ overflowY: "auto" }}>
+                <Grid
+                  container
+                  spacing={8}
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  <ImageIcon
-                    sx={{ fontSize: 100, color: theme.palette.grey[400] }}
-                  />{" "}
-                  {/* Placeholder for an image */}
-                </Paper>
-              </Grid>
-            </Grid>
-          </Container>
-        </Box>
-      </div>
+                  <Grid item xs={12} md={6}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        height: 300,
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#fff",
+                        border: `1px solid ${theme.palette.primary.main}`,
+                      }}
+                    >
+                      <img
+                        src="/goal.webp"
+                        alt="Group Study"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography
+                      variant="h4"
+                      component="h3"
+                      data-aos="zoom-out-left"
+                      gutterBottom
+                    >
+                      Unlock Your Potential with Study Buddy
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      data-aos="fade-up"
+                      gutterBottom
+                    >
+                      Study Buddy is the ultimate tool for effective learning
+                      and networking. With Study Buddy, you can easily set up
+                      meetings, join study sessions, and connect with
+                      like-minded individuals.
+                    </Typography>
+                    <Box sx={{ my: 4 }}>
+                      <Typography
+                        variant="h6"
+                        component="h4"
+                        data-aos="zoom-out-right"
+                        gutterBottom
+                      >
+                        Efficient Learning
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Collaborate with peers, exchange knowledge, and enhance
+                        your understanding of subjects.
+                      </Typography>
+                      <Typography variant="h6" component="h4" gutterBottom>
+                        Network Building
+                      </Typography>
+                      <Typography variant="body1" gutterBottom>
+                        Expand your network, make valuable connections, and
+                        create lifelong study buddies.
+                      </Typography>
+                      <Button variant="contained" sx={{ mr: 2 }}>
+                        Learn More
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={handleOpenCreateAccount}
+                      >
+                        Sign Up
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Container>
+            </Box>
+          </Box>
+        </div>
+      </Parallax>
 
       <div
         data-aos="fade-up" //  fade-up animation
@@ -398,12 +543,15 @@ const LandingPage = () => {
           </Container>
         </Box>
       </div>
+
       <Login open={loginOpen} onClose={handleCloseLogin} />
       <CreateAccount
         open={createAccountOpen}
         onClose={handleCloseCreateAccount}
       />
-      {/* footer */}
+      <div>
+        <Footer />
+      </div>
     </>
   )
 }

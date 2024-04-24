@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MeetingTests {
 
     @Autowired
-    private meetingService meetingService;
+    private MeetingService meetingService;
 
     @Autowired
     private UserRepository userRepository;

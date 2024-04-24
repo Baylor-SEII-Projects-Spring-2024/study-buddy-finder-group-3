@@ -7,19 +7,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.*;
-import studybuddy.api.meeting.Meeting;
-import studybuddy.api.meeting.MeetingReccomendations;
+import studybuddy.api.courses.Courses;
+import studybuddy.api.courses.CoursesRepository;
+import studybuddy.api.courses.CoursesService;
+import studybuddy.api.meeting.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import studybuddy.api.user.User;
-import studybuddy.api.user.UserRecommendations;
+import studybuddy.api.user.*;
 import studybuddy.api.utils.JwtUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/recommendations")
@@ -28,6 +30,12 @@ public class RecommendationEndpoint {
     private JwtUtil jwtUtil;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    public MeetingRepository meetingRepository;
+    @Autowired
+    public UserRepository userService;
+    @Autowired
+    public CoursesService courseService;
 
     @GetMapping("/meetings/{userId}")
     public ResponseEntity<List<Meeting>> getReccomendationList(@PathVariable Long userId)
@@ -48,10 +56,25 @@ public class RecommendationEndpoint {
                                 rs.getString("description"),
                                 rs.getString("meeting_link"),
                                 rs.getString("meeting_location"),
-                                rs.getString("meeting_title")
+                                rs.getString("meeting_title"),
+                                new Courses((courseService.findCourse(rs.getLong("course_id"))))
                         )
                 )
         );
+
+        // Gets all the user's blocked people
+        sql = "SELECT user_id FROM users " +
+                "WHERE user_id != ? AND user_id IN(" +
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)";
+        List<Long> blockedUsers = jdbcTemplate.query(sql, new Object[]{userId, userId}, new RowMapper<Long>() {
+            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getLong("user_id");
+            }
+        });
+
+        //System.out.println("Blocked Users: " + blockedUsers);
+
 
         for(MeetingReccomendations mr : recList){
             Long meetingId = mr.getMeeting().getId();
@@ -59,7 +82,7 @@ public class RecommendationEndpoint {
             // Gets meeting course ID
             sql = "SELECT course_id FROM meeting WHERE meeting_id = ?";
             Long meetingCourse = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, Long.class);
-            System.out.println(meetingCourse);
+            System.out.println("Course ID: " + meetingCourse);
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
                     + " WHERE user_id = ?";
@@ -110,6 +133,24 @@ public class RecommendationEndpoint {
             }
 
             // TODO: Implementation for blocked users
+            sql = "SELECT user_id FROM user_meeting WHERE meeting_id = ? AND user_id != ?";
+            List<Long> meetingUsers = jdbcTemplate.query(sql, new Object[]{meetingId, userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("user_id");
+                }
+            });
+
+            for(Long l1 : meetingUsers){
+                for(Long l2 : blockedUsers){
+                    if(Objects.equals(l1, l2)){
+                        mr.addBlockedPts();
+                        mr.getMeeting().setBlockedUser(true);
+                        System.out.println("Blocked user");
+                    }
+                    break;
+                }
+                break;
+            }
 
             // Gets time of meeting and checks to see if it is within the user's time preference
             Date date = mr.getMeeting().getDate();
@@ -168,6 +209,18 @@ public class RecommendationEndpoint {
                 mr.addFriendPts();
             }
 
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userPrefType = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
+            if(userPrefType != null){
+                if(mr.getMeeting().getLocation() == null && userPrefType.equalsIgnoreCase("virtual")){
+                    mr.addMeetingTypePts();
+                }
+                else if (mr.getMeeting().getLocation() != null && userPrefType.equalsIgnoreCase("physical")){
+                    mr.addMeetingTypePts();
+                }
+            }
+
+
             // Get tutor rating
             sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
                     "WHERE user_id = " +
@@ -211,9 +264,12 @@ public class RecommendationEndpoint {
             count++;
         }
 
-        /*for(Meeting m : meetings){
-            System.out.println(m.getId());
-        }*/
+        meetings.forEach(meeting -> {
+            String course_name = meeting.getCourse().getName();
+            String areaOfStudy = meeting.getCourse().getSubjectArea();
+            meeting.setCourseName(course_name);
+            meeting.setAreaOfStudy(areaOfStudy);
+        });
 
         return new ResponseEntity<>(meetings, HttpStatus.OK);
     }
@@ -224,27 +280,46 @@ public class RecommendationEndpoint {
         List<User> users = new ArrayList<>();
         // Get all users besides current user
         String sql = "SELECT * FROM users " +
-                "WHERE user_id NOT IN " +
-                "(SELECT DISTINCT user1_id FROM friends" +
-                " UNION" +
-                " SELECT DISTINCT user2_id FROM friends)";
+                "WHERE user_id != ? AND istutor = FALSE AND user_id NOT IN (" +
 
-        List<UserRecommendations> recList = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
-                new UserRecommendations(
-                        new User(
-                                rs.getLong("user_id"),
-                                rs.getString("username"),
-                                rs.getString("email_address"),
-                                rs.getString("password"),
-                                rs.getBoolean("istutor"),
-                                rs.getString("nameFirst"),
-                                rs.getString("nameLast"),
-                                rs.getString("areaofstudy"),
-                                rs.getString("pref_time"),
-                                rs.getString("pre_meeting_type")
-                        )
-                )
-        );
+                //Get all friends
+                "SELECT u.user_id FROM users u " +
+                "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
+                "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests to user
+                "SELECT u.user_id FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
+                "WHERE fr.userto_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests from user
+
+                "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
+                "WHERE fr.userfrom_id = ?)"
+
+                + "AND user_id NOT IN (" +
+                //Gets all blocked users
+
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)"
+
+                + "AND user_id NOT IN (" +
+                //Gets all blocked users
+
+                "SELECT bl.blocker_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE u.user_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId, userId, userId);
+
+        List<UserRecommendations> recList = new ArrayList<>();
+
+        for (User ur : userList)
+        {
+            recList.add(new UserRecommendations(ur));
+        }
 
         for(UserRecommendations ur : recList){
             Long user2Id = ur.getUser().getId();
@@ -261,7 +336,8 @@ public class RecommendationEndpoint {
 
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
-                    + " WHERE user_id = ?";
+                    + " WHERE user_id = ? "
+            ;
             List<Long> userCourses = jdbcTemplate.query(sql, new Object[]{userId}, new RowMapper<Long>() {
                 public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
                     return rs.getLong("course_id");
@@ -318,15 +394,196 @@ public class RecommendationEndpoint {
             });
 
             if (!(userTime == null || otherUserTime == null)){
-                if(userTime.equals("morning")){
+                //if(userTime.equals("morning")){
                     if(userTime.equalsIgnoreCase(otherUserTime)){
                         ur.addTimePts();
                     }
+                //}
+            }
+
+            // Pref Meeting Type
+            String otherUserMeetingType = ur.getUser().getPrefMeetingType();
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userMeetingType = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_meeting_type");
+                }
+                else{
+                    return "none";
+                }
+            });
+            if (!(userMeetingType == null || otherUserMeetingType == null)){
+                //if(userMeetingType.equals("morning")){
+                if(userMeetingType.equalsIgnoreCase(otherUserMeetingType)){
+                    ur.addTimePts();
+                }
+                //}
+            }
+            ur.totalPoints();
+
+        }
+        recList.sort(Comparator.comparing(UserRecommendations::getTotalPts).reversed());
+        int count = 0;
+        for(UserRecommendations u : recList){
+            if(count >= 6){
+                break;
+            }
+            users.add(u.getUser());
+            count++;
+        }
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/tutors/{userId}")
+    public ResponseEntity<List<User>> getRecTutorList(@PathVariable Long userId)
+    {
+        List<User> users = new ArrayList<>();
+        // Get all users besides current user
+        String sql = "SELECT * FROM users " +
+                "WHERE user_id != ? AND istutor = TRUE AND user_id NOT IN (" +
+
+                //Get all friends
+                "SELECT u.user_id FROM users u " +
+                "JOIN friends f ON u.user_id = f.user2_id OR u.user_id = f.user1_id " +
+                "WHERE (f.user1_id = ? OR f.user2_id = ?) AND u.user_id != ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests to user
+                "SELECT u.user_id FROM users u JOIN friends_request fr ON u.user_id = fr.userfrom_id " +
+                "WHERE fr.userto_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all friend requests from user
+
+                "SELECT u.user_id FROm users u JOIN friends_request fr ON u.user_id = fr.userto_id " +
+                "WHERE fr.userfrom_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all user that are blocked
+                "SELECT bl.blocked_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocker_id " +
+                "WHERE u.user_id = ?)"
+
+                + " AND user_id NOT IN (" +
+
+                //Gets all user that are blocked
+                "SELECT bl.blocker_id FROM users u JOIN blockedlist bl ON u.user_id = bl.blocked_id " +
+                "WHERE u.user_id = ?)";
+
+        List<User> userList = jdbcTemplate.query(sql, new UserRowMapper(), userId, userId, userId, userId, userId, userId, userId, userId);
+
+        List<UserRecommendations> recList = new ArrayList<>();
+
+        for (User ur : userList)
+        {
+            recList.add(new UserRecommendations(ur));
+        }
+
+        for(UserRecommendations ur : recList){
+            Long user2Id = ur.getUser().getId();
+
+            // Gets other user's course IDs
+
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ?";
+            List<Long> otherUserCourses = jdbcTemplate.query(sql, new Object[]{user2Id}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            // Gets user course IDs
+            sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
+                    + " WHERE user_id = ? "
+            ;
+            List<Long> userCourses = jdbcTemplate.query(sql, new Object[]{userId}, new RowMapper<Long>() {
+                public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getLong("course_id");
+                }
+            });
+
+            // For this one, if they have multiple of the same course, it will stack
+            for(Long l1 : otherUserCourses){
+                for(Long l2 : userCourses){
+                    if(l1 != null && l2 != null){
+                        if(l1.equals(l2)){
+                            ur.addCoursePts();
+                        }
+                    }
+
                 }
             }
 
+            // Area of Study
+            // Gets other user's area of study
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String otherUserSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{user2Id}, String.class);
+
+            // Gets our user's area of study
+            sql = "SELECT areaofstudy FROM users WHERE user_id = ?";
+            String userSubjectCsv = jdbcTemplate.queryForObject(sql, new Object[]{userId}, String.class);
+
+            // Stacks as well
+            if(userSubjectCsv != null && otherUserSubjectCsv != null) {
+                String[] otherUserSubjectList = otherUserSubjectCsv.split(",");
+                String[] userSubjectList = userSubjectCsv.split(",");
+                for (String s1 : userSubjectList) {
+                    for(String s2 : otherUserSubjectList){
+                        if (s1.equalsIgnoreCase(s2)) {
+                            ur.addAreaOfStudyPts();
+                        }
+                    }
+
+                }
+            }
+            else{
+                System.out.println("THIS HAD NO ROWS");
+            }
+
+            String otherUserTime = ur.getUser().getPrefTime();
+            sql = "SELECT pref_time FROM users WHERE user_id = ?";
+            String userTime = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_time");
+                }
+                else{
+                    return "none";
+                }
+            });
+
+            if (!(userTime == null || otherUserTime == null)){
+                //if(userTime.equals("morning")){
+                    if(userTime.equalsIgnoreCase(otherUserTime)){
+                        ur.addTimePts();
+                    }
+                //}
+            }
+
+            // Pref Meeting Type
+            String otherUserMeetingType = ur.getUser().getPrefMeetingType();
+            sql = "SELECT pref_meeting_type FROM users WHERE user_id = ?";
+            String userMeetingType = jdbcTemplate.query(sql, new Object[]{user2Id}, (rs) -> {
+                if(rs.next()){
+                    return rs.getString("pref_meeting_type");
+                }
+                else{
+                    return "none";
+                }
+            });
+            if (!(userMeetingType == null || otherUserMeetingType == null)){
+                //if(userMeetingType.equals("morning")){
+                    if(userMeetingType.equalsIgnoreCase(otherUserMeetingType)){
+                    ur.addTimePts();
+                    }
+                //}
+            }
+
             // Tutor Rating
-            if(ur.getUser().isUserType()){
                 sql = "SELECT COUNT(*) as count, SUM(rating) as ratingSum FROM tutor_rating " +
                         "WHERE user_id = ? GROUP BY user_id";
 
@@ -351,7 +608,7 @@ public class RecommendationEndpoint {
                     rating = 0.0;
                 }
                 ur.addTutorRatingPts(rating);
-            }
+
             ur.totalPoints();
 
         }
@@ -368,5 +625,26 @@ public class RecommendationEndpoint {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+
+    public class UserRowMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            User user = new User();
+
+            user.setId(rs.getLong("user_id"));
+            user.setAreaOfStudy(rs.getString("areaofstudy"));
+            user.setEmailAddress(rs.getString("email_address"));
+            user.setNameFirst(rs.getString("namefirst"));
+            user.setNameLast(rs.getString("namelast"));
+            user.setPassword(rs.getString("password"));
+            user.setUserType(rs.getBoolean("istutor"));
+            user.setUsername(rs.getString("username"));
+            user.setProfilePic(rs.getBytes("profilepic"));
+            user.setPrefTime(rs.getString("pref_time"));
+            user.setPrefMeetingType(rs.getString("pref_meeting_type"));
+
+            return user;
+        }
+    }
 
 }
