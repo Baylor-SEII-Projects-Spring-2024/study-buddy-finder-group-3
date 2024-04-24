@@ -36,6 +36,12 @@ public class Courses {
 
     }
 
-    public Courses(Optional<Courses> courseId) {
+    public Courses(Optional<Courses> course) {
+        this.description = course.get().description;
+        this.name = course.get().name;
+        this.subjectArea = course.get().subjectArea;
+
+
+
     }
 }
