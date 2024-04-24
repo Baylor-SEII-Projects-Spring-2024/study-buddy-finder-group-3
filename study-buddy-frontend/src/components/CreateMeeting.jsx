@@ -50,9 +50,11 @@ function CreateMeeting({ open, onClose }) {
     if (newSearchTerm.length > 1) {
       try {
         const response = await axios.get(
-          `${API_URL}/friends/${user.id}/get/${newSearchTerm}`
+          `${API_URL}/users/search/${newSearchTerm}`
         )
         setSearchResults(response.data)
+        console.log("response", response)
+        console.log("searchResults", searchResults);
       } catch (error) {
         console.error("Failed to search users", error)
         setSearchResults([])

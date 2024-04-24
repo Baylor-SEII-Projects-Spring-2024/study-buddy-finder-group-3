@@ -94,4 +94,7 @@ public class UserService {
 
     }
 
+    public List<User> findUsersContainingUsername(String searchTerm) {
+        return userRepository.findUsersContainingUsername(searchTerm);
+    }
 }
