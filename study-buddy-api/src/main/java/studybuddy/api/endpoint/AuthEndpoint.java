@@ -111,18 +111,87 @@ public class AuthEndpoint {
         }
 
     }
-/*
-    @PostMapping("/checkEmail/{email}")
+
+    /*
+    @GetMapping("/checkEmail/{email}")
     public boolean verifyPassword(@PathVariable Long id, @PathVariable String password){
         try{
             Optional<User> user = userService.findUser(id);
-            return user.;
+
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;
         }
 
     }*/
+
+    /*
+    @PostMapping("/{id}/changePassword")
+    public boolean changePassword(@PathVariable Long id, @RequestBody UserReq userRequest) {
+        List<Object[]> parameters = new ArrayList<>();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(userRequest.getPassword());
+
+        parameters.add(new Object[]{
+                id,
+                hashedPassword,
+        });
+
+        jdbcTemplate.batchUpdate("UPDATE users password = ?  " +
+                "WHERE user_id = ?", parameters);
+        return true;
+    }*/
+
+    @PostMapping("/{id}/changePassword")
+    public boolean changePassword(@PathVariable Long id, @RequestBody UserReq userRequest) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(userRequest.getPassword());
+
+        int rowsAffected = jdbcTemplate.update("UPDATE users SET password = ? WHERE user_id = ?", hashedPassword, id);
+
+        // Check if the update was successful (1 row affected)
+        return rowsAffected == 1;
+    }
+
+    /*
+    @PostMapping("/verifyPassword/{id}")
+    public boolean verifyPassword(@PathVariable Long id, @RequestBody String password) {
+        try {
+            // Retrieve the stored hashed password from the database using the user's ID
+            String storedHashedPassword = jdbcTemplate.queryForObject(
+                    "SELECT password FROM users WHERE user_id = ?",
+                    new Object[]{id},
+                    String.class
+            );
+
+            // Use bcrypt to compare the input password with the stored hashed password
+            return passwordEncoder.matches(password, storedHashedPassword);
+        } catch (Exception e) {
+            log.error("Error verifying password: {}", e.getMessage());
+            return false;
+        }
+    }*/
+
+    @PostMapping("/verifyPassword/{id}")
+    public boolean verifyPassword(@PathVariable Long id, @RequestBody UserReq userReq) {
+        try {
+            String password = userReq.getPassword();
+
+
+            // Retrieve the stored hashed password from the database using the user's ID
+            String storedHashedPassword = jdbcTemplate.queryForObject(
+                    "SELECT password FROM users WHERE user_id = ?",
+                    new Object[]{id},
+                    String.class
+            );
+
+            // Use bcrypt to compare the input password with the stored hashed password
+            return passwordEncoder.matches(password, storedHashedPassword);
+        } catch (Exception e) {
+            log.error("Error verifying password: {}", e.getMessage());
+            return false;
+        }
+    }
 
 
 
@@ -154,10 +223,6 @@ public class AuthEndpoint {
         }
         return ResponseEntity.badRequest().body("Invalid Authorization header");
     }
-
-
-
-
 
 
     public static class UserReq {
@@ -210,4 +275,27 @@ public class AuthEndpoint {
 
         public String getPrefMeetingType() { return prefMeetingType; }
     }
+
+
 }
+
+/*
+
+    @GetMapping("/{id}/verifyPassword")
+    public boolean verifyPassword(@PathVariable Long id, @RequestParam String password) {
+        try {
+            // Retrieve the hashed password from the database based on the user's ID
+            String hashedPassword = jdbcTemplate.queryForObject(
+                    "SELECT password FROM users WHERE user_id = ?",
+                    new Object[]{id},
+                    String.class
+            );
+
+            // Compare the given password with the hashed password from the database
+            return passwordEncoder.matches(password, hashedPassword);
+        } catch (Exception e) {
+            log.error("Error verifying password:", e);
+            return false;
+        }
+    }
+ */

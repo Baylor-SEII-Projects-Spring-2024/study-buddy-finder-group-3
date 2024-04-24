@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
+import studybuddy.api.courses.Courses;
 import studybuddy.api.meeting.Meeting;
-import studybuddy.api.user.Courses;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import studybuddy.api.user.User;
-import studybuddy.api.user.Courses;
 import studybuddy.api.user.UserCourses;
 import studybuddy.api.user.UserRecommendations;
 import studybuddy.api.utils.JwtUtil;

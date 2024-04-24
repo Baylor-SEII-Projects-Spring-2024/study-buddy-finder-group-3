@@ -16,9 +16,6 @@ import {selectUser} from "@/utils/authSlice";
 
 function ChangePassword({ open, onClose }) {
     const dispatch = useDispatch();
-    //const [c_name, setCourseName] = useState("");
-    //const [description , setDescription] = useState("");
-    //const [subjectArea , setSubjectArea] = useState("");
     const [old_password, setOldPassword] = useState("");
     const [new_password , setNewPassword] = useState("");
     const [v_password , setVerifiedPassword] = useState("");
@@ -47,6 +44,7 @@ function ChangePassword({ open, onClose }) {
 
     const handleNewPassword = async (e) => {
         e.preventDefault();
+        /*
         if (!old_password) {
             toast.error("Type Old Password");
             return;
@@ -58,22 +56,40 @@ function ChangePassword({ open, onClose }) {
         if (!v_password) {
             toast.error("Type new password");
             return;
+        }*/
+
+        // Check if new password and verified password match
+        if (new_password !== v_password) {
+            toast.error("New password and verified password do not match");
+            return;
         }
 
-        /*
         try {
-            const response = await axios.post(`${API_URL}/courses/user/${user.id}/newCourseforUser`, {
-                name: old_password,
-                new_password,
-                subjectArea
-            });
-            console.log(response);
+            // Verify old password first
+            const verifyResponse = await axios.post(`${API_URL}/auth/verifyPassword/${user.id}`,
+                {password: old_password});
+            const isPasswordVerified = verifyResponse.data;
 
-            handleClose();
-        } catch (error){
-            toast.error("Invalid Course");
+            if (!isPasswordVerified) {
+                toast.error("Old password is incorrect");
+                return;
+            }
+
+            // If old password is verified, change the password
+            const changePasswordResponse = await axios.post(`${API_URL}/auth/${user.id}/changePassword`, { password: new_password });
+
+            if (changePasswordResponse.data) {
+                toast.success("Password changed successfully");
+                handleClose();
+            } else {
+                toast.error("Failed to change password");
+            }
+        } catch (error) {
+            toast.error("An error occurred while changing password");
             console.error(error);
-        }*/
+        }
+
+
 
     };
 
