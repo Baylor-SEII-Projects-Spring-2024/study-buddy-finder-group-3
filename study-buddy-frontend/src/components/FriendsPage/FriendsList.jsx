@@ -20,10 +20,11 @@ import CardContent from "@mui/material/CardContent"
 import CardActions from "@mui/material/CardActions"
 import Button from "@mui/material/Button"
 import AccountCircleIcon from "@mui/icons-material/AccountCircle"
+import { toast } from "react-toastify"
 
 const fallbackPic = "profilePicture.png"
 
-export default function FriendsList() {
+export default function FriendsList({ listType = "friends" }) {
   const token = useSelector(selectToken)
   const user = useSelector(selectUser)
   const router = useRouter()
@@ -35,7 +36,8 @@ export default function FriendsList() {
   const [selectedUser, setSelectedUser] = useState({})
   const [profilePics, setProfilePics] = useState([])
   const [triggerUpdate, setTriggerUpdate] = useState(false)
-  const [triggerUpdate2ElectricBoogaloo, setTriggerUpdate2ElectricBoogaloo] = useState(false)
+  const [triggerUpdate2ElectricBoogaloo, setTriggerUpdate2ElectricBoogaloo] =
+    useState(false)
 
   const handleListItemClick = (event, user) => {
     setSelectedUser(user)
@@ -51,16 +53,38 @@ export default function FriendsList() {
       console.log("useEffect: FriendsList")
       setUserid(user.id)
     }
+
     fetchAllInfo()
     getProfilePics(friends)
-
-    console.log(loadingPics)
-  }, [user, selectedUser, loadingFriendsList, triggerUpdate, loadingPics, triggerUpdate2ElectricBoogaloo])
+  }, [
+    user,
+    selectedUser,
+    loadingFriendsList,
+    triggerUpdate,
+    loadingPics,
+    triggerUpdate2ElectricBoogaloo,
+  ])
 
   const fetchAllInfo = async () => {
     try {
-      const response = await axios.get(`${API_URL}/friends/${user.id}/all`)
-      setFriendsList(response.data)
+      console.log("List type: ", listType)
+      if (listType === "friends") 
+      {
+        const response = await axios.get(`${API_URL}/friends/${user.id}/all`)
+        setFriendsList(response.data)
+      } 
+      if (listType === "tutorRecommendations") 
+      {
+        const response = await axios.get(`${API_URL}/recommendations/tutors/${user.id}`)
+        setFriendsList(response.data)
+      } 
+      if (listType === "friendsRecommendations") 
+      {
+        const response = await axios.get(`${API_URL}/recommendations/users/${user.id}`)
+        setFriendsList(response.data)
+      }
+
+      
     } catch (error) {
       console.error("Error fetching friends info:", error)
     } finally {
@@ -90,12 +114,28 @@ export default function FriendsList() {
     }
   }
 
+  const requestFriend = (event, id) => {
+    try {
+      axios
+        .post(`${API_URL}/friends/${user.id}/request/${id}`)
+        .then((response) => {
+          //console.log(response)
+        })
+    } catch (error) {
+      console.error("Error adding friend:", error)
+    }
+
+    toast.success("Friend request sent!", {position: "top-center"})
+
+    setTriggerUpdate2ElectricBoogaloo(false)
+    setTriggerUpdate(!triggerUpdate)
+  }
+
   const getProfilePics = async (users) => {
     try {
       const config = {
         responseType: "blob",
       }
-      console.log("Fetching profile pics...")
       const promises = []
 
       for (let i = 0; i < users.length; i++) {
@@ -137,6 +177,19 @@ export default function FriendsList() {
 
   if (loadingPics) {
     if (friends.length === 0 && !loadingFriendsList) {
+      if (listType != "friends")
+      {
+        return (
+          <Typography
+            variant="h3"
+            padding={20}
+            style={{ textAlign: "center" }}
+            color={"gray"}
+          >
+            No {listType === "tutorRecommendations" ? "tutors" : "users"} recommendations to show
+          </Typography>
+        )
+      }
       return (
         <Typography
           variant="h3"
@@ -172,7 +225,7 @@ export default function FriendsList() {
           style={{ textAlign: "center" }}
           color={"gray"}
         >
-          OH NO! You have no friends!
+          {listType === "friends" ? "OH NO! You have no friends!" : listType === "tutorRecommendations" ? "No tutor recommendations to show" : "No user recommendations to show"}
         </Typography>
       ) : (
         <Box sx={{ flexGrow: 1 }}>
@@ -182,7 +235,7 @@ export default function FriendsList() {
             style={{ textAlign: "center" }}
             color={"gray"}
           >
-            Your Friends
+            {listType === "friends" ? "Friends" : listType === "tutorRecommendations" ? "Tutor Recommendations" : "User Recommendations"}
           </Typography>
           <List>
             <Grid container spacing={5} justifyContent={"center"}>
@@ -229,14 +282,14 @@ export default function FriendsList() {
                             {user.areaOfStudy}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Lizards are a widespread group of squamate reptiles,
-                            with over 6,000 species, ranging across all
-                            continents except Antarctica
+                            {user.about_me}
                           </Typography>
                         </CardContent>
                       </CardActionArea>
 
                       <CardActions>
+                        {listType === "friends" ? (
+                          <div>
                         <Button
                           size="small"
                           color="primary"
@@ -253,10 +306,20 @@ export default function FriendsList() {
                         >
                           Block
                         </Button>
+                        </div>
+                        ) : (
+                          <Button
+                            size="small"
+                            color="primary"
+                            onClick={(event) => requestFriend(event, user.id)}
+                            height={60}
+                          >
+                            Add Friend
+                          </Button>
+                        )}
                       </CardActions>
                     </ListItem>
                   </Card>
-                  {/* <FriendProfile open={open} onClose={handleClose} user={selectedUser}/> */}
                 </Grid>
               ))}
             </Grid>

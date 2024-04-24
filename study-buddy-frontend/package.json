@@ -21,7 +21,6 @@
     "@mui/x-date-pickers": "^6.19.5",
     "@reduxjs/toolkit": "^2.0.1",
     "aos": "^2.3.4",
-    "aws-amplify": "^6.0.28",
     "aws-sdk": "^2.1594.0",
     "axios": "^1.6.5",
     "date-fns": "2.25.0",

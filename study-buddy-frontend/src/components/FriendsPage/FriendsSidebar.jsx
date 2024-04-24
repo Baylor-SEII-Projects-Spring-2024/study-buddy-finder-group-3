@@ -35,9 +35,6 @@ import FriendsBlocked from "./FriendsBlocked"
 import { Badge } from "@mui/material"
 import Header from "../Header"
 import RecommendIcon from "@mui/icons-material/Recommend"
-import FriendProfile from "./FriendProfile"
-import FriendRecommendations from "./FriendRecommendations"
-import TutorRecommendations from "./TutorRecommendations"
 import FriendsCancel from "./FriendsCancel"
 
 const drawerWidth = 240
@@ -408,8 +405,8 @@ export default function FriendsSidebar() {
         {activePage === "recommendation" ? (
           <div>
             <Box>
-              <FriendRecommendations />
-              <TutorRecommendations />
+              <FriendsList listType="friendsRecommendations"/>
+              <FriendsList listType="tutorRecommendations"/>
             </Box>
           </div>
         ) : null}

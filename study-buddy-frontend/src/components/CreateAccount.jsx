@@ -199,9 +199,17 @@ function CreateAccount({ open, onClose }) {
             Create Account
           </Typography>
           <Box component="form"
-               sx={{mt: 1,
-               overflowY: "auto",
-               maxHeight: "80vh"}}
+               sx={{
+                mt: 1,
+                overflowY: "auto",
+                overflowX: "hidden",
+                maxHeight: "80vh",
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                },
+                '-ms-overflow-style': 'none',  /* IE and Edge */
+                'scrollbar-width': 'none'  /* Firefox */
+              }}
                onSubmit={handleCreateAccount}>
             <TextField
                 margin="normal"

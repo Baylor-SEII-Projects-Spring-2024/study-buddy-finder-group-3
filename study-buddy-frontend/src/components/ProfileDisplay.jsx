@@ -16,7 +16,6 @@ import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
 import styles from "@/styles/ProfileDisplay.module.css";
 import { useTheme } from "@mui/material/styles"
-import avatarImage from "./StudyBuddyLogo.png"
 
 function ProfileDisplay() {
     const token = useSelector(selectToken);
@@ -29,7 +28,6 @@ function ProfileDisplay() {
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedMeetingType, setSelectedMeetingType] = useState('');
     const theme = useTheme()
-    const imagePath = avatarImage;
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const inputRef = useRef(null);
     const [profilePic, setProfilePic] = useState(null);
