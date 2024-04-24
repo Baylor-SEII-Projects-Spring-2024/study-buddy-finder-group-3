@@ -26,14 +26,6 @@ import { Button } from "@mui/material"
 import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectToken, setToken, logout } from "@/utils/authSlice.js"
-import FriendsList from './FriendsList';
-import axios from "axios";
-import { API_URL } from "@/utils/config";
-import { selectUser } from "@/utils/authSlice";
-import FriendsRequest from "./FriendsRequests";
-import FriendsBlocked from "./FriendsBlocked";
-import { Badge } from "@mui/material";
-import Header from "../Header";
 import ChatComp from "@/components/ChatComp";
 import ChatParentComponent from "@/components/ChatParentComponent";
 import styles from "@/styles/Chat.module.css";
