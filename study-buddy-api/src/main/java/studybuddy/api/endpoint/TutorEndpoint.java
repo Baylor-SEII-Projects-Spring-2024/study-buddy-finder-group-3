@@ -37,7 +37,7 @@ public class TutorEndpoint {
     public ResponseEntity<?> getRating(@PathVariable Long tutorId) {
         List<String> ratings = tutorRatingService.getTutorRatingByUserId(tutorId);
         if (ratings.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.ok(ratings);
         }

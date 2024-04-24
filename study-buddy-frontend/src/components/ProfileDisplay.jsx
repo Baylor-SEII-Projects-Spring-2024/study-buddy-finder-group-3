@@ -39,11 +39,6 @@ function ProfileDisplay() {
 
     // console.log(avatarImage);
 
-    useEffect(() => {
-        if (!token || !user) {
-            router.push('/');
-        }
-    }, [token, router]);
 
     useEffect(() => {
         if (user) {
