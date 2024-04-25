@@ -43,6 +43,7 @@ function CreateMeeting({ open, onClose }) {
   const [courseSearchTerm, setCourseSearchTerm] = useState("")
   const [courseResults, setCourseResults] = useState([])
   const [selectedCourse, setSelectedCourse] = useState(null)
+  const [isPrivateMeetings, setIsPrivateMeetings] = useState(true)
 
   const handleSearchChange = async (event) => {
     const newSearchTerm = event.target.value
@@ -93,6 +94,10 @@ function CreateMeeting({ open, onClose }) {
     }
   }
 
+  const handleIsPrivateMeetingsChange = (event) => {
+    setIsPrivateMeetings(event.target.checked)
+  }
+
   const handleDateChange = (newValue) => {
     setMeetingDate(newValue)
   }
@@ -120,7 +125,7 @@ function CreateMeeting({ open, onClose }) {
 
     try {
       const invitedUserIds = selectedInvites.map((invite) => invite.id)
-
+      console.log("is private", isPrivateMeetings);
       const response = await axios.post(`${API_URL}/meeting/createMeeting`, {
         title: meetingTitle,
         description: meetingDescription,
@@ -128,7 +133,8 @@ function CreateMeeting({ open, onClose }) {
         link: meetingLink,
         location: meetingLocation,
         creatorUsername: user.username,
-        course: { id: selectedCourse.id },
+        course: { id: selectedCourse?.id },
+        private: isPrivateMeetings,
         invitedUserIds,
       })
 
@@ -193,6 +199,15 @@ function CreateMeeting({ open, onClose }) {
             sx={{ ml: 2 }}
           />
         </Box>
+        <FormControlLabel
+          control={<Checkbox 
+            checked={isPrivateMeetings} 
+            onChange={handleIsPrivateMeetingsChange}
+          />}
+          label="Private Meeting"
+          sx={{ mt: 2 }}
+        />
+        
         <TextField
           label="Search Courses"
           type="text"

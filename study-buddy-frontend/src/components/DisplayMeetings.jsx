@@ -97,7 +97,7 @@ function DisplayMeetings() {
     // new timeout
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredMeetingId(meetingId)
-    }, 1000)
+    }, 500)
   }
 
   const handleMouseLeave = () => {
