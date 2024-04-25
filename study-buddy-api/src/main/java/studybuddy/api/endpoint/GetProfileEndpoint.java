@@ -84,7 +84,7 @@ public class GetProfileEndpoint {
             log.info("Updating profile photo for user with ID: {}", userId);
 
             // Check if the photo is not empty and meets the size requirement
-            if (photo != null && !photo.isEmpty() && photo.getSize() <= 30 * 1024) {
+            if (photo != null && !photo.isEmpty() && photo.getSize() <= 16777216) {
                 // Convert MultipartFile to byte array
                 byte[] photoBytes = photo.getBytes();
 
