@@ -425,7 +425,9 @@ function DisplayMeetings() {
                                           {meeting.areaOfStudy} - {meeting.courseName}
                                       </Typography>
                                   )}
-                                  <Button endIcon={<ArrowForwardIosIcon />} sx={{ mt: 2 }}>
+                                  <Button endIcon={<ArrowForwardIosIcon />} sx={{ mt: 2 }}
+                                    onClick={() => handleOpenModal(meeting)}
+                                  >
                                       View Meeting
                                   </Button>
                               </CardContent>
