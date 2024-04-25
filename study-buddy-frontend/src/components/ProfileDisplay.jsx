@@ -297,6 +297,7 @@ function ProfileDisplay( {editable = true, uniqueId = -1}) {
                  position: "relative",
                  backgroundColor: theme.palette.primary.secondary,
                  borderColor: theme.palette.primary.main
+
              }}
         >
             <div className={styles.profileHeader}>
@@ -336,7 +337,7 @@ function ProfileDisplay( {editable = true, uniqueId = -1}) {
                     variant="contained"
                     color="primary"
                     onClick={handleUploadClick}
-                    disabled={!editMode}
+                    disabled={!editable}
                     sx={{
                         // marginLeft: "auto",
                         // marginRight: "auto",

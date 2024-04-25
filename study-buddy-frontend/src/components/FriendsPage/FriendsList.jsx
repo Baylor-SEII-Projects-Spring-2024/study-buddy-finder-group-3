@@ -178,8 +178,13 @@ export default function FriendsList({ listType = "friends" }) {
 
   if (open) {
     return (
-      <Box>
-        <IconButton onClick={() => setOpen(false)}>
+      <Box sx={{ flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+       }}>
+        <IconButton onClick={() => setOpen(false)} sx={{marginBottom: 3}}>
           <ArrowBackIcon />
           Back
         </IconButton>
