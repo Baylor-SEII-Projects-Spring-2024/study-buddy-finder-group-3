@@ -9,18 +9,18 @@ import ListItem from "@mui/material/ListItem"
 import ListItemText from "@mui/material/ListItemText"
 import Typography from "@mui/material/Typography"
 import { ListItemButton, CircularProgress } from "@mui/material"
-import FriendProfile from "./FriendProfile"
 import { API_URL } from "@/utils/config"
 import { Grid } from "@mui/material"
 import Card from "@mui/material/Card"
 import Avatar from "@mui/material/Avatar"
 import CardActionArea from "@mui/material/CardActionArea"
-import CardMedia from "@mui/material/CardMedia"
 import CardContent from "@mui/material/CardContent"
 import CardActions from "@mui/material/CardActions"
 import Button from "@mui/material/Button"
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"
 import { toast } from "react-toastify"
+import ProfileDisplay from "../ProfileDisplay"
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import { IconButton } from "@mui/material"
 
 const fallbackPic = "profilePicture.png"
 
@@ -40,7 +40,7 @@ export default function FriendsList({ listType = "friends" }) {
     useState(false)
 
   const handleListItemClick = (event, user) => {
-    setSelectedUser(user)
+    setSelectedUser(user.id)
     setOpen(true)
   }
 
@@ -53,6 +53,8 @@ export default function FriendsList({ listType = "friends" }) {
       console.log("useEffect: FriendsList")
       setUserid(user.id)
     }
+
+    console.log(friends, "FriendsList")
 
     fetchAllInfo()
     getProfilePics(friends)
@@ -68,23 +70,22 @@ export default function FriendsList({ listType = "friends" }) {
   const fetchAllInfo = async () => {
     try {
       console.log("List type: ", listType)
-      if (listType === "friends") 
-      {
+      if (listType === "friends") {
         const response = await axios.get(`${API_URL}/friends/${user.id}/all`)
         setFriendsList(response.data)
-      } 
-      if (listType === "tutorRecommendations") 
-      {
-        const response = await axios.get(`${API_URL}/recommendations/tutors/${user.id}`)
-        setFriendsList(response.data)
-      } 
-      if (listType === "friendsRecommendations") 
-      {
-        const response = await axios.get(`${API_URL}/recommendations/users/${user.id}`)
+      }
+      if (listType === "tutorRecommendations") {
+        const response = await axios.get(
+          `${API_URL}/recommendations/tutors/${user.id}`
+        )
         setFriendsList(response.data)
       }
-
-      
+      if (listType === "friendsRecommendations") {
+        const response = await axios.get(
+          `${API_URL}/recommendations/users/${user.id}`
+        )
+        setFriendsList(response.data)
+      }
     } catch (error) {
       console.error("Error fetching friends info:", error)
     } finally {
@@ -125,7 +126,7 @@ export default function FriendsList({ listType = "friends" }) {
       console.error("Error adding friend:", error)
     }
 
-    toast.success("Friend request sent!", {position: "top-center"})
+    toast.success("Friend request sent!", { position: "top-center" })
 
     setTriggerUpdate2ElectricBoogaloo(false)
     setTriggerUpdate(!triggerUpdate)
@@ -175,10 +176,21 @@ export default function FriendsList({ listType = "friends" }) {
     }
   }
 
+  if (open) {
+    return (
+      <Box>
+        <IconButton onClick={() => setOpen(false)}>
+          <ArrowBackIcon />
+          Back
+        </IconButton>
+        <ProfileDisplay editable={false} uniqueId={selectedUser} />
+      </Box>
+    )
+  }
+
   if (loadingPics) {
     if (friends.length === 0 && !loadingFriendsList) {
-      if (listType != "friends")
-      {
+      if (listType != "friends") {
         return (
           <Typography
             variant="h3"
@@ -186,7 +198,8 @@ export default function FriendsList({ listType = "friends" }) {
             style={{ textAlign: "center" }}
             color={"gray"}
           >
-            No {listType === "tutorRecommendations" ? "tutors" : "users"} recommendations to show
+            No {listType === "tutorRecommendations" ? "tutors" : "users"}{" "}
+            recommendations to show
           </Typography>
         )
       }
@@ -225,7 +238,11 @@ export default function FriendsList({ listType = "friends" }) {
           style={{ textAlign: "center" }}
           color={"gray"}
         >
-          {listType === "friends" ? "OH NO! You have no friends!" : listType === "tutorRecommendations" ? "No tutor recommendations to show" : "No user recommendations to show"}
+          {listType === "friends"
+            ? "OH NO! You have no friends!"
+            : listType === "tutorRecommendations"
+            ? "No tutor recommendations to show"
+            : "No user recommendations to show"}
         </Typography>
       ) : (
         <Box sx={{ flexGrow: 1 }}>
@@ -235,7 +252,11 @@ export default function FriendsList({ listType = "friends" }) {
             style={{ textAlign: "center" }}
             color={"gray"}
           >
-            {listType === "friends" ? "Friends" : listType === "tutorRecommendations" ? "Tutor Recommendations" : "User Recommendations"}
+            {listType === "friends"
+              ? "Friends"
+              : listType === "tutorRecommendations"
+              ? "Tutor Recommendations"
+              : "User Recommendations"}
           </Typography>
           <List>
             <Grid container spacing={5} justifyContent={"center"}>
@@ -282,7 +303,7 @@ export default function FriendsList({ listType = "friends" }) {
                             {user.areaOfStudy}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {user.about_me}
+                            {user.aboutMe}
                           </Typography>
                         </CardContent>
                       </CardActionArea>
@@ -290,23 +311,23 @@ export default function FriendsList({ listType = "friends" }) {
                       <CardActions>
                         {listType === "friends" ? (
                           <div>
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={(event) => removeFriend(user.id)}
-                          height={60}
-                        >
-                          Remove
-                        </Button>
-                        <Button
-                          size="small"
-                          color="primary"
-                          onClick={(event) => blockUser(user.id)}
-                          height={60}
-                        >
-                          Block
-                        </Button>
-                        </div>
+                            <Button
+                              size="small"
+                              color="primary"
+                              onClick={(event) => removeFriend(user.id)}
+                              height={60}
+                            >
+                              Remove
+                            </Button>
+                            <Button
+                              size="small"
+                              color="primary"
+                              onClick={(event) => blockUser(user.id)}
+                              height={60}
+                            >
+                              Block
+                            </Button>
+                          </div>
                         ) : (
                           <Button
                             size="small"

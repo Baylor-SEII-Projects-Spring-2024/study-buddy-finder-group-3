@@ -132,6 +132,7 @@ export default function FriendsSidebar() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [count, setCount] = useState(0)
   const [requestsValue, setRequestsValue] = useState(0)
+  const [recommendationsValue, setRecommendationsValue] = useState(0)
 
   const navigateToProfile = () => {
     router.push("/profile")
@@ -385,10 +386,8 @@ export default function FriendsSidebar() {
         {activePage === "list" ? <FriendsList /> : null}
         {activePage === "requests" ? (
           <Box>
-            <Button onClick={() => setRequestsValue(0)}>Add Friends</Button>
-            <Button onClick={() => setRequestsValue(1)}>
-              Outgoing Requests
-            </Button>
+            <Button onClick={() => setRequestsValue(0)} variant="contained">Add Friends</Button>
+            <Button onClick={() => setRequestsValue(1)} variant="contained">Outgoing Requests</Button>
             {requestsValue === 0 ? (
               <Box>
                 <FriendsAdd />
@@ -403,12 +402,18 @@ export default function FriendsSidebar() {
         {activePage === "blocked" ? <FriendsBlocked /> : null}
         {activePage === "chat" ? <div>Chat</div> : null}
         {activePage === "recommendation" ? (
-          <div>
-            <Box>
-              <FriendsList listType="friendsRecommendations"/>
-              <FriendsList listType="tutorRecommendations"/>
-            </Box>
-          </div>
+          <Box>
+            <Button onClick={() => setRecommendationsValue(0)} variant="contained">User Recommendations</Button>
+            <Button onClick={() => setRecommendationsValue(1)} variant="contained">Tutor Recommendations</Button>
+            {recommendationsValue === 0 ? (
+              <Box>
+                <FriendsList listType="friendsRecommendations" />
+              </Box>
+            ) : null}
+            {recommendationsValue === 1 ? (
+              <FriendsList listType="tutorRecommendations" />
+            ) : null}
+          </Box>
         ) : null}
       </Box>
     </Box>
