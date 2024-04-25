@@ -39,6 +39,7 @@ import CreateMeeting from "./CreateMeeting.jsx"
 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import Footer from "./Footer.jsx"
+import { useActivePage } from "@/utils/activePageContext"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -57,11 +58,17 @@ function DisplayMeetings() {
   const unreadNotifications = useSelector(
     (state) => state.notifications.notificationCount
   )
+  const { activePage, setActivePage } = useActivePage()
+  
 
   const handleInviteClick = () => {
     router.push("/friends")
   }
 
+  const handleRequestNavigate = () => {
+    setActivePage("requests")
+    router.push("/friends")
+  }
   // useEffect(() => {
   //   const fetchNotifications = async () => {
   //     if (user && user.id) {
@@ -458,7 +465,7 @@ function DisplayMeetings() {
                       >
                           Invite
                       </Button>
-                      <Button variant="outlined" color="primary" sx={{ mx: 1 }}>
+                      <Button variant="outlined" color="primary" sx={{ mx: 1 }} onClick={handleRequestNavigate}>
                           View Requests
                       </Button>
                   </Box>
