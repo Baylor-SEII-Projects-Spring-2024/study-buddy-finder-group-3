@@ -10,15 +10,14 @@ import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Avatar from "@mui/material/Avatar";
 import { useSelector } from "react-redux";
-import { selectToken, selectUser } from "@/utils/authSlice.js";
+import { selectToken, selectUser, setUser } from "@/utils/authSlice.js";
 import { useRouter } from "next/router";
 import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
 import styles from "@/styles/ProfileDisplay.module.css";
 import { useTheme } from "@mui/material/styles"
-import avatarImage from "./StudyBuddyLogo.png"
 
-function ProfileDisplay() {
+function ProfileDisplay( {editable = true, uniqueId = -1}) {
     const token = useSelector(selectToken);
     const user = useSelector(selectUser);
     const router = useRouter();
@@ -29,7 +28,6 @@ function ProfileDisplay() {
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedMeetingType, setSelectedMeetingType] = useState('');
     const theme = useTheme()
-    const imagePath = avatarImage;
     const [selectedPhoto, setSelectedPhoto] = useState(null);
     const inputRef = useRef(null);
     const [profilePic, setProfilePic] = useState(null);
@@ -37,16 +35,22 @@ function ProfileDisplay() {
     const [emailError, setEmailError] = useState('');
     const [usernameError, setUsernameError] = useState('');
 
-    // console.log(avatarImage);
-
 
     useEffect(() => {
+
+
         if (user) {
+            if (uniqueId === -1) {
             setUserId(user.id);
             fetchProfileInfo(user.id);
             fetchProfilePic(user.id);
+            } else {
+                setUserId(uniqueId);
+                fetchProfileInfo(uniqueId);
+                fetchProfilePic(uniqueId);
+            }
         }
-    }, [user]);
+    }, [user, token, router, triggerUpdate]);
 
     const fetchProfileInfo = async (userId) => {
         try {
@@ -64,6 +68,10 @@ function ProfileDisplay() {
             }
 
             setSelectedCourses(coursesArray);
+
+            setSelectedTime(response.data.prefTime);
+            setSelectedMeetingType(response.data.prefMeetingType);
+
         } catch (error) {
             console.error("Error fetching profile info:", error);
         }
@@ -95,7 +103,7 @@ function ProfileDisplay() {
                 username: profile.username,
                 firstName: profile.nameFirst,
                 lastName: profile.nameLast,
-                courses: selectedCourses.join(', '),
+                areaOfStudy: selectedCourses.join(', '),
                 prefTime: selectedTime,
                 prefMeetingType: selectedMeetingType,
                 aboutMe: profile.aboutMe,
@@ -220,27 +228,15 @@ function ProfileDisplay() {
 
         try {
             // Compress the image if it's larger than 30kb
-            const compressedImage = await compressImage(file, 30 * 1024);
+            
+            
+            //const compressedImage = await compressImage(file, 30 * 1024);
+            const compressedImage = file;
             const formData = new FormData();
             formData.append('photo', compressedImage);
-            // const formData = new FormData();
-            // formData.append('photo', file);
-
-            // // Check if the selected photo meets the size requirement
-            // if (file.size > 30 * 1024) {
-            //     toast.error("Selected photo must be 30kb or less.");
-            //     return;
-            // }
-            //
-            // Check if the selected photo meets the size requirement
-            if (compressedImage.size > 30 * 1024) {
-                toast.error("Selected photo must be 225kb or less.");
-                return;
-            }
 
             // Upload the photo to the server
             console.log(formData);
-            // const response = await axios.put(`${API_URL}/profile/updateProfilePhoto/${userId}`, formData, {
             const response = await axios.put(`${API_URL}/profile/updateProfilePhoto/${userId}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -248,11 +244,11 @@ function ProfileDisplay() {
                 }
             });
 
-            if (response.status === 200) {
+            if (response.data === true) {
                 toast.success("Photo uploaded successfully!");
                 // Update the profile picture in the UI
                 // You can implement this part based on your UI structure
-                router.reload();
+                setTriggerUpdate(!triggerUpdate);
             } else {
                 toast.error("Failed to upload photo");
             }
@@ -298,19 +294,13 @@ function ProfileDisplay() {
                  position: "relative",
                  backgroundColor: theme.palette.primary.secondary,
                  borderColor: theme.palette.primary.main
+
              }}
         >
             <div className={styles.profileHeader}>
-                {/*<Avatar alt="Profile Picture" src={profilePics[profile.id]?.pic === "data:text/xml;base64," ? null : profilePics[profile.id]?.pic*/}
-                {/*} style={{ width: 345, height: 230 }} variant="square"*/}
-                {/*/>*/}
                 <Avatar
-                    // src={profile.profilePictureUrl}
-                    // src={avatarImage}
-                    // src="/_next/static/media/StudyBuddyLogo.4d4a46a7.png"
-                    // alt="/StudyBuddyLogo.png"
                     src={profilePic || null}
-                    // alt="Profile Picture"
+                    alt="Profile Picture"
                     className={styles.avatar}
                     sx={{
                         width: "100px",
@@ -344,6 +334,7 @@ function ProfileDisplay() {
                     variant="contained"
                     color="primary"
                     onClick={handleUploadClick}
+                    disabled={!editable}
                     sx={{
                         // marginLeft: "auto",
                         // marginRight: "auto",
@@ -555,6 +546,7 @@ function ProfileDisplay() {
                     //borderRadius: "5px",
                     width: "20vw"
                 }}
+                disabled={!editable}
                 onClick={editMode ? handleSaveClick : handleEditClick} variant="contained" color="primary"
             >
                 {editMode ? 'Save Changes' : 'Edit Profile'}

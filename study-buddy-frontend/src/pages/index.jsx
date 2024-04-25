@@ -1,20 +1,6 @@
 import React, { useState } from "react"
 import Head from "next/head"
-import {
-  Button,
-  Card,
-  CardContent,
-  Stack,
-  Typography,
-  TextField,
-} from "@mui/material"
-import styles from "@/styles/Home.module.css"
-import landingstyles from "@/styles/landing.module.css"
-import Header from "@/components/Header.jsx"
 import LandingPage from "@/components/Landing"
-import Sidebar from "@/components/Sidebar.jsx"
-import TempAws from "@/components/TempAws"
-
 function landing() {
   return (
     <>

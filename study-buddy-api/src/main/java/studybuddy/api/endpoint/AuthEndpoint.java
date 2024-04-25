@@ -115,6 +115,40 @@ public class AuthEndpoint {
     }
 
 
+    @PostMapping("/{id}/changePassword")
+    public boolean changePassword(@PathVariable Long id, @RequestBody UserReq userRequest) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(userRequest.getPassword());
+
+        int rowsAffected = jdbcTemplate.update("UPDATE users SET password = ? WHERE user_id = ?", hashedPassword, id);
+
+        // Check if the update was successful (1 row affected)
+        return rowsAffected == 1;
+    }
+
+
+    @PostMapping("/verifyPassword/{id}")
+    public boolean verifyPassword(@PathVariable Long id, @RequestBody UserReq userReq) {
+        try {
+            String password = userReq.getPassword();
+
+
+            // Retrieve the stored hashed password from the database using the user's ID
+            String storedHashedPassword = jdbcTemplate.queryForObject(
+                    "SELECT password FROM users WHERE user_id = ?",
+                    new Object[]{id},
+                    String.class
+            );
+
+            // Use bcrypt to compare the input password with the stored hashed password
+            return passwordEncoder.matches(password, storedHashedPassword);
+        } catch (Exception e) {
+            log.error("Error verifying password: {}", e.getMessage());
+            return false;
+        }
+    }
+
+
 
     @GetMapping("/validateToken")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String tokenHeader) {
@@ -144,9 +178,6 @@ public class AuthEndpoint {
         }
         return ResponseEntity.badRequest().body("Invalid Authorization header");
     }
-
-
-
 
 
     public static class UserReq {
@@ -218,4 +249,6 @@ public class AuthEndpoint {
 
         public String getAboutMe() { return aboutMe; }
     }
+
+
 }

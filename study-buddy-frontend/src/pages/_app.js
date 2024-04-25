@@ -1,15 +1,19 @@
-import React, { useEffect} from 'react';
-import Head from 'next/head';
-import { Provider as ReduxProvider } from 'react-redux';
+import React, { useEffect} from "react"
+import Head from "next/head"
+import { Provider as ReduxProvider } from "react-redux"
 
-import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter';
-import { CssBaseline } from '@mui/material';
+import { AppCacheProvider } from "@mui/material-nextjs/v14-pagesRouter"
+import { CssBaseline } from "@mui/material"
 
-import { StudyBuddyThemeProvider } from '@/utils/theme';
-import { buildStore } from '@/utils/redux';
+import { StudyBuddyThemeProvider } from "@/utils/theme"
+import { buildStore } from "@/utils/redux"
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+
+import "@/styles/globals.css"
+import { DevSupport } from "@react-buddy/ide-toolbox-next"
+import { ComponentPreviews, useInitial } from "@/dev"
 
 import '@/styles/globals.css'
 import CustomCursor from '@/utils/customCursor';
@@ -18,8 +22,8 @@ import { setToken } from '@/utils/authSlice';
 import ValidateToken from '@/utils/validateToken';
 
 // Initialize Redux
-let initialState = {};
-let reduxStore = buildStore(initialState);
+let initialState = {}
+let reduxStore = buildStore(initialState)
 
 
 export default function App({ Component, pageProps }) {
@@ -34,22 +38,26 @@ export default function App({ Component, pageProps }) {
           <link rel='icon' href='/StudyBuddyLogo Background Removed.png' />
         </Head>
 
-        <StudyBuddyThemeProvider>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
+          <StudyBuddyThemeProvider>
+            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+            <CssBaseline />
           <ValidateToken/>
-          <Component {...pageProps} />
-        </StudyBuddyThemeProvider>
-      </AppCacheProvider>
-      <ToastContainer/>
+            <DevSupport ComponentPreviews={ComponentPreviews}
+                        useInitialHook={useInitial}
+            >
+              <Component {...pageProps} />
+            </DevSupport>
+          </StudyBuddyThemeProvider>
+        </AppCacheProvider>
+        <ToastContainer />
 
-    </ReduxProvider>
+      </ReduxProvider>
     </>
-  );
+  )
 }
 
 function TokenValidator() {
-  ValidateToken(); 
-  return null; 
+  ValidateToken();
+  return null;
 }
 
