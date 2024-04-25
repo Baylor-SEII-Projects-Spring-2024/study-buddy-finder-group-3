@@ -38,9 +38,6 @@ function ProfileDisplay( {editable = true, uniqueId = -1}) {
 
     useEffect(() => {
 
-        if (!token || !user) {
-            router.push('/');
-        }
 
         if (user) {
             if (uniqueId === -1) {

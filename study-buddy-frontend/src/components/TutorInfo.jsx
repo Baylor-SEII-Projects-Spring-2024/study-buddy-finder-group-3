@@ -30,12 +30,6 @@ function TutorInfo() {
     // console.log(avatarImage);
 
     useEffect(() => {
-        if (!token || !user) {
-            router.push('/');
-        }
-    }, [token, router]);
-
-    useEffect(() => {
         if (user) {
             setUserId(user.id);
             fetchProfileInfo(user.id);

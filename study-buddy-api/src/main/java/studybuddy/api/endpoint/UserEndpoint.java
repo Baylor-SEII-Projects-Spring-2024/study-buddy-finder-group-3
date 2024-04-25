@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -74,4 +75,11 @@ public class UserEndpoint {
         }
     }
 
+    //! Exclude user that is doing the searching
+    @GetMapping("/users/{userId}/search/{searchTerm}")
+    public ResponseEntity<?> findUsersContainingUsernameExcludingSearcher(@PathVariable String searchTerm, @PathVariable Long userId) {
+        log.warn("Searching for users with username containing: {}", searchTerm);
+        List<User> usersFound = userService.findUsersContainingUsernameExcludingSearcher(searchTerm, userId);
+        return ResponseEntity.ok(usersFound);
+    }
 }

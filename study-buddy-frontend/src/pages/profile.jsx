@@ -20,12 +20,6 @@ function profiles() {
   const [userId, setUserId] = useState("")
 
   useEffect(() => {
-    if (!token) {
-      router.push("/")
-    }
-  }, [token, router])
-
-  useEffect(() => {
     if (user) {
       setUserId(user.id)
       fetchProfileInfo(user.id)
@@ -83,19 +77,16 @@ function profiles() {
           padding: "20px",
           border: "1px solid #ddd",
           borderRadius: "10px",
-          //minWidth: "30vw",
-          // maxWidth: "50vw",
-          // height: "fit-content",
+          height: "fit-content",
           // maxHeight: "90vh",
           // display: "inline-block",
+          width: "fit-content",
+          maxWidth: "50vw",
+        
           display: "flex",
           backgroundColor: theme.palette.background.default,
           borderColor: theme.palette.primary.main,
-          flexGrow: 0,
-          display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
         }}
       >
         {/*<Sidebar />*/}
