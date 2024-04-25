@@ -26,6 +26,13 @@ import { Button } from "@mui/material"
 import { useRouter } from "next/router"
 import { useSelector, useDispatch } from "react-redux"
 import { selectToken, setToken, logout } from "@/utils/authSlice.js"
+import ChatComp from "@/components/ChatComp";
+import ChatParentComponent from "@/components/ChatParentComponent";
+import styles from "@/styles/Chat.module.css";
+import Messages from "@/components/Messages";
+import ChatInput from "@/components/ChatInput";
+import ChatSidebar from "@/components/ChatSidebar";
+
 import FriendsList from "./FriendsList"
 import axios from "axios"
 import { API_URL } from "@/utils/config"
@@ -404,7 +411,7 @@ export default function FriendsSidebar() {
           </Box>
         ) : null}
         {activePage === "blocked" ? <FriendsBlocked /> : null}
-        {activePage === "chat" ? <div>Chat</div> : null}
+        {activePage === "chat" ? <ChatParentComponent user={user}/> : null}
         {activePage === "recommendation" ? (
           <div>
             <Box>
