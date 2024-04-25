@@ -1,7 +1,17 @@
-import React from "react"
+import React from 'react';
+import ChatSidebar from "@/components/ChatSidebar";
+import ChatComp from "@/components/ChatComp";
+import styles from "@/styles/Chat.module.css";
 
-function dashboard() {
-  return <h1>Chat Page</h1>
-}
+const chat = () => {
+  return(
+    <div className={styles.chat}>
+      <div className={styles.container}>
+        <ChatComp className={styles.ChatComp} />
+        <ChatSidebar className={styles.ChatSidebar} />
+      </div>
+    </div>
+  );
+};
 
-export default dashboard
+export default chat;
