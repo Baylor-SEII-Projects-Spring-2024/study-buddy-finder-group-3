@@ -27,7 +27,9 @@ function TutorInfo() {
     const [tutorRatings, setTutorRatings] = useState([]);
     const theme = useTheme()
     const [loading, setLoading] = useState(true); // Add loading state
-    const [reviewsToShow, setReviewsToShow] = useState(5); // Number of reviews to show
+    const [reviewsToShow, setReviewsToShow] = useState(3); // Number of reviews to show
+    const [showMoreClicked, setShowMoreClicked] = useState(false); // Track if "Show More Reviews" button is clicked
+
 
     // console.log(avatarImage);
 
@@ -110,8 +112,14 @@ function TutorInfo() {
 
     const handleShowMoreReviews = () => {
         const remainingReviews = tutorRatings.length - reviewsToShow;
-        const additionalReviewsToShow = Math.min(remainingReviews, 10);
+        const additionalReviewsToShow = Math.min(remainingReviews, 5);
         setReviewsToShow(reviewsToShow + additionalReviewsToShow);
+        setShowMoreClicked(true); // Set to true when "Show More Reviews" is clicked
+    };
+
+    const handleShowLessReviews = () => {
+        setReviewsToShow(3);
+        setShowMoreClicked(false); // Reset to false when "Show Less Reviews" is clicked
     };
 
     const handleScrollToTop = () => {
@@ -193,15 +201,22 @@ function TutorInfo() {
                     {tutorRatings.length > reviewsToShow && (
                         <Button onClick={handleShowMoreReviews}>Show More Reviews</Button>
                     )}
+                    {showMoreClicked && (
+                        <Button onClick={handleShowLessReviews}
+                        >Show Less Reviews</Button>
+                    )}
                 </Box>
             )}
             <Button
+                variant="contained"
                 onClick={handleScrollToTop}
-                style={{
+                sx={{
                     position: "fixed",
                     bottom: "20px",
                     right: "20px",
                     zIndex: "999",
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.background.default
                 }}
             >
                 ^
