@@ -135,6 +135,7 @@ function CreateMeeting({ open, onClose }) {
         creatorUsername: user.username,
         course: { id: selectedCourse?.id },
         private: isPrivateMeetings,
+        userId: user.id,
         invitedUserIds,
       })
 

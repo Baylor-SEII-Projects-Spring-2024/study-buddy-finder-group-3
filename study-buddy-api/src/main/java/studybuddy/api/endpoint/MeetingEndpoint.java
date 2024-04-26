@@ -9,6 +9,8 @@ import studybuddy.api.meeting.MeetingService;
 
 import java.util.List;
 
+import static studybuddy.api.meeting.MeetingService.log;
+
 @RestController
 @RequestMapping("/meeting")
 public class MeetingEndpoint {
@@ -18,8 +20,10 @@ public class MeetingEndpoint {
 
     @PostMapping("/createMeeting")
     public ResponseEntity<?> createMeeting(@RequestBody Meeting meeting) {
+        log.info("Creating meeting: {}", meeting);
         try {
             String creatorUsername = meeting.getCreatorUsername();
+            log.info("Creator username: {}", creatorUsername);
             if (creatorUsername == null || creatorUsername.isEmpty()) {
                 return ResponseEntity.badRequest().body("Creator username is missing");
             }

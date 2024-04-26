@@ -35,7 +35,8 @@ function MeetingModal({
   updateMeetingInParent,
   isInvitation = false,
   tutorId,
-  onMeetingAccepted
+  onMeetingAccepted,
+  creatorId
 }) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
@@ -54,6 +55,7 @@ function MeetingModal({
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState("")
   const hasMeetingStarted = new Date() > new Date(meeting?.date)
+  const [isCreator, setIsCreator] = useState(false)
   // console.log("user in meeting modal", user);
   // console.log("tutorid in modal click", tutorId);
   useEffect(() => {
@@ -64,6 +66,11 @@ function MeetingModal({
       setEditedLocation(meeting?.location)
       setEditedDate(meeting?.date)
     }
+    setIsCreator(creatorId === user?.id);
+
+    console.log("creatorId", creatorId, "user.id", user?.id);
+    console.log(isCreator)
+
   }, [open, meeting])
 
   const handleDateChange = (newDate) => {
@@ -285,13 +292,14 @@ function MeetingModal({
           </>
         )}
 
-        {!isInvitation && (
+        {!isInvitation && isCreator && (
           <IconButton
             aria-label={editMode ? "save" : "edit"}
             onClick={handleEdit}
             sx={{ position: "absolute", right: 48, top: 8 }}
           >
-            {editMode ? <SaveIcon /> : <EditIcon />}
+            {editMode 
+             ? <SaveIcon /> : <EditIcon />}
           </IconButton>
         )}
 

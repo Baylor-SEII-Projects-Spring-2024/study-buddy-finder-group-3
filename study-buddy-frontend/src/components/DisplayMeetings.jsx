@@ -59,7 +59,7 @@ function DisplayMeetings() {
     (state) => state.notifications.notificationCount
   )
   const { activePage, setActivePage } = useActivePage()
-  
+  const [creatorId, setCreatorId] = useState(null)
 
   const handleInviteClick = () => {
     router.push("/friends")
@@ -182,6 +182,7 @@ function DisplayMeetings() {
   }, [dispatch, user, meetingsStatus])
 
   const handleOpenModal = async (meeting) => {
+    setCreatorId(meeting?.user?.id)
     //  attendeeUserIds is an array before proceeding
     console.log("meeting ob", meeting)
     const attendeeUserIds = meeting?.attendeeUserIds || []
@@ -398,6 +399,7 @@ function DisplayMeetings() {
                   color="text.secondary"
                   gutterBottom
                   align="center"
+                  paddingBottom={2}
               >
                   Meetings we thought may interest you based on your preferences.
               </Typography>
@@ -417,8 +419,8 @@ function DisplayMeetings() {
                                       {meeting.description}
                                   </Typography>
                                   {meeting.blockedUser ? (
-                                      <Typography variant="body2" color="text.secondary" style={{ fontWeight: 'bold', color: 'red' }}>
-                                          BLOCKED USER ATTENDING MEETING
+                                      <Typography variant="body2" color="text.secondary" style={{  color: 'red' }}>
+                                          A blocked user is attending this meeting
                                       </Typography>
                                   ) : (
                                       <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -495,6 +497,7 @@ function DisplayMeetings() {
                   handleClose={handleCloseModal}
                   updateMeetingInParent={updateMeetingInState}
                   tutorId={tutorId}
+                  creatorId={creatorId}
               />
           )}
           <Dialog

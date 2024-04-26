@@ -25,7 +25,7 @@ public class MeetingService {
 
     @Autowired
     public UserRepository userRepository;
-    private static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
+    public static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
 
     @Transactional
     public void createMeeting(Meeting meeting, String creatorUsername) {
@@ -33,6 +33,7 @@ public class MeetingService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         log.info("Creating meeting: {}", meeting);
+        meeting.setUser(creator);
         Meeting newMeeting = meetingRepository.save(meeting);
 
         // meeting creator entry
