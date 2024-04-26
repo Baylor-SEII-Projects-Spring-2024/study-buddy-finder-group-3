@@ -26,6 +26,7 @@ function SettingsMain() {
     const [userId, setUserId] = useState('');
     const [userIsTutor, setUserIsTutor] = useState(false);
     const [selectedAccountType, setSelectedAccountType] = useState("Student");
+    //const [newAccountType, setNewAccountType] = useState("Student");
 
     const [theme, setTheme] = useState('light'); // State to track selected theme
     const [notifications, setNotifications] = useState(false);
@@ -34,35 +35,15 @@ function SettingsMain() {
     const [openChangePasswordModal, setChangePasswordModal] = useState(false);
 
 
-
-
     useEffect(() => {
         if (!token || !user) {
             router.push('/');
-        }
-    }, [token, router]);
-
-    useEffect(() => {
-        if (user) {
+        } else {
             setUserId(user.id);
             fetchProfileInfo(user.id);
+            fetchUserAccountType(user.id);
         }
-    }, [user]);
-    /*
-    useEffect(() => {
-        if (user) {
-            setUserIsTutor(user.accountType === "Tutor");
-            setSelectedAccountType(user.accountType);
-            setProfile(user.profile); // Assuming user.profile contains profile information
-        }
-    }, [user]);*/
-
-
-    const handleNewAccountTypeChange = (event) => {
-        const newAccountType = event.target.value;
-        setUserIsTutor(newAccountType === "Tutor");
-        setSelectedAccountType(newAccountType);
-    };
+    }, [token, user]);
 
 
     const fetchProfileInfo = async (userId) => {
@@ -91,6 +72,17 @@ function SettingsMain() {
             console.log(`Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
         } catch (error) {
             console.error("Error fetching profile info:", error);
+        }
+    };
+
+    const fetchUserAccountType = async (userId) => {
+        try {
+            const response = await axios.get(`${API_URL}/users/${userId}/is-tutor`);
+            const isTutor = response.data;
+            setUserIsTutor(isTutor);
+            setSelectedAccountType(isTutor ? "Tutor" : "Student");
+        } catch (error) {
+            console.error("Error fetching user account type:", error);
         }
     };
 
@@ -124,15 +116,25 @@ function SettingsMain() {
     const handleCloseChangePasswordModal = () => {
         setChangePasswordModal(false);
     };
-
+/*
+    const handleNewAccountTypeChange = (event) => {
+        setNewAccountType(event.target.value);
+    };*/
+    const handleNewAccountTypeChange = (event) => {
+        const newAccountType = event.target.value;
+        setUserIsTutor(newAccountType === "Tutor");
+        setSelectedAccountType(newAccountType);
+    };
 
     const handleSubmit = async () => {
 
     try {
         const data = {
             isTutor: selectedAccountType === "Tutor" ? true : false,
-        };
-
+        };/*
+        const data = {
+            isTutor: newAccountType === "Tutor" ? true : false,
+        };*/
 
         // Send a request to update the user's account type
         await axios.put(`${API_URL}/users/${user.id}/changeAccountType`, data);
