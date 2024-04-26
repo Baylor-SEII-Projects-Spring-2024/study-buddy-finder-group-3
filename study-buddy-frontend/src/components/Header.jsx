@@ -59,17 +59,14 @@ function Header() {
     dispatch(fetchMeetingsByUserId(user.id))
   }
 
-
   useEffect(() => {
     fetchNotifications()
   }, [dispatch, user])
 
-  
   // to handle meeting accept and refresh notifications
   const handleAcceptMeeting = () => {
-    fetchNotifications(); 
-  };
-
+    fetchNotifications()
+  }
 
   const handleSettingsClick = (event) => {
     setSettingsAnchorEl(event.currentTarget)
@@ -95,6 +92,10 @@ function Header() {
   const navigateToSetting = (settingPath) => {
     router.push(settingPath)
     handleCloseSettingsMenu() // close the menu after navigation
+  }
+
+  const handleFriendRequestClick = () => {
+    router.push("/friends")
   }
 
   const handleLogout = async () => {
@@ -236,17 +237,14 @@ function Header() {
                 },
               }}
             >
-              <MenuItem onClick={() => navigateToSetting("/profile")}>
+              <MenuItem onClick={() => navigateToSetting("/settings")}>
+                General
+              </MenuItem>
+              <MenuItem onClick={() => navigateToSetting("/profile/")}>
                 Account
               </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/courses")}>
+              <MenuItem onClick={() => navigateToSetting("/courses")}>
                 Courses
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/privacy")}>
-                Privacy
-              </MenuItem>
-              <MenuItem onClick={() => navigateToSetting("/settings/help")}>
-                Help
               </MenuItem>
             </Menu>
           </Box>
@@ -305,7 +303,7 @@ function Header() {
           )}
           {friendRequests.length > 0 &&
             friendRequests.map((request) => (
-              <MenuItem key={request.id}>
+              <MenuItem key={request.id} onClick={handleFriendRequestClick}>
                 Friend request from: {request.username}
               </MenuItem>
             ))}

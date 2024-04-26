@@ -3,6 +3,8 @@ package studybuddy.api.user;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Optional;
+
 @Data
 @Entity
 @Table(name = User.TABLE_NAME)
@@ -48,7 +50,7 @@ public class User {
     String areaOfStudy;
 
     @Lob
-    @Column(name = "PROFILEPIC",  columnDefinition = "BLOB")
+    @Column(name = "PROFILEPIC",  columnDefinition = "MEDIUMBLOB")
     byte[] profilePic;
 
     @Column(name = "PREF_TIME")
@@ -59,6 +61,9 @@ public class User {
 
     @Column(name = "ABOUT_ME")
     String aboutMe;
+
+    public User(Optional<User> userId) {
+    }
 
     public boolean getIsTutor() {
         return userType;
@@ -96,8 +101,9 @@ public class User {
         this.nameFirst = other.nameFirst;
         this.nameLast = other.nameLast;
         this.areaOfStudy = other.areaOfStudy;
-        this.prefTime = other.prefTime;
         this.prefMeetingType = other.prefMeetingType;
+        this.prefTime = other.prefTime;
+        this.profilePic = other.profilePic;
         this.aboutMe = other.aboutMe;
     }
 }

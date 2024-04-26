@@ -94,4 +94,7 @@ public class UserService {
 
     }
 
+    public List<User> findUsersContainingUsernameExcludingSearcher(String searchTerm, Long userId) {
+        return userRepository.findUsersContainingUsernameExcludingSearcher(searchTerm, userId);
+    }
 }

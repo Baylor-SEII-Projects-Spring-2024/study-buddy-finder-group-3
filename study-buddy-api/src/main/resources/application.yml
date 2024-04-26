@@ -6,6 +6,21 @@ spring:
     username: root
     password: password
     driverClassName: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: studybuddyofficialsite@gmail.com
+    password: ujyv gklb jkem dbjs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   jpa:
     hibernate:
       ddl-auto: update

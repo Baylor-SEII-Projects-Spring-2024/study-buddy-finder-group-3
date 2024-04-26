@@ -46,7 +46,7 @@ public class GetProfileEndpoint {
 
         log.info("Update user using: {}", userRequest);
         log.info("Updating user profile with userId={}, areaofstudy={}, email={}, firstName={}, lastName={}, username={}",
-                userId, userRequest.getCourses(), userRequest.getEmail(), userRequest.getFirstName(),
+                userId, userRequest.getAreaOfStudy(), userRequest.getEmail(), userRequest.getFirstName(),
                 userRequest.getLastName(), userRequest.getUsername());
 
 
@@ -65,7 +65,7 @@ public class GetProfileEndpoint {
                         "WHERE user_id = ?",
                 userRequest.getEmail(),
                 //hashedPassword,
-                userRequest.getCourses(),
+                userRequest.getAreaOfStudy(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 //userRequest.getIsTutor(),
@@ -84,7 +84,7 @@ public class GetProfileEndpoint {
             log.info("Updating profile photo for user with ID: {}", userId);
 
             // Check if the photo is not empty and meets the size requirement
-            if (photo != null && !photo.isEmpty() && photo.getSize() <= 30 * 1024) {
+            if (photo != null && !photo.isEmpty() && photo.getSize() <= 16777216) {
                 // Convert MultipartFile to byte array
                 byte[] photoBytes = photo.getBytes();
 

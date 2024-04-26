@@ -14,7 +14,6 @@ import { API_URL } from "@/utils/config";
 import { toast } from "react-toastify";
 import styles from "@/styles/ProfileDisplay.module.css";
 import { useTheme } from "@mui/material/styles"
-import avatarImage from "./StudyBuddyLogo.png"
 import {Star as StarIcon} from "@mui/icons-material";
 import {StarHalf as StarHalfIcon} from "@mui/icons-material";
 import StarBorderIcon from '@mui/icons-material/StarBorder';
@@ -27,17 +26,10 @@ function TutorInfo() {
     const [userId, setUserId] = useState('');
     const [tutorRatings, setTutorRatings] = useState([]);
     const theme = useTheme()
-    const imagePath = avatarImage;
     const [loading, setLoading] = useState(true); // Add loading state
     const [reviewsToShow, setReviewsToShow] = useState(5); // Number of reviews to show
 
     // console.log(avatarImage);
-
-    useEffect(() => {
-        if (!token || !user) {
-            router.push('/');
-        }
-    }, [token, router]);
 
     useEffect(() => {
         if (user) {
