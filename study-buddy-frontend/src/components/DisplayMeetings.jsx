@@ -164,7 +164,7 @@ function DisplayMeetings() {
 
   const handleDeleteMeeting = async () => {
     try {
-      await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}`)
+      await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}/${user.id}`)
       setOpenDeleteDialog(false)
       dispatch(fetchMeetingsByUserId(user.id))
       toast.success("Meeting successfully deleted")

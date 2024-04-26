@@ -50,10 +50,11 @@ public class MeetingEndpoint {
         return ResponseEntity.ok(updatedMeeting);
     }
 
-    @DeleteMapping("/{meetingId}")
-    public ResponseEntity<?> deleteMeeting(@PathVariable Long meetingId) {
+    @DeleteMapping("/{meetingId}/{userDeletingId}")
+    public ResponseEntity<?> deleteMeeting(@PathVariable Long meetingId, @PathVariable Long userDeletingId) {
         try {
-            meetingService.deleteMeeting(meetingId);
+            log.info("Deleting meeting: {}", meetingId);
+            meetingService.deleteMeeting(meetingId, userDeletingId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete meeting");
