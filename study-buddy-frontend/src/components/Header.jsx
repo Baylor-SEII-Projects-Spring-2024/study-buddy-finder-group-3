@@ -94,6 +94,10 @@ function Header() {
     handleCloseSettingsMenu() // close the menu after navigation
   }
 
+  const handleFriendRequestClick = () => {
+    router.push("/friends")
+  }
+
   const handleLogout = async () => {
     const token = localStorage.getItem("token")
     if (token) {
@@ -299,7 +303,7 @@ function Header() {
           )}
           {friendRequests.length > 0 &&
             friendRequests.map((request) => (
-              <MenuItem key={request.id}>
+              <MenuItem key={request.id} onClick={handleFriendRequestClick}>
                 Friend request from: {request.username}
               </MenuItem>
             ))}
