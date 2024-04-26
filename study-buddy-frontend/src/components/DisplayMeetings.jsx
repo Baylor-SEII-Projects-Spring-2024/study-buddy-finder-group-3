@@ -36,13 +36,15 @@ import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
-
+import { useTheme } from "@mui/material/styles"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import Footer from "./Footer.jsx"
 import { useActivePage } from "@/utils/activePageContext"
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
+  const theme = useTheme()
+
   const user = useSelector(selectUser)
   const meetings = useSelector((state) => state.meetings.meetings)
   const meetingsStatus = useSelector((state) => state.meetings.status)
@@ -288,243 +290,276 @@ function DisplayMeetings() {
             gutterBottom
             sx={{ color: "text.secondary" }}
           >
-              You have {unreadNotifications} unread notifications
+            You have {unreadNotifications} unread notifications
           </Typography>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    "& > *": {
-                        marginRight: 1,
-                    },
-                }}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              "& > *": {
+                marginRight: 1,
+              },
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenCreateMeeting}
             >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpenCreateMeeting}
-                >
-                    Create
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => scrollToSection("recommended-meetings")}
-                >
-                    View Recommended Meetings
-                </Button>
-            </Box>
+              Create
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => scrollToSection("recommended-meetings")}
+            >
+              View Recommended Meetings
+            </Button>
+          </Box>
         </Box>
-          <Box
-              id="meetings-section"
-              sx={{ height: "100vh", pt: "64px", marginBottom: "64px" }}
-          >
-              <Typography variant="h4" component="h2" gutterBottom align="center">
-                  Your Meetings
-              </Typography>
-              <Typography variant="body1" align="center" gutterBottom>
-                  Here are your upcoming meetings
-              </Typography>
-              {/* need ot add fitlers  */}
-              <Grid container spacing={4} sx={{ mt: 4 }}>
-                  {meetings.slice(0, 6).map((meeting) => (
-                      <Grid
-                          item
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          key={meeting.id}
-                          onMouseEnter={() => handleMouseEnter(meeting.id)}
-                          onMouseLeave={handleMouseLeave}
-                      >
-                          <Card style={{ position: "relative" }}>
-                              {" "}
-                              <CardActionArea onClick={() => handleOpenModal(meeting)}>
-                                  <CardMedia
-                                      component="img"
-                                      height="140"
-                                      image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
-                                      alt={meeting.title}
-                                  />
-                                  <CardContent>
-                                      <Typography gutterBottom variant="h5" component="div">
-                                          {meeting.title}
-                                      </Typography>
-                                      <Typography variant="body2" color="text.secondary">
-                                          {meeting.description}
-                                      </Typography>
-                                      <Box
-                                          sx={{ display: "flex", mt: 2, alignItems: "center" }}
-                                      >
-                                          <AccessTimeIcon sx={{ mr: 1 }} />
-                                          <Typography variant="body2">
-                                              Date: {new Date(meeting.date).toLocaleString()}
-                                          </Typography>
-                                      </Box>
-                                      <Box
-                                          sx={{ display: "flex", mt: 1, alignItems: "center" }}
-                                      >
-                                          <LocationOnIcon sx={{ mr: 1 }} />
-                                          <Typography variant="body2">
-                                              Location: {meeting.location || "Not specified"}
-                                          </Typography>
-                                      </Box>
-                                  </CardContent>
-                              </CardActionArea>
-                              {hoveredMeetingId === meeting.id && (
-                                  <IconButton
-                                      onClick={() => handleOpenDeleteDialog(meeting)}
-                                      style={{
-                                          position: "absolute",
-                                          top: 0,
-                                          right: 0,
-                                          color: "red",
-                                      }}
-                                  >
-                                      <DeleteIcon />
-                                  </IconButton>
-                              )}
-                          </Card>
-                      </Grid>
-                  ))}
-              </Grid>
-          </Box>
-          {/* beginning of rec meetings */}
-          <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px" }}>
-              <Typography variant="h4" component="h2" gutterBottom align="center">
-                  Recommended Meetings
-              </Typography>
-              <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  gutterBottom
-                  align="center"
-                  paddingBottom={2}
+        <Box
+          id="meetings-section"
+          sx={{ height: "100vh", pt: "64px", marginBottom: "64px" }}
+        >
+          <Typography variant="h4" component="h2" gutterBottom align="center">
+            Your Meetings
+          </Typography>
+          <Typography variant="body1" align="center" gutterBottom>
+            Here are your upcoming meetings
+          </Typography>
+          {/* need ot add fitlers  */}
+          <Grid container spacing={4} sx={{ mt: 4 }}>
+            {meetings.slice(0, 6).map((meeting) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                key={meeting.id}
+                onMouseEnter={() => handleMouseEnter(meeting.id)}
+                onMouseLeave={handleMouseLeave}
               >
-                  Meetings we thought may interest you based on your preferences.
-              </Typography>
-              <Grid container spacing={4} justifyContent="center">
-                  {recommendedMeetings?.map((meeting) => (
-                      <Grid item xs={12} sm={6} md={4} key={meeting.id}>
-                          <Card>
-                              <CardContent>
-                                  <Typography gutterBottom variant="h5" component="div">
-                                      {meeting.title}
-                                  </Typography>
-                                  <Typography
-                                      variant="body2"
-                                      color="text.secondary"
-                                      gutterBottom
-                                  >
-                                      {meeting.description}
-                                  </Typography>
-                                  {meeting.blockedUser ? (
-                                      <Typography variant="body2" color="text.secondary" style={{  color: 'red' }}>
-                                          A blocked user is attending this meeting
-                                      </Typography>
-                                  ) : (
-                                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                                          {meeting.areaOfStudy} - {meeting.courseName}
-                                      </Typography>
-                                  )}
-                                  <Button endIcon={<ArrowForwardIosIcon />} sx={{ mt: 2 }}
-                                    onClick={() => handleOpenModal(meeting)}
-                                  >
-                                      View Meeting
-                                  </Button>
-                              </CardContent>
-                          </Card>
-                      </Grid>
-                  ))}
-              </Grid>
-              <Box textAlign="center" mt={2}>
-                  <Button>View All</Button>
-              </Box>
-          </Box>
-          {/* end of recc meetings */}
-
-          <Box
-              id="friends-section"
-              sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  height: "100vh",
-              }}
-          >
-              <Box sx={{ width: "60%" }}>
-                  <Typography variant="h4" component="h2" gutterBottom>
-                      Expand Your Network with Study Buddy
-                  </Typography>
-                  <Typography variant="subtitle1" gutterBottom>
-                      Invite friends or peers to join Study Buddy and enhance your study
-                      experience.
-                  </Typography>
-                  <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
-                      <Button
-                          variant="contained"
-                          color="primary"
-                          sx={{ mx: 1 }}
-                          onClick={handleInviteClick}
+                <Card style={{ position: "relative" }}>
+                  {" "}
+                  <CardActionArea onClick={() => handleOpenModal(meeting)}>
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
+                      alt={meeting.title}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {meeting.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {meeting.description}
+                      </Typography>
+                      <Box
+                        sx={{ display: "flex", mt: 2, alignItems: "center" }}
                       >
-                          Invite
-                      </Button>
-                      <Button variant="outlined" color="primary" sx={{ mx: 1 }} onClick={handleRequestNavigate}>
-                          View Requests
-                      </Button>
-                  </Box>
-              </Box>
-              <Box
+                        <AccessTimeIcon sx={{ mr: 1 }} />
+                        <Typography variant="body2">
+                          Date: {new Date(meeting.date).toLocaleString()}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{ display: "flex", mt: 1, alignItems: "center" }}
+                      >
+                        <LocationOnIcon sx={{ mr: 1 }} />
+                        <Typography variant="body2">
+                          Location: {meeting.location || "Not specified"}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </CardActionArea>
+                  {hoveredMeetingId === meeting.id && (
+                    <IconButton
+                      onClick={() => handleOpenDeleteDialog(meeting)}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        color: "red",
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+        {/* beginning of rec meetings */}
+        <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px" }}>
+          <Typography variant="h4" component="h2" gutterBottom align="center">
+            Recommended Meetings
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            color="text.secondary"
+            gutterBottom
+            align="center"
+            paddingBottom={2}
+          >
+            Meetings we thought may interest you based on your preferences.
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            {recommendedMeetings?.map((meeting) => (
+              <Grid item xs={12} sm={6} md={4} key={meeting.id}>
+                <Card>
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {meeting.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                    >
+                      {meeting.description}
+                    </Typography>
+                    {meeting.blockedUser ? (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        style={{ color: "red" }}
+                      >
+                        A blocked user is attending this meeting
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {meeting.areaOfStudy} - {meeting.courseName}
+                      </Typography>
+                    )}
+                    <Button
+                      endIcon={<ArrowForwardIosIcon />}
+                      sx={{ mt: 2 }}
+                      onClick={() => handleOpenModal(meeting)}
+                    >
+                      View Meeting
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <Box textAlign="center" mt={2}>
+            <Button>View All</Button>
+          </Box>
+        </Box>
+        {/* end of recc meetings */}
+
+        <Box
+          id="friends-section"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            height: "100vh",
+          }}
+        >
+          <Box sx={{ width: "60%" }}>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Expand Your Network with Study Buddy
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Invite friends or peers to join Study Buddy and enhance your study
+              experience.
+            </Typography>
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ mx: 1 }}
+                onClick={handleInviteClick}
+              >
+                Invite
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{ mx: 1 }}
+                onClick={handleRequestNavigate}
+              >
+                View Requests
+              </Button>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              width: "40%",
+              height: 200,
+              bgcolor: "grey.300",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography variant="caption" display="block" gutterBottom>
+            <Paper
+                  elevation={0}
                   sx={{
-                      width: "40%",
-                      height: 200,
-                      bgcolor: "grey.300",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                    height: 300,
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#fff",
+                    border: `1px solid ${theme.palette.primary.main}`,
                   }}
-              >
-                  <Typography variant="caption" display="block" gutterBottom>
-                      add image eventually
-                  </Typography>
-              </Box>
-          </Box>
+                >
 
-          {selectedMeeting && (
-              <MeetingModal
-                  meeting={selectedMeeting}
-                  open={modalOpen}
-                  handleClose={handleCloseModal}
-                  updateMeetingInParent={updateMeetingInState}
-                  tutorId={tutorId}
-                  creatorId={creatorId}
+              <img
+                src="/friends.png"
+                alt="friends"
+                style={{ width: "100%", height: "100%" }}
               />
-          )}
-          <Dialog
-              open={openDeleteDialog}
-              onClose={() => setOpenDeleteDialog(false)}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-          >
-              <DialogTitle id="alert-dialog-title">
-                  {"Are you sure you want to delete this meeting?"}
-              </DialogTitle>
-              <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                      This action cannot be undone.
-                  </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                  <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-                  <Button onClick={handleDeleteMeeting} autoFocus>
-                      Delete
-                  </Button>
-              </DialogActions>
-          </Dialog>
-          <CreateMeeting
-              open={createMeetingOpen}
-              onClose={handleCloseCreateMeeting}
+              </Paper>
+            </Typography>
+          </Box>
+        </Box>
+
+        {selectedMeeting && (
+          <MeetingModal
+            meeting={selectedMeeting}
+            open={modalOpen}
+            handleClose={handleCloseModal}
+            updateMeetingInParent={updateMeetingInState}
+            tutorId={tutorId}
+            creatorId={creatorId}
           />
+        )}
+        <Dialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to delete this meeting?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              This action cannot be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+            <Button onClick={handleDeleteMeeting} autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <CreateMeeting
+          open={createMeetingOpen}
+          onClose={handleCloseCreateMeeting}
+        />
       </Container>
     </>
   )
