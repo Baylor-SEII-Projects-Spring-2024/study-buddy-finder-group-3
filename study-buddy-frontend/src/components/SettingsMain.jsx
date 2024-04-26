@@ -311,7 +311,7 @@ function SettingsMain() {
                     <Button
                         variant="contained"
                         color="primary"
-                        style={{marginRight: '5vh'}}
+                        style={{marginRight: '3vh'}}
                         onClick={handleOpenChangePasswordModal}
                     >
                         Edit
@@ -323,17 +323,18 @@ function SettingsMain() {
                     <Typography variant="h8" gutterBottom style={{marginLeft: '5vh'}}>
                         Account type
                     </Typography>
-                    <Select
-                        value={userIsTutor ? "Tutor" : "Student"}
-                        onChange={handleNewAccountTypeChange}
-                        style={{width: '150px', marginRight: '5vh'}}
-                    >
-                        <MenuItem value="Tutor">Tutor</MenuItem>
-                        <MenuItem value="Student">Student</MenuItem>
-                    </Select>
-                    <Button variant="contained" color="primary" onClick={handleSubmit}>
-                        Save
-                    </Button>
+                        <Select
+                            value={userIsTutor ? "Tutor" : "Student"}
+                            onChange={handleNewAccountTypeChange}
+                            style={{width: '150px',  marginRight: '5vh'}}
+                        >
+                            <MenuItem value="Tutor">Tutor</MenuItem>
+                            <MenuItem value="Student">Student</MenuItem>
+                        </Select>
+                        <Button variant="contained" color="primary" onClick={handleSubmit}
+                        style={{marginRight:"3vh"}}>
+                            Save
+                        </Button>
                 </div>
             </Box>
 

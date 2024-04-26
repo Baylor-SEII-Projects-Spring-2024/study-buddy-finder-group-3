@@ -36,7 +36,7 @@ import java.util.*;
 
 
 @RestController
-@RequestMapping("/courses")
+@RequestMapping("/courseInfo")
 public class CourseEndpoint {
     @Autowired
     private JwtUtil jwtUtil;
