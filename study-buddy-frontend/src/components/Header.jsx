@@ -193,7 +193,7 @@ function Header() {
               onClose={handleCloseMeetingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd",
+                  backgroundColor: "#5813d6",
                   color: "white",
                 },
               }}
@@ -234,7 +234,7 @@ function Header() {
               onClose={handleCloseSettingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd",
+                  backgroundColor: "#5813d6",
                   color: "white",
                 },
               }}
