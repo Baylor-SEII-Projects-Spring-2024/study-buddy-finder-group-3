@@ -81,6 +81,19 @@ public class MeetingEndpoint {
         }
     }
 
+    @PostMapping("/join/{meetingId}/{userId}")
+    public ResponseEntity<?> joinMeeting(@PathVariable Long meetingId, @PathVariable Long userId) {
+        log.info("Joining meeting: {}", userId);
+        try {
+            meetingService.joinMeeting(userId, meetingId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Failed to join meeting: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+
 
 
 

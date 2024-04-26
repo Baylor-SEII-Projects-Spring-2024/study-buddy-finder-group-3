@@ -36,7 +36,7 @@ function MeetingModal({
   isInvitation = false,
   tutorId,
   onMeetingAccepted,
-  creatorId
+  creatorId,
 }) {
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
@@ -66,11 +66,10 @@ function MeetingModal({
       setEditedLocation(meeting?.location)
       setEditedDate(meeting?.date)
     }
-    setIsCreator(creatorId === user?.id);
+    setIsCreator(creatorId === user?.id)
 
-    console.log("creatorId", creatorId, "user.id", user?.id);
+    console.log("creatorId", creatorId, "user.id", user?.id)
     console.log(isCreator)
-
   }, [open, meeting])
 
   const handleDateChange = (newDate) => {
@@ -136,14 +135,11 @@ function MeetingModal({
 
   const submitReview = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/tutor/${tutorId}/review`,
-        {
-          userId: user.id,
-          rating: rating,
-          comment: comment,
-        }
-      )
+      const response = await axios.post(`${API_URL}/tutor/${tutorId}/review`, {
+        userId: user.id,
+        rating: rating,
+        comment: comment,
+      })
       toast.success("Review submitted successfully")
       setShowReviewFields(false) // hide review fields after submission
     } catch (error) {
@@ -182,6 +178,28 @@ function MeetingModal({
       toast.success("Meeting rejected successfully")
     } catch (error) {
       console.error("Failed to reject meeting:", error)
+    }
+  }
+
+  const joinMeeting = async (meetingId) => {
+    if (!meetingId || !user.id) {
+      console.error("Meeting ID or User ID is undefined")
+      return
+    }
+
+    try {
+      console.log("Joining meeting", meetingId, user.id)
+      const response = await axios.post(
+        `${API_URL}/meeting/join/${meetingId}/${user?.id}`,
+        {}
+      )
+      if (response.status === 200) {
+        toast.success("Joined meeting successfully")
+        updateMeetingInParent()
+      }
+    } catch (error) {
+      console.error("Error joining meeting:", error)
+      toast.error("Failed to join meeting")
     }
   }
 
@@ -298,8 +316,7 @@ function MeetingModal({
             onClick={handleEdit}
             sx={{ position: "absolute", right: 48, top: 8 }}
           >
-            {editMode 
-             ? <SaveIcon /> : <EditIcon />}
+            {editMode ? <SaveIcon /> : <EditIcon />}
           </IconButton>
         )}
 
@@ -335,15 +352,18 @@ function MeetingModal({
             user={selectedUser}
           />
         )}
-        {hasMeetingStarted && !showReviewFields && tutorId !== null && tutorId !== undefined && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setShowReviewFields(true)}
-          >
-            Leave a Review
-          </Button>
-        )}
+        {hasMeetingStarted &&
+          !showReviewFields &&
+          tutorId !== null &&
+          tutorId !== undefined && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setShowReviewFields(true)}
+            >
+              Leave a Review
+            </Button>
+          )}
 
         {showReviewFields && (
           <Box sx={{ mt: 2 }}>
@@ -373,6 +393,9 @@ function MeetingModal({
               Submit Review
             </Button>
           </Box>
+        )}
+        {meeting?.isJoinable && (
+          <Button onClick={() => joinMeeting(meeting.id)}>Join Meeting</Button>
         )}
       </Box>
     </Modal>

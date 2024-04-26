@@ -183,7 +183,7 @@ function DisplayMeetings() {
     }
   }, [dispatch, user, meetingsStatus])
 
-  const handleOpenModal = async (meeting) => {
+  const handleOpenModal = async (meeting, isJoinable) => {
     setCreatorId(meeting?.user?.id)
     //  attendeeUserIds is an array before proceeding
     console.log("meeting ob", meeting)
@@ -222,6 +222,7 @@ function DisplayMeetings() {
     setSelectedMeeting({
       ...meeting,
       attendeeProfiles: validAttendeeProfiles,
+      isJoinable: isJoinable
     })
 
     setModalOpen(true)
@@ -440,7 +441,7 @@ function DisplayMeetings() {
                     <Button
                       endIcon={<ArrowForwardIosIcon />}
                       sx={{ mt: 2 }}
-                      onClick={() => handleOpenModal(meeting)}
+                      onClick={() => handleOpenModal(meeting, true)}
                     >
                       View Meeting
                     </Button>

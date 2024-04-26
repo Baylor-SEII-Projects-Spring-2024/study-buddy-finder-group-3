@@ -146,4 +146,27 @@ public class MeetingService {
 
         return meetings;
     }
+    @Transactional
+    public void joinMeeting(Long userId, Long meetingId) {
+        log.info("User {} joining meeting {}", userId, meetingId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found: " + meetingId));
+
+        Optional<UserMeeting> userMeetingOptional = Optional.ofNullable(userMeetingRepository.findByMeetingAndUser(meeting, Optional.of(user)));
+        UserMeeting userMeeting;
+        if (userMeetingOptional.isPresent()) {
+            userMeeting = userMeetingOptional.get();
+            userMeeting.setInviteStatus("Accepted");
+        } else {
+            userMeeting = new UserMeeting();
+            userMeeting.setUser(user);
+            userMeeting.setMeeting(meeting);
+            userMeeting.setInviteStatus("Accepted");
+        }
+        userMeetingRepository.save(userMeeting);
+    }
+
+
 }
