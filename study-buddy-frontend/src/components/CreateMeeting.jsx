@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { API_URL } from "@/utils/config"
+import { isFuture } from 'date-fns';
 
 const style = {
   position: "absolute",
@@ -44,6 +45,8 @@ function CreateMeeting({ open, onClose }) {
   const [courseResults, setCourseResults] = useState([])
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [isPrivateMeetings, setIsPrivateMeetings] = useState(true)
+  const [isBadDate, setIsBadDate] = useState(false)
+
 
   const handleSearchChange = async (event) => {
     const newSearchTerm = event.target.value
@@ -97,11 +100,18 @@ function CreateMeeting({ open, onClose }) {
   const handleIsPrivateMeetingsChange = (event) => {
     setIsPrivateMeetings(event.target.checked)
   }
-
-  const handleDateChange = (newValue) => {
-    setMeetingDate(newValue)
-  }
-
+   const handleDateChange = (newValue) => {
+    const now = new Date();
+    if (isFuture(newValue)) {
+      setMeetingDate(newValue);
+    } else {
+      toast.error("Please select a future date and time.",{
+        toastId: "meetingDate"
+      });
+      setIsBadDate(true);
+    }
+  };
+  
   const handleTitleChange = (event) => {
     setMeetingTitle(event.target.value)
   }
@@ -121,6 +131,12 @@ function CreateMeeting({ open, onClose }) {
     if (!meetingTitle) {
       toast.error("Title cannot be empty")
       return
+    }
+    if (isBadDate){
+      toast.error("Please select a future date and time.",{
+        toastId: "meetingDate"
+      });
+      return;
     }
 
     try {
@@ -247,6 +263,7 @@ function CreateMeeting({ open, onClose }) {
             label="Start Time"
             value={meetingDate}
             onChange={handleDateChange}
+            minDateTime={new Date()}
             renderInput={(params) => (
               <TextField {...params} sx={{ width: "200%", mt: 2, mr: 2 }} />
             )}
