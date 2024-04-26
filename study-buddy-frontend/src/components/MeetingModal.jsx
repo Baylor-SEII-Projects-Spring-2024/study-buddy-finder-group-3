@@ -201,6 +201,7 @@ function MeetingModal({
       console.error("Error joining meeting:", error)
       toast.error("Failed to join meeting")
     }
+    handleClose()
   }
 
   return (

@@ -41,6 +41,9 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import Footer from "./Footer.jsx"
 import { useActivePage } from "@/utils/activePageContext"
 
+//TODO: NEED TO REDUX THE RECOMMENDED MEETINGS ACCEPT 
+
+
 function DisplayMeetings() {
   const dispatch = useDispatch()
   const theme = useTheme()
@@ -147,27 +150,29 @@ function DisplayMeetings() {
     setCreateMeetingOpen(false)
   }
 
-  useEffect(() => {
-    const fetchRecommendedMeetings = async () => {
-      try {
-        const response = await axios.get(
-          `${API_URL}/recommendations/meetings/${user.id}`
-        )
-        setRecommendedMeetings(response.data)
-      } catch (error) {
-        console.error("Error fetching recommended meetings:", error)
-      }
+  const fetchRecommendedMeetings = async () => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/recommendations/meetings/${user.id}`
+      )
+      setRecommendedMeetings(response.data)
+    } catch (error) {
+      console.error("Error fetching recommended meetings:", error)
     }
+  }
 
+  useEffect(() => {
     fetchRecommendedMeetings() // Call the function to fetch recommended meetings
   }, [user])
 
+  
   const handleDeleteMeeting = async () => {
     try {
       await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}/${user.id}`)
       setOpenDeleteDialog(false)
       dispatch(fetchMeetingsByUserId(user.id))
       toast.success("Meeting successfully deleted")
+      fetchRecommendedMeetings()
     } catch (error) {
       console.error("Failed to delete meeting:", error)
     }
@@ -232,6 +237,7 @@ function DisplayMeetings() {
     setTutorId(null)
     setModalOpen(false)
     setSelectedMeeting(null)
+    fetchRecommendedMeetings()
   }
 
   if (meetingsStatus === "loading") {
