@@ -36,6 +36,9 @@ function ProfileDisplay() {
     const [triggerUpdate, setTriggerUpdate] = useState(false)
     const [emailError, setEmailError] = useState('');
     const [usernameError, setUsernameError] = useState('');
+    const [firstNameError, setFirstNameError] = useState('');
+    const [lastNameError, setLastNameError] = useState('');
+    const [aboutMeError, setAboutMeError] = useState('');
 
     // console.log(avatarImage);
 
@@ -125,6 +128,44 @@ function ProfileDisplay() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        // Validate minimum character limit
+        if (value.trim().length < 2) {
+            // Display error message
+            switch (name) {
+                case 'emailAddress':
+                    setEmailError('Email address must be at least 2 characters long');
+                    break;
+                case 'username':
+                    setUsernameError('Username must be at least 2 characters long');
+                    break;
+                return;
+            }
+        }
+
+
+        if ( value.trim().length > 255 ) {
+            // Display error message
+            switch (name) {
+                case 'emailAddress':
+                    setEmailError('Email address must be less than 255 characters');
+                    break;
+                case 'username':
+                    setUsernameError('Username must be less than 255 characters');
+                    break;
+                case 'nameFirst':
+                    setFirstNameError('First name must be less than 255 characters');
+                    break;
+                case 'nameLast':
+                    setLastNameError('Last name must be less than 255 characters');
+                    break;
+                case 'aboutMe':
+                    setAboutMeError('About me must be less than 255 characters');
+                    break;
+                default:
+                    break;
+            }
+        }
 
         // Validate email format
         if (name === 'emailAddress') {
@@ -225,7 +266,7 @@ function ProfileDisplay() {
 
         try {
             // Compress the image if it's larger than 30kb
-            const compressedImage = await compressImage(file, 30 * 1024);
+            const compressedImage = await compressImage(file, 16 * 1024 * 1024);
             const formData = new FormData();
             formData.append('photo', compressedImage);
             // const formData = new FormData();
@@ -238,8 +279,8 @@ function ProfileDisplay() {
             // }
             //
             // Check if the selected photo meets the size requirement
-            if (compressedImage.size > 30 * 1024) {
-                toast.error("Selected photo must be 225kb or less.");
+            if (compressedImage.size > 16 * 1024 * 1024) {
+                toast.error("Selected photo must be 16MB or less.");
                 return;
             }
 
@@ -420,6 +461,8 @@ function ProfileDisplay() {
                     label="First Name"
                     name="nameFirst"
                     value={profile.nameFirst || ''}
+                    error={Boolean(firstNameError)}
+                    helperText={firstNameError}
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
@@ -429,6 +472,8 @@ function ProfileDisplay() {
                     label="Last Name"
                     name="nameLast"
                     value={profile.nameLast || ''}
+                    error={Boolean(lastNameError)}
+                    helperText={lastNameError}
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
@@ -442,6 +487,8 @@ function ProfileDisplay() {
                     rows={4} // Set the number of visible rows
                     // inputProps={{ maxLength: 255 }} // Set the maximum character limit
                     // maxLength={255}
+                    error={Boolean(aboutMeError)}
+                    helperText={aboutMeError}
                     disabled={!editMode}
                     onChange={handleInputChange}
                 />
