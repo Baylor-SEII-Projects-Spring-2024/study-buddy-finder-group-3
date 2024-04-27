@@ -84,7 +84,7 @@ function FriendsAdd() {
       console.error("Error adding friend:", error)
     }
 
-    toast.success("Friend request sent!", {position: "top-center"})
+    toast.success("Friend request sent!")
 
     const updatedFriends = friends.filter((user3) => user3.id !== user2.id)
     setFriendsList(updatedFriends)

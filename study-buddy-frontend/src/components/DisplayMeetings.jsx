@@ -102,7 +102,7 @@ function DisplayMeetings() {
     // new timeout
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredMeetingId(meetingId)
-    }, 500)
+    })
   }
 
   const handleMouseLeave = () => {
@@ -178,7 +178,7 @@ function DisplayMeetings() {
     }
     setTimeout(() => {
       scrollToSection("meetings-section")
-    }, 100)
+    }, 500)
     setOpenDeleteDialog(false)
   }
 

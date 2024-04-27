@@ -54,7 +54,7 @@ export default function App({ Component, pageProps }) {
               </DevSupport>
             </StudyBuddyThemeProvider>
           </AppCacheProvider>
-          <ToastContainer />
+          <ToastContainer position="bottom-right" />
         </ActivePageProvider>
       </ReduxProvider>
     </>
