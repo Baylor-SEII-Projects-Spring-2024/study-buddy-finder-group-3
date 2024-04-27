@@ -47,7 +47,6 @@ import { useActivePage } from "@/utils/activePageContext"
 function DisplayMeetings() {
   const dispatch = useDispatch()
   const theme = useTheme()
-
   const user = useSelector(selectUser)
   const meetings = useSelector((state) => state.meetings.meetings)
   const meetingsStatus = useSelector((state) => state.meetings.status)
@@ -74,22 +73,7 @@ function DisplayMeetings() {
     setActivePage("requests")
     router.push("/friends")
   }
-  // useEffect(() => {
-  //   const fetchNotifications = async () => {
-  //     if (user && user.id) {
-  //       try {
-  //         const response = await axios.get(`${API_URL}/user/${user.id}/notifications`);
-  //         dispatch(setUnreadNotifications({ count: response.data.length
-  //         }));
-  //       } catch (error) {
-  //         console.error("Error fetching notifications:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchNotifications();
-  // }, [dispatch, user]);
-
+  
   const [hoveredMeetingId, setHoveredMeetingId] = useState(null)
   // ref to keep track of the current timeout without causing re-renders
   const hoverTimeoutRef = useRef(null)
