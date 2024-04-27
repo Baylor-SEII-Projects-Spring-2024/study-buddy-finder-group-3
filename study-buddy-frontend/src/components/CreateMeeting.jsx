@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { API_URL } from "@/utils/config"
+import { isFuture } from 'date-fns';
 
 const style = {
   position: "absolute",
@@ -43,6 +44,9 @@ function CreateMeeting({ open, onClose }) {
   const [courseSearchTerm, setCourseSearchTerm] = useState("")
   const [courseResults, setCourseResults] = useState([])
   const [selectedCourse, setSelectedCourse] = useState(null)
+  const [isPrivateMeetings, setIsPrivateMeetings] = useState(true)
+  const [isBadDate, setIsBadDate] = useState(false)
+
 
   const handleSearchChange = async (event) => {
     const newSearchTerm = event.target.value
@@ -93,10 +97,21 @@ function CreateMeeting({ open, onClose }) {
     }
   }
 
-  const handleDateChange = (newValue) => {
-    setMeetingDate(newValue)
+  const handleIsPrivateMeetingsChange = (event) => {
+    setIsPrivateMeetings(event.target.checked)
   }
-
+   const handleDateChange = (newValue) => {
+    const now = new Date();
+    if (isFuture(newValue)) {
+      setMeetingDate(newValue);
+    } else {
+      toast.error("Please select a future date and time.",{
+        toastId: "meetingDate"
+      });
+      setIsBadDate(true);
+    }
+  };
+  
   const handleTitleChange = (event) => {
     setMeetingTitle(event.target.value)
   }
@@ -117,10 +132,16 @@ function CreateMeeting({ open, onClose }) {
       toast.error("Title cannot be empty")
       return
     }
+    if (isBadDate){
+      toast.error("Please select a future date and time.",{
+        toastId: "meetingDate"
+      });
+      return;
+    }
 
     try {
       const invitedUserIds = selectedInvites.map((invite) => invite.id)
-
+      console.log("is private", isPrivateMeetings);
       const response = await axios.post(`${API_URL}/meeting/createMeeting`, {
         title: meetingTitle,
         description: meetingDescription,
@@ -128,7 +149,9 @@ function CreateMeeting({ open, onClose }) {
         link: meetingLink,
         location: meetingLocation,
         creatorUsername: user.username,
-        course: { id: selectedCourse.id },
+        course: { id: selectedCourse?.id },
+        private: isPrivateMeetings,
+        userId: user.id,
         invitedUserIds,
       })
 
@@ -193,6 +216,15 @@ function CreateMeeting({ open, onClose }) {
             sx={{ ml: 2 }}
           />
         </Box>
+        <FormControlLabel
+          control={<Checkbox 
+            checked={isPrivateMeetings} 
+            onChange={handleIsPrivateMeetingsChange}
+          />}
+          label="Private Meeting"
+          sx={{ mt: 2 }}
+        />
+        
         <TextField
           label="Search Courses"
           type="text"
@@ -231,6 +263,7 @@ function CreateMeeting({ open, onClose }) {
             label="Start Time"
             value={meetingDate}
             onChange={handleDateChange}
+            minDateTime={new Date()}
             renderInput={(params) => (
               <TextField {...params} sx={{ width: "200%", mt: 2, mr: 2 }} />
             )}

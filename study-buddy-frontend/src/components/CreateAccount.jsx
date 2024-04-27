@@ -165,15 +165,15 @@ function CreateAccount({ open, onClose }) {
       })
       console.log(response)
       if (response.status === 200){
-        toast.success("Account created successfully!", { position: "top-center" })
+        toast.success("Account created successfully!")
         router.push('/home')
       } else {
-        toast.error("Failed to create account", { position: "top-center" })
+        toast.error("Failed to create account")
         console.log("Failed to create account")
       }
 
     } catch (error){
-      toast.error("Failed to create account", { position: "top-center" })
+      toast.error("Failed to create account")
       console.error(error)
     }
 
