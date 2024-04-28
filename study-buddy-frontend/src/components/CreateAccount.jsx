@@ -165,15 +165,15 @@ function CreateAccount({ open, onClose }) {
       })
       console.log(response)
       if (response.status === 200){
-        toast.success("Account created successfully!", { position: "top-center" })
+        toast.success("Account created successfully!")
         router.push('/home')
       } else {
-        toast.error("Failed to create account", { position: "top-center" })
+        toast.error("Failed to create account")
         console.log("Failed to create account")
       }
 
     } catch (error){
-      toast.error("Failed to create account", { position: "top-center" })
+      toast.error("Failed to create account")
       console.error(error)
     }
 
@@ -279,7 +279,7 @@ function CreateAccount({ open, onClose }) {
                   padding: "20px",
                   border: "1px solid #ddd",
                   borderRadius: "5px",
-                  width: "20vw"
+                  width: "19vw"
                 }} >
               <div>
                 <Typography variant="subtitle1">Area of Study:</Typography>
@@ -319,7 +319,7 @@ function CreateAccount({ open, onClose }) {
                   padding: "20px",
                   border: "1px solid #ddd",
                   borderRadius: "5px",
-                  width: "20vw"
+                  width: "19vw"
                 }}>
               <div>
                 <Typography variant="subtitle1">Time Preference:</Typography>
@@ -354,7 +354,7 @@ function CreateAccount({ open, onClose }) {
                   padding: "20px",
                   border: "1px solid #ddd",
                   borderRadius: "5px",
-                  width: "20vw"
+                  width: "19vw"
                 }}>
               <div>
                 <Typography variant="subtitle1">Meeting Type Preference:</Typography>
@@ -372,11 +372,12 @@ function CreateAccount({ open, onClose }) {
             </Box>
             <Button
                 type="submit"
-                fullWidth
+                
                 variant="contained"
                 sx={{
+                  width: "18.5vw",
                   mt: 3,
-                  mb: 2,
+                  mb: 2,           
                   backgroundColor: "bluegrey", // Change color if needed
                   "&:hover": {
                     backgroundColor: "bluegrey", // Change color if needed

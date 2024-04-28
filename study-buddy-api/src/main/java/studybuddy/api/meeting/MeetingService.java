@@ -25,7 +25,7 @@ public class MeetingService {
 
     @Autowired
     public UserRepository userRepository;
-    private static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
+    public static final Logger log = LoggerFactory.getLogger(AuthEndpoint.class);
 
     @Transactional
     public void createMeeting(Meeting meeting, String creatorUsername) {
@@ -33,6 +33,7 @@ public class MeetingService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         log.info("Creating meeting: {}", meeting);
+        meeting.setUser(creator);
         Meeting newMeeting = meetingRepository.save(meeting);
 
         // meeting creator entry
@@ -95,12 +96,30 @@ public class MeetingService {
     }
 
     @Transactional
-    public void deleteMeeting(Long meetingId) {
-        List<UserMeeting> userMeetings = userMeetingRepository.findByMeetingId(meetingId);
-        userMeetingRepository.deleteAll(userMeetings);
+    public void deleteMeeting(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+        // Check if the user requesting  delete is the creator of the meeting
+        if (meeting.getUser().getId().equals(userId)) {
+            // User is the creator, delete the entire meeting and all associations
+            log.warn("Delete from the creator: {}", meetingId);
+            userMeetingRepository.deleteAll(userMeetingRepository.findByMeetingId(meetingId));
+            meetingRepository.delete(meeting);
+        } else {
+            // User is not the creator, delete only this user's association with the meeting
+            log.warn("Delete from the user: {}", meetingId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, Optional.ofNullable(user));
 
-        meetingRepository.deleteById(meetingId);
+            if (userMeeting != null) {
+                userMeetingRepository.delete(userMeeting);
+            } else {
+                throw new RuntimeException("Meeting association not found");
+            }
+        }
     }
+
 
     public void updateMeetingStatus(Long meetingId, Long userId, String status) {
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -145,4 +164,27 @@ public class MeetingService {
 
         return meetings;
     }
+    @Transactional
+    public void joinMeeting(Long userId, Long meetingId) {
+        log.info("User {} joining meeting {}", userId, meetingId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found: " + meetingId));
+
+        Optional<UserMeeting> userMeetingOptional = Optional.ofNullable(userMeetingRepository.findByMeetingAndUser(meeting, Optional.of(user)));
+        UserMeeting userMeeting;
+        if (userMeetingOptional.isPresent()) {
+            userMeeting = userMeetingOptional.get();
+            userMeeting.setInviteStatus("Accepted");
+        } else {
+            userMeeting = new UserMeeting();
+            userMeeting.setUser(user);
+            userMeeting.setMeeting(meeting);
+            userMeeting.setInviteStatus("Accepted");
+        }
+        userMeetingRepository.save(userMeeting);
+    }
+
+
 }

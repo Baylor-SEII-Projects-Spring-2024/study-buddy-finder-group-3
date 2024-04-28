@@ -460,8 +460,8 @@ const LandingPage = () => {
                         Expand your network, make valuable connections, and
                         create lifelong study buddies.
                       </Typography>
-                      <Button variant="contained" sx={{ mr: 2 }}>
-                        Learn More
+                      <Button variant="contained" sx={{ mr: 2 }} onClick={() => scrollToSection("customers-section")}>
+                        See What The People Say
                       </Button>
                       <Button
                         variant="outlined"

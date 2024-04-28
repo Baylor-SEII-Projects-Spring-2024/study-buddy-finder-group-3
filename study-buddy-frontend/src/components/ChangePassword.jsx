@@ -35,7 +35,6 @@ function ChangePassword({ open, onClose }) {
     };
 
     const handleClose = (e) => {
-        e.preventDefault();
         setOldPassword("");
         setNewPassword("");
         setVerifiedPassword("");
@@ -44,25 +43,47 @@ function ChangePassword({ open, onClose }) {
 
     const handleNewPassword = async (e) => {
         e.preventDefault();
-        /*
+
         if (!old_password) {
-            toast.error("Type Old Password");
+            toast.error("Enter Old Password");
             return;
         }
         if (!new_password) {
-            toast.error("Type new password");
+            toast.error("New password cannot be empty");
             return;
         }
         if (!v_password) {
-            toast.error("Type new password");
+            toast.error("Retype new password");
             return;
-        }*/
+        }
 
         // Check if new password and verified password match
         if (new_password !== v_password) {
             toast.error("New password and verified password do not match");
             return;
         }
+
+        const numberRegex = /\d/;
+        if (!numberRegex.test(new_password)) {
+            toast.error("Password must contain at least one number");
+            return;
+        }
+        const uppercaseRegex = /[A-Z]/;
+        if (!uppercaseRegex.test(new_password)) {
+            toast.error("Password must contain at least one uppercase character");
+            return;
+        }
+        const lowercaseRegex = /[a-z]/;
+        if (!lowercaseRegex.test(new_password)) {
+            toast.error("Password must contain at least one lowercase character");
+            return;
+        }
+        const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+        if (!specialCharRegex.test(new_password)) {
+            toast.error("Password must contain at least one special character");
+            return;
+        }
+
 
         try {
             // Verify old password first
@@ -77,6 +98,7 @@ function ChangePassword({ open, onClose }) {
 
             // If old password is verified, change the password
             const changePasswordResponse = await axios.post(`${API_URL}/auth/${user.id}/changePassword`, { password: new_password });
+            // console.log("changePasswordResponse", changePasswordResponse);
 
             if (changePasswordResponse.data) {
                 toast.success("Password changed successfully");
@@ -110,7 +132,7 @@ function ChangePassword({ open, onClose }) {
                         fullWidth
                         label="Old Password"
                         name="old_password"
-                        autoComplete="old_password"
+                        type="password"
                         autoFocus
                         onChange={handleOldPasswordChange}
                         value={old_password}
@@ -120,7 +142,7 @@ function ChangePassword({ open, onClose }) {
                         fullWidth
                         name="new_password"
                         label="New Password"
-                        autoComplete="new_password"
+                        type="password"
                         onChange={handleNewPasswordChange}
                         value={new_password}
                     />
@@ -129,7 +151,7 @@ function ChangePassword({ open, onClose }) {
                         fullWidth
                         name="v_password"
                         label="Verify New Password"
-                        autoComplete="current-password"
+                        type="password"
                         onChange={handleVerifiedPasswordChange}
                         value={v_password}
                     />

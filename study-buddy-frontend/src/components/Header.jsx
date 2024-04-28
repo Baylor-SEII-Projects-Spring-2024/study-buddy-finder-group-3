@@ -21,7 +21,7 @@ import axios from "axios"
 import NotificationsIcon from "@mui/icons-material/Notifications"
 import MeetingModal from "./MeetingModal"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
-
+import { useActivePage } from "@/utils/activePageContext"
 const sections = [
   { title: "Home", id: "home-section" },
   { title: "Friends", id: "friends-section" },
@@ -39,7 +39,7 @@ function Header() {
   )
   const user = useSelector(selectUser)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
-
+  const { activePage, setActivePage } = useActivePage()
   const fetchNotifications = async () => {
     if (user && user.id) {
       // check if user and user.id exist
@@ -95,6 +95,8 @@ function Header() {
   }
 
   const handleFriendRequestClick = () => {
+    setActivePage("requests")
+    handleCloseNotificationMenu()
     router.push("/friends")
   }
 
@@ -191,7 +193,7 @@ function Header() {
               onClose={handleCloseMeetingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd",
+                  backgroundColor: "#5813d6",
                   color: "white",
                 },
               }}
@@ -207,13 +209,6 @@ function Header() {
                 sx={{ padding: "10px 20px" }}
               >
                 <Typography variant="inherit">Recommended Meetings</Typography>
-              </MenuItem>
-              <Divider />
-              <MenuItem
-                onClick={() => console.log("Navigate to settings/courses")}
-                sx={{ padding: "10px 20px" }}
-              >
-                <Typography variant="inherit">View All Meetings</Typography>
               </MenuItem>
             </Menu>
             <Button
@@ -232,7 +227,7 @@ function Header() {
               onClose={handleCloseSettingsMenu}
               PaperProps={{
                 style: {
-                  backgroundColor: "#628dbd",
+                  backgroundColor: "#5813d6",
                   color: "white",
                 },
               }}

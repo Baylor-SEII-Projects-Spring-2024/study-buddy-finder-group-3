@@ -126,7 +126,7 @@ export default function FriendsList({ listType = "friends" }) {
       console.error("Error adding friend:", error)
     }
 
-    toast.success("Friend request sent!", { position: "top-center" })
+    toast.success("Friend request sent!")
 
     setTriggerUpdate2ElectricBoogaloo(false)
     setTriggerUpdate(!triggerUpdate)

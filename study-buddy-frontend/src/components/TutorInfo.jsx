@@ -27,6 +27,10 @@ function TutorInfo() {
     const [tutorRatings, setTutorRatings] = useState([]);
     const theme = useTheme()
     const [loading, setLoading] = useState(true); // Add loading state
+    const [reviewsToShow, setReviewsToShow] = useState(3); // Number of reviews to show
+    const [showMoreClicked, setShowMoreClicked] = useState(false); // Track if "Show More Reviews" button is clicked
+
+
     // console.log(avatarImage);
 
     useEffect(() => {
@@ -106,6 +110,24 @@ function TutorInfo() {
         return isNaN(average) ? 'N/A' : average.toFixed(1);
     }
 
+    const handleShowMoreReviews = () => {
+        const remainingReviews = tutorRatings.length - reviewsToShow;
+        const additionalReviewsToShow = Math.min(remainingReviews, 5);
+        setReviewsToShow(reviewsToShow + additionalReviewsToShow);
+        setShowMoreClicked(true); // Set to true when "Show More Reviews" is clicked
+    };
+
+    const handleShowLessReviews = () => {
+        setReviewsToShow(3);
+        setShowMoreClicked(false); // Reset to false when "Show Less Reviews" is clicked
+    };
+
+    const handleScrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
 
     // Calculate the average rating, assuming it's a decimal
     const averageRating = calculateAverageRating(tutorRatings);
@@ -153,7 +175,8 @@ function TutorInfo() {
                     <br/>
 
                     <Typography variant="h5">Reviews:</Typography>
-                    {tutorRatings.map((ratingString, index) => {
+                    {/*{tutorRatings.map((ratingString, index) => {*/}
+                    {tutorRatings.slice(0, reviewsToShow).map((ratingString, index) => {
                         // Use regular expression to match the comment and rating
                         const match = ratingString.match(/^(.*?),\s*(\d+(\.\d+)?|\.\d+)$/);
                         if (!match) return null; // If the ratingString doesn't match the pattern, skip it
@@ -175,8 +198,29 @@ function TutorInfo() {
                             </Box>
                         );
                     })}
+                    {tutorRatings.length > reviewsToShow && (
+                        <Button onClick={handleShowMoreReviews}>Show More Reviews</Button>
+                    )}
+                    {showMoreClicked && (
+                        <Button onClick={handleShowLessReviews}
+                        >Show Less Reviews</Button>
+                    )}
                 </Box>
             )}
+            <Button
+                variant="contained"
+                onClick={handleScrollToTop}
+                sx={{
+                    position: "fixed",
+                    bottom: "20px",
+                    right: "20px",
+                    zIndex: "999",
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.background.default
+                }}
+            >
+                ^
+            </Button>
         </Box>
     );
 }
