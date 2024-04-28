@@ -24,7 +24,7 @@ function UserCourses() {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await axios.get(`${API_URL}/courseInfo/allCourses`);
+                const response = await axios.get(`${API_URL}/allCourses`);
                 setCourses(response.data);
             } catch (error) {
                 console.error("Error fetching courses:", error);
@@ -41,7 +41,7 @@ function UserCourses() {
   }
   const handleAddCourses = async () => {
         try {
-            await axios.post(`${API_URL}/courseInfo/user/${user.id}/addCourses`, selectedCourses);
+            await axios.post(`${API_URL}/courses/user/${user.id}/addCourses`, selectedCourses);
             router.push("/courses");
         } catch (error) {
             console.error("Error adding courses:", error);

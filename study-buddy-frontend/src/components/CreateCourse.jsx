@@ -53,7 +53,7 @@ function CreateCourse({ open, onClose }) {
         }
 
         try {
-            const response = await axios.post(`${API_URL}/courseInfo/user/${user.id}/newCourseforUser`, {
+            const response = await axios.post(`${API_URL}/courses/user/${user.id}/newCourseforUser`, {
                 name: c_name,
                 description,
                 subjectArea
