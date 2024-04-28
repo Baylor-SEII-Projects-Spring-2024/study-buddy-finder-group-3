@@ -10,13 +10,17 @@ import { selectToken, selectUser } from "@/utils/authSlice.js"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import ListItemText from "@mui/material/ListItemText"
-import { ListItemButton, Menu, Typography } from "@mui/material"
+import { Dialog, DialogContent, Fab, ListItemButton, Menu, Typography } from "@mui/material"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
 import Grow from "@mui/material/Grow"
 import Paper from "@mui/material/Paper"
 import Popper from "@mui/material/Popper"
+import ProfileDisplay from "../ProfileDisplay"
+import DialogActions from "@mui/material/DialogActions"
+import Button from "@mui/material/Button"
+
 
 function FriendsAdd() {
   const user = useSelector(selectUser)
@@ -28,6 +32,7 @@ function FriendsAdd() {
   const token = useSelector(selectToken)
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
+  const [dialogOpen, setDialogOpen] = useState(false)
   const textFieldRef = useRef(null)
   const textFieldWidth = textFieldRef.current
     ? textFieldRef.current.getBoundingClientRect().width
@@ -73,7 +78,7 @@ function FriendsAdd() {
     }
   }
 
-  const handleListItemClick = (event, user2) => {
+  const sendRequest = (event, user2) => {
     try {
       axios
         .post(`${API_URL}/friends/${user.id}/request/${user2.id}`)
@@ -88,6 +93,11 @@ function FriendsAdd() {
 
     const updatedFriends = friends.filter((user3) => user3.id !== user2.id)
     setFriendsList(updatedFriends)
+  }
+
+  const handleListItemClick = (event, user) => {
+    //sendRequest(event, user)
+    setDialogOpen(true)
   }
 
   return (
@@ -135,16 +145,26 @@ function FriendsAdd() {
           <Typography marginLeft={1}>No Users Found</Typography>
         ) : (
           <List>
-          {friends.map((user) => (
-            <ListItem key={user.id}>
-              <ListItemButton
-                onClick={(event) => handleListItemClick(event, user)}
-              >
-                <ListItemText primary={user.username} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+            {friends.map((user) => (
+              <ListItem key={user.id}>
+                <ListItemButton
+                  onClick={(event) => handleListItemClick(event, user)}
+                >
+                  <ListItemText primary={user.username} />
+                </ListItemButton>
+                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+                  <DialogContent>
+                    <ProfileDisplay editable={false} uniqueId={user.id}/>
+                  </DialogContent>
+                  <DialogActions style={{justifyContent: "center"}}>
+                  <Button onClick={(event) => sendRequest(event, user)} variant={"contained"}>
+                    Send Friend Request
+                  </Button>
+                  </DialogActions>
+                </Dialog>
+              </ListItem>
+            ))}
+          </List>
         )}
       </Menu>
     </Box>
