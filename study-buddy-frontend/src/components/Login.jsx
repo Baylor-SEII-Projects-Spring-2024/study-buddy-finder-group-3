@@ -8,22 +8,21 @@ import styles from "@/styles/login-create.module.css"
 import { toast } from "react-toastify"
 import { useRouter } from "next/router"
 import axios from "axios"
-import { useDispatch } from 'react-redux';
-import { setToken, setUser } from '@/utils/authSlice.js';
-import { API_URL } from "@/utils/config";
-import ResetRequest from "./ResetRequest";
+import { useDispatch } from "react-redux"
+import { setToken, setUser } from "@/utils/authSlice.js"
+import { API_URL } from "@/utils/config"
+import ResetRequest from "./ResetRequest"
 
 function Login({ open, onClose }) {
-  const dispatch = useDispatch();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [resetOpen, setResetOpen] = useState(false);
+  const dispatch = useDispatch()
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [resetOpen, setResetOpen] = useState(false)
   const router = useRouter()
 
   const handleResetClose = () => {
     setResetOpen(false)
   }
-
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value)
@@ -46,7 +45,7 @@ function Login({ open, onClose }) {
       return
     }
     if (!password) {
-      toast.error("Password cannot be empty", {toastId: "password"})
+      toast.error("Password cannot be empty", { toastId: "password" })
       return
     }
 
@@ -115,6 +114,20 @@ function Login({ open, onClose }) {
             value={password}
           />
           <Button
+            onClick={() => setResetOpen(true)}
+            variant="text"
+            sx={{
+              position: "relative",
+              backgroundColor: "bluegrey",
+              "&:hover": {
+                backgroundColor: "bluegrey",
+              },
+            }}
+          >
+            Forgot your password?
+          </Button>
+
+          <Button
             type="submit"
             fullWidth
             variant="contained"
@@ -129,26 +142,12 @@ function Login({ open, onClose }) {
           >
             Sign In
           </Button>
-          <Button
-            onClick={() => setResetOpen(true)}
-            fullWidth
-            variant="contained"
-            sx={{
-              backgroundColor: "bluegrey",
-              "&:hover": {
-                backgroundColor: "bluegrey",
-              },
-            }}
-          >
-            Reset Password
-          </Button>
           <Button fullWidth variant="text" onClick={handleClose}>
             Cancel
           </Button>
         </Box>
-        <ResetRequest  open={resetOpen} onClose={handleResetClose}/>
+        <ResetRequest open={resetOpen} onClose={handleResetClose} />
       </Box>
-      
     </Modal>
   )
 }
