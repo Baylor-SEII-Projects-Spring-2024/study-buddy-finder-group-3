@@ -18,11 +18,11 @@ export default function FriendsCancel({ onUpdate }) {
   const [friends, setFriendsList] = useState([])
   const [userId, setUserid] = useState("")
 
-  useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
-  }, [token, router])
+  // useEffect(() => {
+  //   if (!token || !user) {
+  //     router.push("/")
+  //   }
+  // }, [token, router])
 
   useEffect(() => {
     if (user) {

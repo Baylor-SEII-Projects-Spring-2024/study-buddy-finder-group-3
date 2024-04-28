@@ -39,14 +39,14 @@ export default function ResetRequest({ open, onClose }) {
 
       mailRequest.to = email
       mailRequest.text = `<p>To reset your password, please click on the following link:</p>
-      <a href="http://localhost:3000/${response.data}">studybudy.com/resetPassword</a>`
+      <a href="http://localhost:3000/${response.data}">studybudy.com/reset-password</a>`
 
       sendEmail()
 
       toast.success("Reset link sent to your email")
     } catch (error) {
       console.error("Error generating reset link:", error)
-      toast.error("Error generating reset link")
+      toast.error("This email is not associated with an account. Please try again.")
     }
   }
 
@@ -70,8 +70,7 @@ export default function ResetRequest({ open, onClose }) {
         <DialogTitle>Reset Password</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To reset your password, please enter your email address here. We
-            will send you an email with a link to reset your password.
+            Please enter your email address. If this email is associated with an account, you will recieve an email with instructions to reset you password.
           </DialogContentText>
           <TextField
             autoFocus

@@ -12,7 +12,7 @@ import { selectToken, selectUser } from "@/utils/authSlice.js"
 import { useRouter } from "next/router"
 import { API_URL } from "@/utils/config"
 import CreateCourse from "@/components/CreateCourse"
-
+import Header from "./Header"
 function UserCourses() {
   const token = useSelector(selectToken)
   const user = useSelector(selectUser)
@@ -229,6 +229,8 @@ function UserCourses() {
   ]
 
   return (
+    <>
+    <Header/>
     <Box
       id="home-section"
       sx={{
@@ -311,6 +313,7 @@ function UserCourses() {
         Add Selected Courses
       </Button>
     </Box>
+    </>
   )
 }
 export default UserCourses

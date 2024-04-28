@@ -7,38 +7,24 @@ import { useRouter } from "next/router"
 import DisplayMeetings from "@/components/DisplayMeetings"
 import Box from "@mui/material/Box"
 import { useAuth } from "@/utils/useAuth"
+import AuthProgress from "@/components/AuthProgress"
+
 function home() {
-    useAuth()
-    const router = useRouter();
-    const token = useSelector(selectToken);
-    const [isCheckingToken, setIsCheckingToken] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsCheckingToken(false);  
-        }, 1000); 
-
-        return () => clearTimeout(timer);
-    }, []);
-
-    useEffect(() => {
-        if (!isCheckingToken && !token) {
-            router.push("/");
-        }
-    }, [token, isCheckingToken, router]);
-    
-    return (
-
-        <>
-            <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                {/* <Header /> */}
-                <Box sx={{ display: "flex", flexGrow: 1 }}>
-                    {/* <Sidebar /> */}
-                    <DisplayMeetings />
-                </Box>
-            </Box>
-        </>
-    )
+  const [authComplete, setAuthComplete] = useState(false)
+  
+  return (
+    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        {/* <Box sx={{ display: "flex", flexGrow: 1 }}> */}
+          {!authComplete ? (
+            <AuthProgress onAuthComplete={() => setAuthComplete(true)} />
+          ) : (
+            <DisplayMeetings />
+          )}
+        {/* </Box> */}
+      </Box>
+    </>
+  )
 }
 
 export default home
