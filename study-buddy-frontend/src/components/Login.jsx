@@ -35,11 +35,11 @@ function Login({ open, onClose }) {
   const handleLogin = async (e) => {
     e.preventDefault()
     if (!username) {
-      toast.error("Username cannot be empty")
+      toast.error("Username cannot be empty", { toastId: "username" })
       return
     }
     if (!password) {
-      toast.error("Password cannot be empty")
+      toast.error("Password cannot be empty", {toastId: "password"})
       return
     }
 
