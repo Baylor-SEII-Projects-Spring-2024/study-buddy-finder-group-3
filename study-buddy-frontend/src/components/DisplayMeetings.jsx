@@ -40,9 +40,9 @@ import { useTheme } from "@mui/material/styles"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import Footer from "./Footer.jsx"
 import { useActivePage } from "@/utils/activePageContext"
-
-//TODO: NEED TO REDUX THE RECOMMENDED MEETINGS ACCEPT 
-
+import MeetingGrid from "./MeetingGrid.jsx"
+import AllMeetingsModal from "./AllMeetingsModal.jsx"
+//TODO: NEED TO REDUX THE RECOMMENDED MEETINGS ACCEPT
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
@@ -62,8 +62,32 @@ function DisplayMeetings() {
   const unreadNotifications = useSelector(
     (state) => state.notifications.notificationCount
   )
-  const { activePage, setActivePage } = useActivePage()
+  const { setActivePage } = useActivePage()
   const [creatorId, setCreatorId] = useState(null)
+  const [isAllMeetingsModalOpen, setAllMeetingsModalOpen] = useState(false)
+
+  const handleOpenAllMeetingsModal = () => {
+    setAllMeetingsModalOpen(true)
+  }
+
+  const handleCloseAllMeetingsModal = () => {
+    setAllMeetingsModalOpen(false)
+  }
+
+  const handleMeetingClick = (meeting) => {
+    setSelectedMeeting(meeting)
+    setModalOpen(true) 
+    handleCloseAllMeetingsModal() 
+    setCreatorId(meeting?.user?.id)
+  }
+
+  const handleDeleteMeetingFromModal = (meeting) => {
+    
+    setMeetingToDelete(meeting);
+    handleCloseAllMeetingsModal()
+    setOpenDeleteDialog(true);
+
+  };
 
   const handleInviteClick = () => {
     router.push("/friends")
@@ -73,7 +97,7 @@ function DisplayMeetings() {
     setActivePage("requests")
     router.push("/friends")
   }
-  
+
   const [hoveredMeetingId, setHoveredMeetingId] = useState(null)
   // ref to keep track of the current timeout without causing re-renders
   const hoverTimeoutRef = useRef(null)
@@ -149,7 +173,6 @@ function DisplayMeetings() {
     fetchRecommendedMeetings() // Call the function to fetch recommended meetings
   }, [user])
 
-  
   const handleDeleteMeeting = async () => {
     try {
       await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}/${user.id}`)
@@ -211,7 +234,7 @@ function DisplayMeetings() {
     setSelectedMeeting({
       ...meeting,
       attendeeProfiles: validAttendeeProfiles,
-      isJoinable: isJoinable
+      isJoinable: isJoinable,
     })
 
     setModalOpen(true)
@@ -310,7 +333,7 @@ function DisplayMeetings() {
         </Box>
         <Box
           id="meetings-section"
-          sx={{ height: "100vh", pt: "64px", marginBottom: "64px" }}
+          sx={{ minHeight: "100vh", pt: "64px", marginBottom: "64px" }}
         >
           <Typography variant="h4" component="h2" gutterBottom align="center">
             Your Meetings
@@ -319,7 +342,17 @@ function DisplayMeetings() {
             Here are your upcoming meetings
           </Typography>
           {/* need ot add fitlers  */}
-          <Grid container spacing={4} sx={{ mt: 4 }}>
+          <MeetingGrid
+            meetings={meetings}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
+            handleOpenModal={handleOpenModal}
+            handleOpenDeleteDialog={handleOpenDeleteDialog}
+            hoveredMeetingId={hoveredMeetingId}
+            handleOpenAllMeetingsModal={handleOpenAllMeetingsModal}
+          />
+
+          {/* <Grid container spacing={4} sx={{ mt: 4 }}>
             {meetings.slice(0, 6).map((meeting) => (
               <Grid
                 item
@@ -380,7 +413,7 @@ function DisplayMeetings() {
                 </Card>
               </Grid>
             ))}
-          </Grid>
+          </Grid> */}
         </Box>
         {/* beginning of rec meetings */}
         <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px" }}>
@@ -493,24 +526,23 @@ function DisplayMeetings() {
             }}
           >
             <Typography variant="caption" display="block" gutterBottom>
-            <Paper
-                  elevation={0}
-                  sx={{
-                    height: 300,
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#fff",
-                    border: `1px solid ${theme.palette.primary.main}`,
-                  }}
-                >
-
-              <img
-                src="/friends.png"
-                alt="friends"
-                style={{ width: "100%", height: "100%" }}
-              />
+              <Paper
+                elevation={0}
+                sx={{
+                  height: 300,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#fff",
+                  border: `1px solid ${theme.palette.primary.main}`,
+                }}
+              >
+                <img
+                  src="/friends.png"
+                  alt="friends"
+                  style={{ width: "100%", height: "100%" }}
+                />
               </Paper>
             </Typography>
           </Box>
@@ -551,6 +583,12 @@ function DisplayMeetings() {
           open={createMeetingOpen}
           onClose={handleCloseCreateMeeting}
         />
+        <AllMeetingsModal
+          open={isAllMeetingsModalOpen}
+          handleClose={handleCloseAllMeetingsModal}
+          meetings={meetings} // Pass all meetings to the modal
+          onMeetingClick={handleMeetingClick}
+          onDeleteMeeting={handleDeleteMeetingFromModal}         />
       </Container>
     </>
   )
