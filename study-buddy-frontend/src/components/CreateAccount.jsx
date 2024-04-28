@@ -372,15 +372,14 @@ function CreateAccount({ open, onClose }) {
             </Box>
             <Button
                 type="submit"
-                
+                fullWidth
                 variant="contained"
                 sx={{
-                  width: "18.5vw",
                   mt: 3,
                   mb: 2,           
-                  backgroundColor: "bluegrey", // Change color if needed
+                  backgroundColor: "bluegrey", 
                   "&:hover": {
-                    backgroundColor: "bluegrey", // Change color if needed
+                    backgroundColor: "bluegrey", 
                   },
                 }}
             >

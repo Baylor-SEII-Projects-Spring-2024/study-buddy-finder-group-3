@@ -46,7 +46,7 @@ function DisplayCourses() {
         const fetchCourseByUserId = async () => {
                 try{
                     const response = await axios.get(
-                        `${API_URL}/courseInfo/user/${user.id}/courses`
+                        `${API_URL}/courses/user/${user.id}/courses`
                     )
                     setCourses(response.data);
                     console.log("hello")
@@ -63,7 +63,7 @@ function DisplayCourses() {
 
     const handleDeleteCourse = async () => {
         try {
-            await axios.delete(`${API_URL}/courseInfo/user/${user?.id}/courses/${selectedCourse?.id}`);
+            await axios.delete(`${API_URL}/courses/user/${user?.id}/courses/${selectedCourse?.id}`);
             setCourses(courses.filter(course => course?.id !== selectedCourse?.id));
             setOpenDeleteDialog(false);
         } catch (error) {
