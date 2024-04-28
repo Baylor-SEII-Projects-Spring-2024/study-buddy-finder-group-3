@@ -20,18 +20,18 @@ function UserCourses() {
   const [openCreateCourseModal, setOpenCreateCourseModal] = useState(false)
   const [selectedCourses, setSelectedCourses] = useState([])
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/courses/allCourses`)
-        setCourses(response.data)
-      } catch (error) {
-        console.error("Error fetching courses:", error)
-      }
-    }
-    fetchCourses()
-  }, [])
 
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/courseInfo/allCourses`);
+                setCourses(response.data);
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+            }
+        };
+        fetchCourses();
+    }, []);
   const handleCheckboxChange = (courseId) => {
     if (selectedCourses.includes(courseId)) {
       setSelectedCourses(selectedCourses.filter((id) => id !== courseId))
@@ -39,19 +39,14 @@ function UserCourses() {
       setSelectedCourses([...selectedCourses, courseId])
     }
   }
-
   const handleAddCourses = async () => {
-    try {
-      await axios.post(
-        `${API_URL}/courses/user/${user.id}/addCourses`,
-        selectedCourses
-      )
-      router.push("/courses")
-    } catch (error) {
-      console.error("Error adding courses:", error)
-    }
-  }
-
+        try {
+            await axios.post(`${API_URL}/courseInfo/user/${user.id}/addCourses`, selectedCourses);
+            router.push("/courses");
+        } catch (error) {
+            console.error("Error adding courses:", error);
+        }
+    };
   const handleOpenCreateCourseModal = () => {
     setOpenCreateCourseModal(true)
   }
@@ -259,6 +254,9 @@ function UserCourses() {
           onClick={handleOpenCreateCourseModal}
         >
           New Course
+        </Button>
+        <Button variant="contained" color="primary" onClick={handleAddCourses}>
+          Add Selected Courses
         </Button>
         <Button
           variant="outlined"

@@ -25,15 +25,16 @@ import { useTheme } from "@mui/material/styles"
 import CreateCourse from "@/components/CreateCourse"
 
 function SettingsMain() {
-  const [receiveEmails, setReceiveEmails] = useState(true)
-  const [darkMode, setDarkMode] = useState(false)
-  const token = useSelector(selectToken)
-  const user = useSelector(selectUser)
-  const router = useRouter()
-  const [profile, setProfile] = useState("")
-  const [userId, setUserId] = useState("")
-  const [userIsTutor, setUserIsTutor] = useState(false)
-  const [selectedAccountType, setSelectedAccountType] = useState("Student")
+    const [receiveEmails, setReceiveEmails] = useState(true);
+    const [darkMode, setDarkMode] = useState(false);
+    const token = useSelector(selectToken);
+    const user = useSelector(selectUser);
+    const router = useRouter();
+    const [profile, setProfile] = useState('');
+    const [userId, setUserId] = useState('');
+    const [userIsTutor, setUserIsTutor] = useState(false);
+    const [selectedAccountType, setSelectedAccountType] = useState("Student");
+    //const [newAccountType, setNewAccountType] = useState("Student");
 
   const [theme, setTheme] = useState("light") // State to track selected theme
   const [notifications, setNotifications] = useState(false)
@@ -47,33 +48,107 @@ function SettingsMain() {
     }
   }, [token, router])
 
-  useEffect(() => {
-    if (user) {
-      setUserId(user.id)
-      fetchProfileInfo(user.id)
-    }
-  }, [user])
-  /*
     useEffect(() => {
-        if (user) {
-            setUserIsTutor(user.accountType === "Tutor");
-            setSelectedAccountType(user.accountType);
-            setProfile(user.profile); // Assuming user.profile contains profile information
+        if (!token || !user) {
+            router.push('/');
+        } else {
+            setUserId(user.id);
+            fetchProfileInfo(user.id);
+            fetchUserAccountType(user.id);
         }
-    }, [user]);*/
+    }, [token, user]);
 
-  const handleNewAccountTypeChange = (event) => {
-    const newAccountType = event.target.value
-    setUserIsTutor(newAccountType === "Tutor")
-    setSelectedAccountType(newAccountType)
-  }
 
-  const fetchProfileInfo = async (userId) => {
+    const fetchProfileInfo = async (userId) => {
+        try {
+            const response = await axios.get(`${API_URL}/profile/${userId}`);
+
+            // Log the entire response data object
+            console.log("Response data:", response.data);
+
+            setProfile(response.data);
+
+            // Extract courses from the areaOfStudy field
+            let coursesArray = [];
+            if (response.data.areaOfStudy) {
+                if (typeof response.data.areaOfStudy === 'string') {
+                    // If areaOfStudy is a string, split it into an array
+                    coursesArray = response.data.areaOfStudy.split(',').map(course => course.trim());
+                } else if (Array.isArray(response.data.areaOfStudy)) {
+                    // If areaOfStudy is already an array, use it directly
+                    coursesArray = response.data.areaOfStudy;
+                }
+            }
+
+            setSelectedCourses(coursesArray);
+            console.log("User's initial courses are: ", response.data.areaOfStudy);
+            console.log(`Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`);
+        } catch (error) {
+            console.error("Error fetching profile info:", error);
+        }
+    };
+
+    const fetchUserAccountType = async (userId) => {
+        try {
+            const response = await axios.get(`${API_URL}/users/${userId}/is-tutor`);
+            const isTutor = response.data;
+            setUserIsTutor(isTutor);
+            setSelectedAccountType(isTutor ? "Tutor" : "Student");
+        } catch (error) {
+            console.error("Error fetching user account type:", error);
+        }
+    };
+
+    // Handler for changing settings
+    const handleEmailsChange = () => {
+        setReceiveEmails(!receiveEmails);
+    };
+
+    const handleDarkModeChange = () => {
+        setDarkMode(!darkMode);
+    };
+    const handleThemeChange = (event) => {
+        setTheme(event.target.value);
+        // add logic here to switch the theme
+    };
+
+    const handleNotificationsChange = (event) => {
+        setNotifications(event.target.checked);
+        //  add logic here to handle notifications setting change
+    };
+    const handleEmailUpdatesChange = (event) => {
+        setEmailUpdates(event.target.checked);
+        //  add logic here to handle email updates setting change
+    };
+
+
+    const handleOpenChangePasswordModal = () => {
+        setChangePasswordModal(true);
+    };
+
+    const handleCloseChangePasswordModal = () => {
+        setChangePasswordModal(false);
+    };
+/*
+    const handleNewAccountTypeChange = (event) => {
+        setNewAccountType(event.target.value);
+    };*/
+    const handleNewAccountTypeChange = (event) => {
+        const newAccountType = event.target.value;
+        setUserIsTutor(newAccountType === "Tutor");
+        setSelectedAccountType(newAccountType);
+    };
+
+    const handleSubmit = async () => {
+
     try {
-      const response = await axios.get(`${API_URL}/profile/${userId}`)
+        const data = {
+            isTutor: selectedAccountType === "Tutor" ? true : false,
+        };/*
+        const data = {
+            isTutor: newAccountType === "Tutor" ? true : false,
+        };*/
 
-      // Log the entire response data object
-      console.log("Response data:", response.data)
 
       setProfile(response.data)
 
@@ -101,50 +176,6 @@ function SettingsMain() {
     }
   }
 
-  // Handler for changing settings
-  const handleEmailsChange = () => {
-    setReceiveEmails(!receiveEmails)
-  }
-
-  const handleDarkModeChange = () => {
-    setDarkMode(!darkMode)
-  }
-  const handleThemeChange = (event) => {
-    setTheme(event.target.value)
-    // add logic here to switch the theme
-  }
-
-  const handleNotificationsChange = (event) => {
-    setNotifications(event.target.checked)
-    //  add logic here to handle notifications setting change
-  }
-  const handleEmailUpdatesChange = (event) => {
-    setEmailUpdates(event.target.checked)
-    //  add logic here to handle email updates setting change
-  }
-
-  const handleOpenChangePasswordModal = () => {
-    setChangePasswordModal(true)
-  }
-
-  const handleCloseChangePasswordModal = () => {
-    setChangePasswordModal(false)
-  }
-
-  const handleSubmit = async () => {
-    try {
-      const data = {
-        isTutor: selectedAccountType === "Tutor" ? true : false,
-      }
-
-      // Send a request to update the user's account type
-      await axios.put(`${API_URL}/users/${user.id}/changeAccountType`, data)
-      toast.success("Account type updated successfully!")
-    } catch (error) {
-      console.error("Error updating account type:", error)
-      toast.error("Failed to update account type. Please try again later.")
-    }
-  }
 
   return (
     <Box
@@ -308,8 +339,9 @@ function SettingsMain() {
       </Box>
       <br />
 
-      {/* Account/Privacy section */}
-      <Box
+
+    {/* Account/Privacy section */}
+    <Box
         border={1}
         borderColor="primary.main"
         borderRadius={8}
@@ -317,60 +349,63 @@ function SettingsMain() {
         display="flex"
         flexDirection="column"
         width={"50vw"}
-      >
+    >
         <Typography variant="h8" gutterBottom>
-          Account and Privacy
+            Account and Privacy
         </Typography>
         <Divider />
 
         <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-            justifyContent: "space-between",
-          }}
+            style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "10px",
+                justifyContent: "space-between",
+            }}
         >
-          <Typography variant="h8" gutterBottom style={{ marginLeft: "5vh" }}>
-            Change Password
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginRight: "5vh" }}
-            onClick={handleOpenChangePasswordModal}
-          >
-            Edit
-          </Button>
+            <Typography variant="h8" gutterBottom style={{ marginLeft: "5vh" }}>
+                Change Password
+            </Typography>
+            <Button
+                variant="contained"
+                color="primary"
+                style={{ marginRight: "5vh" }}
+                onClick={handleOpenChangePasswordModal}
+            >
+                Edit
+            </Button>
         </div>
         <ChangePassword
-          open={openChangePasswordModal}
-          onClose={handleCloseChangePasswordModal}
+            open={openChangePasswordModal}
+            onClose={handleCloseChangePasswordModal}
         />
 
         <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
+            style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+            }}
         >
-          <Typography variant="h8" gutterBottom style={{ marginLeft: "5vh" }}>
-            Account type
-          </Typography>
-          <Select
-            value={userIsTutor ? "Tutor" : "Student"}
-            onChange={handleNewAccountTypeChange}
-            style={{ width: "150px", marginRight: "5vh" }}
-          >
-            <MenuItem value="Tutor">Tutor</MenuItem>
-            <MenuItem value="Student">Student</MenuItem>
-          </Select>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Save
-          </Button>
+            <Typography variant="h8" gutterBottom style={{ marginLeft: "5vh" }}>
+                Account type
+            </Typography>
+            <Select
+                value={userIsTutor ? "Tutor" : "Student"}
+                onChange={handleNewAccountTypeChange}
+                style={{ width: "150px", marginRight: "5vh" }}
+            >
+                <MenuItem value="Tutor">Tutor</MenuItem>
+                <MenuItem value="Student">Student</MenuItem>
+            </Select>
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+                Save
+            </Button>
         </div>
-      </Box>
+    </Box>
+
+
+
     </Box>
   )
 }
