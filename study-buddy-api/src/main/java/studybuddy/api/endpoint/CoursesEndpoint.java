@@ -1,15 +1,22 @@
 package studybuddy.api.endpoint;
 
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
 import studybuddy.api.courses.Courses;
+import studybuddy.api.courses.CoursesService;
+import studybuddy.api.utils.JwtUtil;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +32,34 @@ import studybuddy.api.utils.JwtUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static studybuddy.api.meeting.MeetingService.log;
+
 
 @RestController
-@RequestMapping("/courseInfo")
+@RequestMapping("/courses")
 public class CoursesEndpoint {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private CoursesService coursesService;
+
+    @GetMapping("/names")
+    public ResponseEntity<List<Courses>> getCoursesBySearchTerm(@RequestParam(required = false) String search) {
+        log.info("Search term received: '{}'", search);
+        List<Courses> courses;
+        if (search == null || search.isEmpty()) {
+            courses = coursesService.getAllCourses();
+            log.info("Returning all courses.");
+        } else {
+            courses = coursesService.getCoursesContaining(search);
+            log.info("Returning filtered courses.");
+        }
+        log.info("Number of courses found: {}", courses.size());
+        return ResponseEntity.ok(courses);
+    }
 
     @GetMapping("/user/{userId}/courses")
     public ResponseEntity<List<Courses>> getCoursesByUserId(@PathVariable Long userId) {
