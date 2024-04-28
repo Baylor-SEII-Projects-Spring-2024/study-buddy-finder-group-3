@@ -210,13 +210,6 @@ function Header() {
               >
                 <Typography variant="inherit">Recommended Meetings</Typography>
               </MenuItem>
-              <Divider />
-              <MenuItem
-                onClick={() => console.log("Navigate to settings/courses")}
-                sx={{ padding: "10px 20px" }}
-              >
-                <Typography variant="inherit">View All Meetings</Typography>
-              </MenuItem>
             </Menu>
             <Button
               color="inherit"
