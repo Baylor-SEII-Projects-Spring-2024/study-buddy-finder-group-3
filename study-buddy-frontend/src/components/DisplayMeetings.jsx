@@ -284,7 +284,6 @@ function DisplayMeetings() {
             marginTop: "64px",
             padding: 2,
             boxSizing: "border-box",
-            backgroundImage: "url('/home-gradient.webp')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",

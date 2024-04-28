@@ -98,7 +98,7 @@ function ChangePassword({ open, onClose }) {
 
             // If old password is verified, change the password
             const changePasswordResponse = await axios.post(`${API_URL}/auth/${user.id}/changePassword`, { password: new_password });
-            console.log("changePasswordResponse", changePasswordResponse);
+            // console.log("changePasswordResponse", changePasswordResponse);
 
             if (changePasswordResponse.data) {
                 toast.success("Password changed successfully");

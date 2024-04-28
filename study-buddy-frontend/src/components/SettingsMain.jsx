@@ -64,7 +64,7 @@ function SettingsMain() {
             const response = await axios.get(`${API_URL}/profile/${userId}`);
 
             // Log the entire response data object
-            console.log("Response data:", response.data);
+            // console.log("Response data:", response.data);
 
             setProfile(response.data);
 
