@@ -11,12 +11,18 @@ import axios from "axios"
 import { useDispatch } from 'react-redux';
 import { setToken, setUser } from '@/utils/authSlice.js';
 import { API_URL } from "@/utils/config";
+import ResetRequest from "./ResetRequest";
 
 function Login({ open, onClose }) {
   const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [resetOpen, setResetOpen] = useState(false);
   const router = useRouter()
+
+  const handleResetClose = () => {
+    setResetOpen(false)
+  }
 
 
   const handleUsernameChange = (event) => {
@@ -117,11 +123,26 @@ function Login({ open, onClose }) {
           >
             Sign In
           </Button>
+          <Button
+            onClick={() => setResetOpen(true)}
+            fullWidth
+            variant="contained"
+            sx={{
+              backgroundColor: "bluegrey",
+              "&:hover": {
+                backgroundColor: "bluegrey",
+              },
+            }}
+          >
+            Reset Password
+          </Button>
           <Button fullWidth variant="text" onClick={handleClose}>
             Cancel
           </Button>
         </Box>
+        <ResetRequest  open={resetOpen} onClose={handleResetClose}/>
       </Box>
+      
     </Modal>
   );
 }

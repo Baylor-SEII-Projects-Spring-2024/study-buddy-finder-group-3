@@ -6,15 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import studybuddy.api.user.PasswordReset;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 import studybuddy.api.utils.JwtUtil;
 import studybuddy.api.utils.TokenStore;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
@@ -177,6 +183,60 @@ public class AuthEndpoint {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().body("Invalid Authorization header");
+    }
+
+    @GetMapping("/generateResetToken/{email}")
+    public ResponseEntity<BigInteger> generateResetToken(@PathVariable String email) {
+        //Check if email is valid
+        String sql = "SELECT * FROM users WHERE email_address = ?";
+
+        List<User> users = jdbcTemplate.query(sql, new GetFriendsEndpoint.UserRowMapper(), email);
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        //Generate a token
+
+        SecureRandom random = new SecureRandom();
+
+        BigInteger token = BigInteger.valueOf(random.nextLong());
+
+        //Store token and userID in db
+
+        sql = "INSERT INTO password_reset (token, reset_user_id) VALUES(?, ?)";
+
+        jdbcTemplate.update(sql, token, users.get(0).getId());
+
+        //return token
+        return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
+    @GetMapping("/validateResetToken/{token}")
+    public ResponseEntity<User> validateResetToken(@PathVariable BigInteger token) {
+
+        String sql = "SELECT u.* FROM users u JOIN password_reset pr ON u.user_id = pr.reset_user_id WHERE pr.token = ?";
+
+        List<User> users = jdbcTemplate.query(sql, new GetFriendsEndpoint.UserRowMapper(), token);
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (users.size() > 1) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return new ResponseEntity<>(users.get(0), HttpStatus.OK);
+    }
+
+    @DeleteMapping("invalidateResetToken/{token}")
+    public ResponseEntity<?> invalidateResetToken(@PathVariable BigInteger token) {
+        String sql = "DELETE FROM password_reset WHERE token = ?";
+
+        jdbcTemplate.update(sql, token);
+
+        return ResponseEntity.ok().build();
     }
 
 
