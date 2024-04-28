@@ -20,6 +20,7 @@ import {
   CardActionArea,
   CardMedia,
 } from "@mui/material"
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
 import VideocamIcon from "@mui/icons-material/Videocam"
@@ -76,18 +77,16 @@ function DisplayMeetings() {
 
   const handleMeetingClick = (meeting) => {
     setSelectedMeeting(meeting)
-    setModalOpen(true) 
-    handleCloseAllMeetingsModal() 
+    setModalOpen(true)
+    handleCloseAllMeetingsModal()
     setCreatorId(meeting?.user?.id)
   }
 
   const handleDeleteMeetingFromModal = (meeting) => {
-    
-    setMeetingToDelete(meeting);
+    setMeetingToDelete(meeting)
     handleCloseAllMeetingsModal()
-    setOpenDeleteDialog(true);
-
-  };
+    setOpenDeleteDialog(true)
+  }
 
   const handleInviteClick = () => {
     router.push("/friends")
@@ -341,7 +340,6 @@ function DisplayMeetings() {
           <Typography variant="body1" align="center" gutterBottom>
             Here are your upcoming meetings
           </Typography>
-          {/* need ot add fitlers  */}
           <MeetingGrid
             meetings={meetings}
             handleMouseEnter={handleMouseEnter}
@@ -351,69 +349,6 @@ function DisplayMeetings() {
             hoveredMeetingId={hoveredMeetingId}
             handleOpenAllMeetingsModal={handleOpenAllMeetingsModal}
           />
-
-          {/* <Grid container spacing={4} sx={{ mt: 4 }}>
-            {meetings.slice(0, 6).map((meeting) => (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                key={meeting.id}
-                onMouseEnter={() => handleMouseEnter(meeting.id)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Card style={{ position: "relative" }}>
-                  {" "}
-                  <CardActionArea onClick={() => handleOpenModal(meeting)}>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
-                      alt={meeting.title}
-                    />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        {meeting.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {meeting.description}
-                      </Typography>
-                      <Box
-                        sx={{ display: "flex", mt: 2, alignItems: "center" }}
-                      >
-                        <AccessTimeIcon sx={{ mr: 1 }} />
-                        <Typography variant="body2">
-                          Date: {new Date(meeting.date).toLocaleString()}
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", mt: 1, alignItems: "center" }}
-                      >
-                        <LocationOnIcon sx={{ mr: 1 }} />
-                        <Typography variant="body2">
-                          Location: {meeting.location || "Not specified"}
-                        </Typography>
-                      </Box>
-                    </CardContent>
-                  </CardActionArea>
-                  {hoveredMeetingId === meeting.id && (
-                    <IconButton
-                      onClick={() => handleOpenDeleteDialog(meeting)}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        color: "red",
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  )}
-                </Card>
-              </Grid>
-            ))}
-          </Grid> */}
         </Box>
         {/* beginning of rec meetings */}
         <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px" }}>
@@ -430,29 +365,21 @@ function DisplayMeetings() {
             Meetings we thought may interest you based on your preferences.
           </Typography>
           <Grid container spacing={4} justifyContent="center">
-            {recommendedMeetings?.map((meeting) => (
-              <Grid item xs={12} sm={6} md={4} key={meeting.id}>
-                <Card>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {meeting.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                    >
-                      {meeting.description}
-                    </Typography>
-                    {meeting.blockedUser ? (
+            {recommendedMeetings && recommendedMeetings.length > 0 ? (
+              recommendedMeetings.map((meeting) => (
+                <Grid item xs={12} sm={6} md={4} key={meeting.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {meeting.title}
+                      </Typography>
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        style={{ color: "red" }}
+                        gutterBottom
                       >
-                        A blocked user is attending this meeting
+                        {meeting.description}
                       </Typography>
-                    ) : (
                       <Typography
                         variant="body2"
                         color="text.secondary"
@@ -460,22 +387,38 @@ function DisplayMeetings() {
                       >
                         {meeting.areaOfStudy} - {meeting.courseName}
                       </Typography>
-                    )}
-                    <Button
-                      endIcon={<ArrowForwardIosIcon />}
-                      sx={{ mt: 2 }}
-                      onClick={() => handleOpenModal(meeting, true)}
-                    >
-                      View Meeting
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                      <Button
+                        endIcon={<ArrowForwardIosIcon />}
+                        sx={{ mt: 2 }}
+                        onClick={() => handleOpenModal(meeting, true)}
+                      >
+                        View Meeting
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  textAlign: "center",
+                  mt: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  height: "30vh", 
+                }}
+              >
+                <Typography variant="subtitle1">
+                  There doesn't seem to be any meetings that you might be
+                  interested in at the moment.
+                </Typography>
+                <SentimentDissatisfiedIcon sx={{ fontSize: 40 }} />
+              </Box>
+            )}
           </Grid>
-          <Box textAlign="center" mt={2}>
-            <Button>View All</Button>
-          </Box>
         </Box>
         {/* end of recc meetings */}
 
@@ -490,10 +433,10 @@ function DisplayMeetings() {
         >
           <Box sx={{ width: "60%" }}>
             <Typography variant="h4" component="h2" gutterBottom>
-              Expand Your Network with Study Buddy
+              Expand Your Network
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
-              Invite friends or peers to join Study Buddy and enhance your study
+              Invite friends or peers as buddies and enhance your study
               experience.
             </Typography>
             <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
@@ -588,7 +531,8 @@ function DisplayMeetings() {
           handleClose={handleCloseAllMeetingsModal}
           meetings={meetings} // Pass all meetings to the modal
           onMeetingClick={handleMeetingClick}
-          onDeleteMeeting={handleDeleteMeetingFromModal}         />
+          onDeleteMeeting={handleDeleteMeetingFromModal}
+        />
       </Container>
     </>
   )
