@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { API_URL } from "@/utils/config"
-import { isFuture } from 'date-fns';
+import { isFuture } from "date-fns"
 
 const style = {
   position: "absolute",
@@ -47,7 +47,6 @@ function CreateMeeting({ open, onClose }) {
   const [isPrivateMeetings, setIsPrivateMeetings] = useState(true)
   const [isBadDate, setIsBadDate] = useState(false)
 
-
   const handleSearchChange = async (event) => {
     const newSearchTerm = event.target.value
     setSearchTerm(newSearchTerm)
@@ -58,7 +57,7 @@ function CreateMeeting({ open, onClose }) {
         )
         setSearchResults(response.data)
         console.log("response", response)
-        console.log("searchResults", searchResults);
+        console.log("searchResults", searchResults)
       } catch (error) {
         console.error("Failed to search users", error)
         setSearchResults([])
@@ -100,24 +99,32 @@ function CreateMeeting({ open, onClose }) {
   const handleIsPrivateMeetingsChange = (event) => {
     setIsPrivateMeetings(event.target.checked)
   }
-   const handleDateChange = (newValue) => {
-    const now = new Date();
+  const handleDateChange = (newValue) => {
+    const now = new Date()
     if (isFuture(newValue)) {
-      setMeetingDate(newValue);
+      setMeetingDate(newValue)
     } else {
-      toast.error("Please select a future date and time.",{
-        toastId: "meetingDate"
-      });
-      setIsBadDate(true);
+      toast.error("Please select a future date and time.", {
+        toastId: "meetingDate",
+      })
+      setIsBadDate(true)
     }
-  };
-  
+  }
+
   const handleTitleChange = (event) => {
-    setMeetingTitle(event.target.value)
+    const title = event.target.value
+    if (title.length <= 100) {
+      // lim
+      setMeetingTitle(title)
+    }
   }
 
   const handleDescriptionChange = (event) => {
-    setMeetingDescription(event.target.value)
+    const description = event.target.value
+    if (description.length <= 255) {
+      // lim
+      setMeetingDescription(description)
+    }
   }
 
   const handleLinkChange = (event) => {
@@ -132,16 +139,16 @@ function CreateMeeting({ open, onClose }) {
       toast.error("Title cannot be empty")
       return
     }
-    if (isBadDate){
-      toast.error("Please select a future date and time.",{
-        toastId: "meetingDate"
-      });
-      return;
+    if (isBadDate) {
+      toast.error("Please select a future date and time.", {
+        toastId: "meetingDate",
+      })
+      return
     }
 
     try {
       const invitedUserIds = selectedInvites.map((invite) => invite.id)
-      console.log("is private", isPrivateMeetings);
+      console.log("is private", isPrivateMeetings)
       const response = await axios.post(`${API_URL}/meeting/createMeeting`, {
         title: meetingTitle,
         description: meetingDescription,
@@ -184,14 +191,13 @@ function CreateMeeting({ open, onClose }) {
     >
       <Box sx={style}>
         <TextField
-          margin="dense"
-          id="meetingTitle"
           label="Add Title"
-          type="text"
-          fullWidth
           variant="outlined"
-          sx={{ mt: 2 }}
+          value={meetingTitle}
           onChange={handleTitleChange}
+          fullWidth
+          helperText={`${meetingTitle.length}/100`}
+          FormHelperTextProps={{ style: { textAlign: "right" } }}
         />
         <Box display="flex" alignItems="center">
           <TextField
@@ -217,14 +223,16 @@ function CreateMeeting({ open, onClose }) {
           />
         </Box>
         <FormControlLabel
-          control={<Checkbox 
-            checked={isPrivateMeetings} 
-            onChange={handleIsPrivateMeetingsChange}
-          />}
+          control={
+            <Checkbox
+              checked={isPrivateMeetings}
+              onChange={handleIsPrivateMeetingsChange}
+            />
+          }
           label="Private Meeting"
           sx={{ mt: 2 }}
         />
-        
+
         <TextField
           label="Search Courses"
           type="text"
@@ -246,17 +254,17 @@ function CreateMeeting({ open, onClose }) {
         </List>
 
         <TextField
-          margin="dense"
-          id="meetingDescription"
-          label="Add description"
-          type="text"
-          fullWidth
+          label="Add Description"
+          variant="outlined"
           multiline
           rows={4}
-          variant="outlined"
-          sx={{ mt: 2 }}
+          value={meetingDescription}
           onChange={handleDescriptionChange}
+          fullWidth
+          helperText={`${meetingDescription.length}/255`}
+          FormHelperTextProps={{ style: { textAlign: "right" } }}
         />
+
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker
             sx={{ mt: 2, mr: 4 }}
