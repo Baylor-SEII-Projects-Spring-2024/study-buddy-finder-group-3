@@ -45,9 +45,9 @@ export default function FriendsList({ listType = "friends" }) {
   }
 
   useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
+    // if (!token || !user) {
+    //   router.push("/")
+    // }
 
     if (user) {
       console.log("useEffect: FriendsList")

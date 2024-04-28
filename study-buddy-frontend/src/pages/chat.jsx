@@ -1,17 +1,28 @@
-import React from 'react';
-import ChatSidebar from "@/components/ChatSidebar";
-import ChatComp from "@/components/ChatComp";
-import styles from "@/styles/Chat.module.css";
+//! DONT THINK WE NEED THIS
+// import React, { useState } from 'react';
+// import ChatSidebar from "@/components/ChatSidebar";
+// import ChatComp from "@/components/ChatComp";
+// import styles from "@/styles/Chat.module.css";
+// import AuthProgress from '@/components/AuthProgress';
 
-const chat = () => {
-  return(
-    <div className={styles.chat}>
-      <div className={styles.container}>
-        <ChatComp className={styles.ChatComp} />
-        <ChatSidebar className={styles.ChatSidebar} />
-      </div>
-    </div>
-  );
-};
+// const Chat = () => {
+//   const [authComplete, setAuthComplete] = useState(false);
+//   return (
+//     <>
+//       <div className={styles.chat}>
+//         <div className={styles.container}>
+//           {!authComplete ? (
+//             <AuthProgress onAuthComplete={() => setAuthComplete(true)} />
+//           ) : (
+//             <>
+//               <ChatComp className={styles.chatComp} />
+//               <ChatSidebar className={styles.chatSidebar} />
+//             </>
+//           )}
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
 
-export default chat;
+// export default Chat;
