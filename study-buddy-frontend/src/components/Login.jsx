@@ -50,18 +50,20 @@ function Login({ open, onClose }) {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, {
-        username,
-        password,
-      })
+      const response = await axios.post(
+        `${API_URL}/auth/login`,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true, // Send cookies with the request
+        }
+      )
       console.log(response)
       if (response.status === 200) {
-        dispatch(setToken(response.data.token))
         dispatch(setUser(response.data.user))
-        localStorage.setItem("token", response.data.token)
         console.log("user", response.data.user)
-        //authenticate token
-
         router.push("/home")
       } else {
         toast.error("Invalid username or password")
