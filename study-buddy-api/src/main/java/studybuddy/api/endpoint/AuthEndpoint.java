@@ -167,10 +167,19 @@ public class AuthEndpoint {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {
-                    // Validate the token
                     String token = cookie.getValue();
                     if (jwtUtil.validateToken(token)) {
-                        return ResponseEntity.ok().body("Token is valid");
+                        try {
+                            Long userId = jwtUtil.extractUserId(token);
+                            User user = userService.getUserById(userId);
+                            if (user != null) {
+                                return ResponseEntity.ok().body(user);
+                            } else {
+                                return ResponseEntity.status(404).body("User not found");
+                            }
+                        } catch (Exception e) {
+                            return ResponseEntity.status(500).body("Error processing token");
+                        }
                     }
                 }
             }

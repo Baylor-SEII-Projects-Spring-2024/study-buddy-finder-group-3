@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react"
 import Box from "@mui/material/Box"
 import LinearProgress from "@mui/material/LinearProgress"
 import Typography from "@mui/material/Typography"
-import { useDispatch } from "react-redux"
 import axios from "axios"
 import { setUser, logout } from "@/utils/authSlice"
 import { API_URL } from "@/utils/config"
 import { useTheme } from "@emotion/react"
 import { useRouter } from "next/router"
+import { useDispatch, useSelector } from "react-redux"
 function AuthProgress({ onAuthComplete }) {
   const theme = useTheme()
   const dispatch = useDispatch()
@@ -22,7 +22,7 @@ function AuthProgress({ onAuthComplete }) {
           withCredentials: true,
         })
         console.log("Server token validation response:", response)
-        // dispatch(setUser(response.data));
+        dispatch(setUser(response.data));
         setProgress(100)
         onAuthComplete()
       } catch (error) {

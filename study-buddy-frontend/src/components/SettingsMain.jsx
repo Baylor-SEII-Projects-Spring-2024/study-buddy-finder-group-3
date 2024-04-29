@@ -49,21 +49,21 @@ function SettingsMain() {
   // }, [token, router])
 
   useEffect(() => {
-    if (!token || !user) {
+    // if (!token || !user) {
       // router.push("/")
-    } else {
-      setUserId(user.id)
-      fetchProfileInfo(user.id)
-      fetchUserAccountType(user.id)
-    }
-  }, [token, user])
+    // } else {
+      setUserId(user?.id)
+      fetchProfileInfo(user?.id)
+      fetchUserAccountType(user?.id)
+    // }
+  }, [ user])
 
   const fetchProfileInfo = async (userId) => {
     try {
       const response = await axios.get(`${API_URL}/profile/${userId}`)
 
       // Log the entire response data object
-      // console.log("Response data:", response.data);
+      console.log("Response data:", response.data);
 
       setProfile(response.data)
 

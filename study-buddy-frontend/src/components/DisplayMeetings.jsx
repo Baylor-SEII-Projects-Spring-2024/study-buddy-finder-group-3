@@ -49,6 +49,7 @@ function DisplayMeetings() {
   const dispatch = useDispatch()
   const theme = useTheme()
   const user = useSelector(selectUser)
+  console.log("user", user)
   const meetings = useSelector((state) => state.meetings.meetings)
   const meetingsStatus = useSelector((state) => state.meetings.status)
   const [selectedMeeting, setSelectedMeeting] = useState(null)

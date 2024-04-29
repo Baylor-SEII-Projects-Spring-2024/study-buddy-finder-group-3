@@ -16,7 +16,6 @@ import CreateCourse from "@/components/CreateCourse";
 import Header from "./Header";
 
 function UserCourses() {
-  const token = useSelector(selectToken);
   const user = useSelector(selectUser);
   const router = useRouter();
   const [courses, setCourses] = useState({});
@@ -68,11 +67,6 @@ function UserCourses() {
     setOpenCreateCourseModal(false);
   };
 
-  useEffect(() => {
-    if (!token || !user) {
-      router.push("/");
-    }
-  }, [token, router]);
 
   const renderCourseList = (courses) => (
     <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
