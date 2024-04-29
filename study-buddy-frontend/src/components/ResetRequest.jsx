@@ -39,7 +39,7 @@ export default function ResetRequest({ open, onClose }) {
 
       mailRequest.to = email
       mailRequest.text = `<p>To reset your password, please click on the following link:</p>
-      <a href="http://localhost:3000/${response.data}">studybudy.com/reset-password</a>`
+      <a href="http://34.16.148.153:3000/${response.data}">studybudy.com/reset-password</a>`
 
       sendEmail()
 
