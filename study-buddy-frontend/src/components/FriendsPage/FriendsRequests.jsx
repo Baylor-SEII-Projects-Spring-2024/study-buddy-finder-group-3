@@ -69,6 +69,7 @@ export default function FriendsRequest({ onUpdate }) {
           `${API_URL}/user/${user.id}/notifications`
         )
         if (response.status === 200) {
+          console.log("notifications", response.data)
           dispatch(setNotifications(response.data))
         }
       } catch (error) {

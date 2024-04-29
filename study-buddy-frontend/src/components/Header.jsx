@@ -104,7 +104,7 @@ function Header() {
     try {
       await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true })
       dispatch(logout()) // clear redux
-      router.push("/") 
+      router.push("/")
     } catch (error) {
       toast.error("Logout failed")
       console.error("Logout failed:", error)
@@ -282,24 +282,28 @@ function Header() {
           open={Boolean(anchorEl)}
           onClose={handleCloseNotificationMenu}
         >
-          {pendingInvitations.length > 0 ? (
-            pendingInvitations.map((invitation) => (
-              <MenuItem
-                key={invitation.id}
-                onClick={() => openMeetingModal(invitation)}
-              >
-                Meeting invite: {invitation.title}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem>No pending invitations</MenuItem>
-          )}
-          {friendRequests.length > 0 &&
-            friendRequests.map((request) => (
-              <MenuItem key={request.id} onClick={handleFriendRequestClick}>
-                Friend request from: {request.username}
-              </MenuItem>
-            ))}
+          {[
+            ...(pendingInvitations.length > 0
+              ? pendingInvitations.map((invitation) => (
+                  <MenuItem
+                    key={invitation.id}
+                    onClick={() => openMeetingModal(invitation)}
+                  >
+                    Meeting invite: {invitation.title}
+                  </MenuItem>
+                ))
+              : []),
+            ...(friendRequests.length > 0
+              ? friendRequests.map((request) => (
+                  <MenuItem key={request.id} onClick={handleFriendRequestClick}>
+                    Friend request from: {request.username}
+                  </MenuItem>
+                ))
+              : []),
+            pendingInvitations.length === 0 && friendRequests.length === 0 && (
+              <MenuItem>No pending invitations</MenuItem>
+            ),
+          ]}
         </Menu>
       </AppBar>
       <MeetingModal
