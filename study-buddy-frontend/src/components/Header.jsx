@@ -101,18 +101,13 @@ function Header() {
   }
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      await axios.post(
-        `${API_URL}/auth/invalidateToken`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      localStorage.removeItem("token")
-      dispatch(logout())
-      router.push("/")
+    try {
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true })
+      dispatch(logout()) // clear redux
+      router.push("/") 
+    } catch (error) {
+      toast.error("Logout failed")
+      console.error("Logout failed:", error)
     }
   }
 
@@ -123,6 +118,7 @@ function Header() {
       router.push("/friends")
     } else {
       if (section) {
+        console.log("section", section)
         handleCloseMeetingsMenu()
         handleCloseSettingsMenu()
         const offset = 64
@@ -132,6 +128,9 @@ function Header() {
           top: position,
           behavior: "smooth",
         })
+        if (sectionId === "home-section") {
+          router.push("/home")
+        }
       } else {
         router.push("/home").then(() => {
           window.requestAnimationFrame(() => {
@@ -152,7 +151,6 @@ function Header() {
       }
     }
   }
-
   const handleNotificationClick = (event, meeting) => {
     setAnchorEl(event.currentTarget)
     setSelectedMeeting(meeting)
