@@ -182,6 +182,18 @@ function CreateMeeting({ open, onClose }) {
     setCourseResults([])
   }
 
+  const handleUserSelect = (user) => {
+    if (!selectedInvites.find((u) => u.id === user.id)) {
+      setSelectedInvites([...selectedInvites, user])
+    }
+    setSearchTerm("") // Clear search term to allow new input
+    setSearchResults([]) // Clear search results
+  }
+
+  const handleRemoveUser = (userId) => {
+    setSelectedInvites(selectedInvites.filter((u) => u.id !== userId))
+  }
+
   return (
     <Modal
       open={open}
@@ -292,7 +304,7 @@ function CreateMeeting({ open, onClose }) {
             <ListItem
               key={user.id}
               button
-              onClick={() => setSelectedInvites([...selectedInvites, user])}
+              onClick={() => handleUserSelect(user)}
             >
               <ListItemText primary={user.username} />
             </ListItem>
@@ -303,13 +315,7 @@ function CreateMeeting({ open, onClose }) {
           {selectedInvites.map((invite) => (
             <ListItem key={invite.id}>
               <ListItemText primary={invite.username} />
-              <Button
-                onClick={() =>
-                  setSelectedInvites(
-                    selectedInvites.filter((i) => i.id !== invite.id)
-                  )
-                }
-              >
+              <Button onClick={() => handleRemoveUser(invite.id)}>
                 Remove
               </Button>
             </ListItem>
