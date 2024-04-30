@@ -39,21 +39,21 @@ const sections = [
 const testimonials = [
   {
     review:
-      "Study Buddy really helped me pass all my Computer Science classes!",
+      "Study Buddy really helped me pass all my Computer Science classes! I recommend it to all my friends!",
     name: "Carter Collins",
     role: "Student, Baylor University",
   },
   {
     review:
       "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
-    name: "Name Name",
+    name: "Arianna Finley",
     role: "Student, Baylor University",
   },
   {
     review:
-      "Study Buddy is an amazing platform that has helped me improve my study habits and connect with like-minded individuals. Highly recommended!",
-    name: "Name Name",
-    role: "Professor, Baylor University",
+      "Study Buddy has really helped me improve my grades by allowing me to find study sessions with things I struggle with. I highly recommend it!",
+    name: "Boris Dekkers",
+    role: "Student, University of Groningen",
   },
 ]
 
