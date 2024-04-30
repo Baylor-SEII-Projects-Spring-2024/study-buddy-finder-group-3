@@ -126,10 +126,13 @@ function UserCourses() {
         }}
       >
         <Typography variant="h4" gutterBottom>Add Course</Typography>
+        Don't see your course? Click "New Course" to add it.
+
         <Container>
           <Button variant="contained" color="primary" onClick={handleOpenCreateCourseModal}>New Course</Button>
           <Button variant="contained" color="primary" onClick={handleAddCourses}>Add Selected Courses</Button>
           <Button variant="outlined" color="primary" onClick={() => router.push("/courses/")}>Back</Button>
+          
         </Container>
         <br />
         <CreateCourse open={openCreateCourseModal} onClose={handleCloseCreateCourseModal} />

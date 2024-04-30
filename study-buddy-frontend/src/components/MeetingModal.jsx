@@ -34,10 +34,10 @@ function MeetingModal({
   handleClose,
   updateMeetingInParent,
   isInvitation = false,
-  tutorId,
   onMeetingAccepted,
   creatorId,
 }) {
+  console.log("meeting", meeting)
   const [friendProfileOpen, setFriendProfileOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [editMode, setEditMode] = useState(false)
@@ -56,8 +56,10 @@ function MeetingModal({
   const [comment, setComment] = useState("")
   const hasMeetingStarted = new Date() > new Date(meeting?.date)
   const [isCreator, setIsCreator] = useState(false)
-  // console.log("user in meeting modal", user);
-  // console.log("tutorid in modal click", tutorId);
+  const [hasAlreadyReviewed, setHasAlreadyReviewed] = useState(false)
+  const [selectedTutorIdForReview, setSelectedTutorIdForReview] = useState(null)
+  const [unreviewedTutors, setUnreviewedTutors] = useState([]);
+  const [tutorIds, setTutorIds] = useState([])
   useEffect(() => {
     if (!open) {
       setEditMode(false)
@@ -71,6 +73,14 @@ function MeetingModal({
     console.log("creatorId", creatorId, "user.id", user?.id)
     console.log(isCreator)
   }, [open, meeting])
+
+  useEffect(() => {
+    if (open && meeting.tutorIds.length > 0) {
+      console.log("check if already reviewied!!!!")
+      checkIfAlreadyReviewed(meeting.tutorIds)
+      setTutorIds(meeting.tutorIds)
+    }
+  }, [meeting, open])
 
   const handleDateChange = (newDate) => {
     setEditedDate(newDate)
@@ -131,23 +141,61 @@ function MeetingModal({
     }
     setEditMode(!editMode)
   }
-  // console.log("meeting", meeting)
+  // console.log("meeting", meeting)`
 
-  const submitReview = async () => {
+  const checkIfAlreadyReviewed = async (tutorIds) => {
+    if (!Array.isArray(tutorIds)) {
+      console.error("Invalid tutors data:", tutorIds);
+      return; // Exit if tutors is not an array
+    }
+  
+    try {
+      const responses = await Promise.all(
+        tutorIds.map((tutorId) =>
+          axios.get(`${API_URL}/tutor/${user.id}/has-already-reviewed/${tutorId}`)
+        )
+      );
+      console.log("is reviewed respones", responses)
+      // Filter out tutors whose reviews do not exist based on the API response
+      const newUnreviewedTutors = tutorIds.filter((tutorId, index) => {
+        const response = responses[index];
+        return !response.data;
+      });
+  
+      // Update state with tutors that have not been reviewed yet
+      setUnreviewedTutors(newUnreviewedTutors);
+      setHasAlreadyReviewed(newUnreviewedTutors.length !== tutorIds.length); // Update whether any reviews were found
+    } catch (error) {
+      console.error("Failed to check if user has already reviewed:", error);
+    }
+  }
+    
+  
+  const submitReview = async (tutorId) => {
+    if (user.id === tutorId) {
+      toast.error("Cannot review yourself");
+      return;
+    }
+  
     try {
       const response = await axios.post(`${API_URL}/tutor/${tutorId}/review`, {
         userId: user.id,
         rating: rating,
         comment: comment,
-      })
-      toast.success("Review submitted successfully")
-      setShowReviewFields(false) // hide review fields after submission
+      });
+  
+      toast.success("Review submitted successfully");
+      // Re-check and update tutors list after submitting a review
+      
+      checkIfAlreadyReviewed(unreviewedTutors);
+      
+      setShowReviewFields(false); // Hide review fields after submission
     } catch (error) {
-      toast.error("Failed to submit review")
-      console.error("Failed to submit review:", error)
+      toast.error("Failed to submit review");
+      console.error("Failed to submit review:", error);
     }
   }
-
+    
   const handleAccept = async () => {
     try {
       const response = await axios.patch(
@@ -202,6 +250,11 @@ function MeetingModal({
       toast.error("Failed to join meeting")
     }
     handleClose()
+  }
+
+  const handleOpenReviewFields = (tutorId) => {
+    setSelectedTutorIdForReview(tutorId)
+    setShowReviewFields(true);
   }
 
   return (
@@ -269,6 +322,7 @@ function MeetingModal({
               <DateTimePicker
                 label="Start Time"
                 value={editedDate}
+                minDateTime={new Date()}
                 onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} />}
                 sx={{ width: "100%", mt: 2 }}
@@ -354,32 +408,31 @@ function MeetingModal({
           />
         )}
         {hasMeetingStarted &&
-          !showReviewFields &&
-          tutorId !== null &&
-          tutorId !== undefined && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setShowReviewFields(true)}
-            >
-              Leave a Review
-            </Button>
+          !hasAlreadyReviewed &&
+          unreviewedTutors.map(
+            (unreviewedTutor) =>
+              user.id !== unreviewedTutor && (
+                <Button
+                  key={unreviewedTutor}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleOpenReviewFields(unreviewedTutor)}
+                >
+                  Leave a Review for {unreviewedTutor}
+                </Button>
+              )
           )}
 
-        {showReviewFields && (
+        {selectedTutorIdForReview && showReviewFields && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="h6" gutterBottom>
               Leave a Review
             </Typography>
-            <Typography component="legend">Rating</Typography>
             <Rating
               name="simple-controlled"
               value={rating}
-              onChange={(event, newValue) => {
-                setRating(newValue)
-              }}
+              onChange={(event, newValue) => setRating(newValue)}
             />
-            <Typography sx={{ mt: 2 }}>Please select your rating</Typography>
             <TextField
               fullWidth
               label="Comment"
@@ -390,9 +443,13 @@ function MeetingModal({
               onChange={(e) => setComment(e.target.value)}
               sx={{ mb: 2 }}
             />
-            <Button variant="contained" color="primary" onClick={submitReview}>
-              Submit Review
-            </Button>
+          {showReviewFields && <Button
+            variant="contained"
+            color="primary"
+            onClick={() => submitReview(selectedTutorIdForReview)}
+          >
+            Submit Review
+          </Button>}
           </Box>
         )}
         {meeting?.isJoinable && (
