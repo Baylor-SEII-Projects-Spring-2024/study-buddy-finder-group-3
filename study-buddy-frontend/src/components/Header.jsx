@@ -101,18 +101,13 @@ function Header() {
   }
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      await axios.post(
-        `${API_URL}/auth/invalidateToken`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      localStorage.removeItem("token")
-      dispatch(logout())
+    try {
+      await axios.post(`${API_URL}/auth/logout`, {}, { withCredentials: true })
+      dispatch(logout()) // clear redux
       router.push("/")
+    } catch (error) {
+      toast.error("Logout failed")
+      console.error("Logout failed:", error)
     }
   }
 
@@ -123,6 +118,7 @@ function Header() {
       router.push("/friends")
     } else {
       if (section) {
+        console.log("section", section)
         handleCloseMeetingsMenu()
         handleCloseSettingsMenu()
         const offset = 64
@@ -132,6 +128,9 @@ function Header() {
           top: position,
           behavior: "smooth",
         })
+        if (sectionId === "home-section") {
+          router.push("/home")
+        }
       } else {
         router.push("/home").then(() => {
           window.requestAnimationFrame(() => {
@@ -152,7 +151,6 @@ function Header() {
       }
     }
   }
-
   const handleNotificationClick = (event, meeting) => {
     setAnchorEl(event.currentTarget)
     setSelectedMeeting(meeting)
@@ -284,24 +282,28 @@ function Header() {
           open={Boolean(anchorEl)}
           onClose={handleCloseNotificationMenu}
         >
-          {pendingInvitations.length > 0 ? (
-            pendingInvitations.map((invitation) => (
-              <MenuItem
-                key={invitation.id}
-                onClick={() => openMeetingModal(invitation)}
-              >
-                Meeting invite: {invitation.title}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem>No pending invitations</MenuItem>
-          )}
-          {friendRequests.length > 0 &&
-            friendRequests.map((request) => (
-              <MenuItem key={request.id} onClick={handleFriendRequestClick}>
-                Friend request from: {request.username}
-              </MenuItem>
-            ))}
+          {[
+            ...(pendingInvitations.length > 0
+              ? pendingInvitations.map((invitation) => (
+                  <MenuItem
+                    key={invitation.id}
+                    onClick={() => openMeetingModal(invitation)}
+                  >
+                    Meeting invite: {invitation.title}
+                  </MenuItem>
+                ))
+              : []),
+            ...(friendRequests.length > 0
+              ? friendRequests.map((request) => (
+                  <MenuItem key={request.id} onClick={handleFriendRequestClick}>
+                    Friend request from: {request.username}
+                  </MenuItem>
+                ))
+              : []),
+            pendingInvitations.length === 0 && friendRequests.length === 0 && (
+              <MenuItem>No pending invitations</MenuItem>
+            ),
+          ]}
         </Menu>
       </AppBar>
       <MeetingModal

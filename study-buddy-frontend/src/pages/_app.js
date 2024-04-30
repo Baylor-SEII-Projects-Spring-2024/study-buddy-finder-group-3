@@ -19,7 +19,6 @@ import "@/styles/globals.css"
 import CustomCursor from "@/utils/customCursor"
 import { useDispatch } from "react-redux"
 import { setToken } from "@/utils/authSlice"
-import ValidateToken from "@/utils/validateToken"
 import { ActivePageProvider } from "@/utils/activePageContext"
 
 // Initialize Redux
@@ -32,7 +31,6 @@ export default function App({ Component, pageProps }) {
       {/* <CustomCursor/> */}
       <ReduxProvider store={reduxStore}>
         <ActivePageProvider>
-          <TokenValidator />
           <AppCacheProvider>
             <Head>
               <meta
@@ -45,7 +43,6 @@ export default function App({ Component, pageProps }) {
             <StudyBuddyThemeProvider>
               {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
               <CssBaseline />
-              <ValidateToken />
               <DevSupport
                 ComponentPreviews={ComponentPreviews}
                 useInitialHook={useInitial}
@@ -61,7 +58,7 @@ export default function App({ Component, pageProps }) {
   )
 }
 
-function TokenValidator() {
-  ValidateToken()
-  return null
-}
+// function TokenValidator() {
+//   ValidateToken()
+//   return null
+// }

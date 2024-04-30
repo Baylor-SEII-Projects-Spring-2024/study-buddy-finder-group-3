@@ -51,6 +51,7 @@ function TutorInfo() {
 
             if (profileResponse.data.userType) {
                 const tutorRatingResponse = await axios.get(`${API_URL}/tutor/${userId}/rating`);
+                console.log("Tutor Ratings:", tutorRatingResponse.data);
                 setTutorRatings(tutorRatingResponse.data);
                 console.log(tutorRatings);
                 setLoading(false); // Set loading to false when ratings are fetched

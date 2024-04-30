@@ -51,12 +51,12 @@ public class JwtUtil {
     }
 
 
-    public String extractUsername(String token) {
-        return Jwts.parserBuilder()
+    public Long extractUserId(String token) {
+        Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
+        return claims.get("userId", Long.class);
     }
 }

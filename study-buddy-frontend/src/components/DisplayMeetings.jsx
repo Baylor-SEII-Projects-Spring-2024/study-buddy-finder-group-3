@@ -49,6 +49,7 @@ function DisplayMeetings() {
   const dispatch = useDispatch()
   const theme = useTheme()
   const user = useSelector(selectUser)
+  console.log("user", user)
   const meetings = useSelector((state) => state.meetings.meetings)
   const meetingsStatus = useSelector((state) => state.meetings.status)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
@@ -58,7 +59,8 @@ function DisplayMeetings() {
   const [showDeleteIcon, setShowDeleteIcon] = useState(false)
   const [recommendedMeetings, setRecommendedMeetings] = useState()
   const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
-  const [tutorId, setTutorId] = useState(null)
+  // const [tutors, setTutorId] = useState(null)
+  const [tutorIds, setTutorIds] = useState([]) 
   const router = useRouter()
   const unreadNotifications = useSelector(
     (state) => state.notifications.notificationCount
@@ -195,52 +197,53 @@ function DisplayMeetings() {
   }, [dispatch, user, meetingsStatus])
 
   const handleOpenModal = async (meeting, isJoinable) => {
-    setCreatorId(meeting?.user?.id)
-    //  attendeeUserIds is an array before proceeding
-    console.log("meeting ob", meeting)
-    const attendeeUserIds = meeting?.attendeeUserIds || []
-
+    setCreatorId(meeting?.user?.id);
+    const attendeeUserIds = meeting?.attendeeUserIds || [];
+    let localTutorIds = []; 
+    console.log("attendeeUserIds", attendeeUserIds)
     const attendeeProfiles = await Promise.all(
       attendeeUserIds
-        .filter((id) => id !== user.id)
+        .filter(id => id !== user.id)
         .map(async (userId) => {
           try {
             const [profileResponse, isTutorResponse] = await Promise.all([
               axios.get(`${API_URL}/profile/${userId}`),
-              axios.get(`${API_URL}/users/${userId}/is-tutor`),
-            ])
-            if (isTutorResponse.data == true) {
-              setTutorId(userId)
+              axios.get(`${API_URL}/users/${userId}/is-tutor`)
+            ]);
+            console.log("profileResponse", profileResponse.data)
+            console.log("isTutorResponse", isTutorResponse.data)
+            if (isTutorResponse.data === true) {
+              console.log("is tutor in t")
+              console.log("tutor is ", userId)
+              localTutorIds.push(userId);
             }
-            console.log("isTutorResponse", isTutorResponse)
-            // if (isTutorResponse.data.isTutor) {
-            //   response.data.isTutor = true;
-            // }
-            console.log("profile res", profileResponse)
-            return profileResponse.data
+            
+            return profileResponse.data;
           } catch (error) {
-            console.error("Error fetching attendee info:", error)
-            return null // null for errors fix later
+            console.error("Error fetching attendee info:", error);
+            return null;
           }
         })
-    )
+    );
 
-    // filter out any null profiles resulting from errors
-    const validAttendeeProfiles = attendeeProfiles.filter(
-      (profile) => profile !== null
-    )
-
+    console.log("localTutorIds", localTutorIds)
+    const validAttendeeProfiles = attendeeProfiles.filter(profile => profile !== null);
+  
     setSelectedMeeting({
       ...meeting,
       attendeeProfiles: validAttendeeProfiles,
       isJoinable: isJoinable,
-    })
+      tutorIds: localTutorIds || []
+    });
 
-    setModalOpen(true)
+    
+    setTutorIds(localTutorIds);
+    setModalOpen(true);
   }
 
+  
   const handleCloseModal = () => {
-    setTutorId(null)
+    tutorIds.length = 0; // Clear the tutor IDs array
     setModalOpen(false)
     setSelectedMeeting(null)
     fetchRecommendedMeetings()
@@ -496,7 +499,7 @@ function DisplayMeetings() {
             open={modalOpen}
             handleClose={handleCloseModal}
             updateMeetingInParent={updateMeetingInState}
-            tutorId={tutorId}
+            tutors={tutorIds} // Ensure it defaults to an empty array if undefined
             creatorId={creatorId}
           />
         )}

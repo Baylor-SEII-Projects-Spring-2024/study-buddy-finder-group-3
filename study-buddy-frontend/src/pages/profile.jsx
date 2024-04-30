@@ -62,9 +62,8 @@ function profiles() {
               overflow: "hidden",
               position: "absolute", // or "fixed" if needed
               top: 50,
-              left: 300,
               // left: "30%",
-              width: "73%",
+              width: "100vw",
               height: "300px",
               backgroundColor: theme.palette.secondary.main,
               border: "1px solid",
