@@ -62,7 +62,7 @@ public class AuthEndpoint {
                 Cookie cookie = new Cookie("token", token);
                 cookie.setHttpOnly(true);
                 cookie.setMaxAge(86400); //24hrs
-                cookie.setDomain("localhost");
+                cookie.setDomain("34.16.148.153");
                 response.addCookie(cookie);
                 Map<String, Object> responseData = new HashMap<>();
                 responseData.put("user", new User(foundUser));
@@ -198,7 +198,7 @@ public class AuthEndpoint {
         cookie.setHttpOnly(true);
         cookie.setMaxAge(0); // Expire the cookie immediately
 //        cookie.setSecure(true);
-        cookie.setDomain("localhost");
+        cookie.setDomain("34.16.148.153");
         log.info("Clearing cookie " + cookie.getName());
         response.addCookie(cookie);
     }

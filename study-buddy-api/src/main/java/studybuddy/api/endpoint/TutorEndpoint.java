@@ -10,6 +10,8 @@ import studybuddy.api.user.User;
 
 import java.util.List;
 
+import static studybuddy.api.meeting.MeetingService.log;
+
 @RestController
 @RequestMapping("/tutor")
 public class TutorEndpoint {
@@ -36,11 +38,18 @@ public class TutorEndpoint {
     @GetMapping("/{tutorId}/rating")
     public ResponseEntity<?> getRating(@PathVariable Long tutorId) {
         List<String> ratings = tutorRatingService.getTutorRatingByUserId(tutorId);
+        log.info("Ratings: {}", ratings);
         if (ratings.isEmpty()) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.ok(ratings);
         }
+    }
+
+    @GetMapping("/{userId}/has-already-reviewed/{tutorId}")
+    public ResponseEntity<?> hasAlreadyReviewed(@PathVariable Long userId, @PathVariable Long tutorId) {
+        boolean hasAlreadyReviewed = tutorRatingService.hasAlreadyReviewed(userId, tutorId);
+        return ResponseEntity.ok(hasAlreadyReviewed);
     }
 
     // get req body
