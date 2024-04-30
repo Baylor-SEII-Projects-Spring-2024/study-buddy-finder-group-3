@@ -292,21 +292,21 @@ function DisplayMeetings() {
             borderRadius: "10px",
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
             zIndex: 1,
-            backdropFilter: "blur(10px)"
+            backdropFilter: "blur(10px)",
           }}
         >
           <Typography
             variant="h3"
             component="h1"
             gutterBottom
-            sx={{ color: "text.primary" }}
+            sx={{ color: "text.primary", marginLeft: 15}}
           >
             Welcome {user && user.username ? user.username : ""}
           </Typography>
           <Typography
             variant="subtitle1"
             gutterBottom
-            sx={{ color: "text.secondary" }}
+            sx={{ color: "text.secondary", marginLeft: 15 }}
           >
             You have {unreadNotifications} unread notifications
           </Typography>
@@ -317,6 +317,7 @@ function DisplayMeetings() {
               "& > *": {
                 marginRight: 1,
               },
+              marginLeft: 15
             }}
           >
             <Button

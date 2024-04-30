@@ -15,7 +15,7 @@ function AllMeetingsModal({ open, handleClose, meetings, onMeetingClick, onDelet
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogTitle>All Upcoming Meetings</DialogTitle>
+      <DialogTitle>All Meetings</DialogTitle>
       <DialogContent>
         <List>
           {meetings.map(meeting => (
