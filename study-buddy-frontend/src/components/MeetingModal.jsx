@@ -78,7 +78,8 @@ function MeetingModal({
   }, [open, meeting])
 
   useEffect(() => {
-    if (open && meeting.tutorIds > 0) {
+    console.log("meeting", meeting)
+    if (open) {
       console.log("check if already reviewied!!!!")
       checkIfAlreadyReviewed(meeting.tutorIds)
       setTutorIds(meeting.tutorIds)
@@ -163,6 +164,7 @@ function MeetingModal({
   // console.log("meeting", meeting)`
 
   const checkIfAlreadyReviewed = async (tutorIds) => {
+    console.log("DO i make it?????")
     if (!Array.isArray(tutorIds)) {
       console.error("Invalid tutors data:", tutorIds)
       return // Exit if tutors is not an array
@@ -176,12 +178,15 @@ function MeetingModal({
           )
         )
       )
-      console.log("is reviewed respones", responses)
+      console.log("Is reviewed responses", responses)
       // Filter out tutors whose reviews do not exist based on the API response
       const newUnreviewedTutors = tutorIds.filter((tutorId, index) => {
         const response = responses[index]
-        return !response.data
+        console.log("response", response.data, " for tutorId", tutorId)
+        return response && response.data === false
       })
+
+      console.log("new unreviewed tutors", newUnreviewedTutors)
 
       // Update state with tutors that have not been reviewed yet
       setUnreviewedTutors(newUnreviewedTutors)
@@ -210,6 +215,9 @@ function MeetingModal({
       checkIfAlreadyReviewed(unreviewedTutors)
 
       setShowReviewFields(false) // Hide review fields after submission
+      // Clear rating and comment fields after submission
+      setRating(0)
+      setComment("")
     } catch (error) {
       toast.error("Failed to submit review")
       console.error("Failed to submit review:", error)
@@ -428,7 +436,6 @@ function MeetingModal({
           />
         )}
         {hasMeetingStarted &&
-          !hasAlreadyReviewed &&
           unreviewedTutors.map(
             (tutorId) =>
               user.id !== tutorId &&

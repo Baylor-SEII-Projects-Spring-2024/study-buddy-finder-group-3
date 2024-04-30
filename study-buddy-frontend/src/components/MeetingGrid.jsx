@@ -14,27 +14,21 @@ function truncateTitle(title) {
   return title.length > maxChars ? title.substring(0, maxChars) + "..." : title;
 }
 
-
 function MeetingGrid({ meetings, handleMouseEnter, handleMouseLeave, handleOpenModal, handleOpenDeleteDialog, hoveredMeetingId, handleOpenAllMeetingsModal }) {
-  // filter and sort upcoming meetings
   const upcomingMeetings = meetings
     .filter(meeting => new Date(meeting.date) > new Date())
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // filter and sort expired meetings
   const expiredMeetings = meetings
     .filter(meeting => new Date(meeting.date) <= new Date())
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // get the number of expired meetings needed to display
   const numExpiredNeeded = 6 - upcomingMeetings.length;
-
-  // combined upcoming and expired meetings to display
   const displayMeetings = upcomingMeetings.concat(expiredMeetings.slice(0, numExpiredNeeded));
 
   return (
     <Grid container spacing={4} sx={{ mt: 4 }}>
-      {displayMeetings.map((meeting) => (
+      {displayMeetings.map((meeting, index) => (
         <Grid
           item
           xs={12}
@@ -49,7 +43,8 @@ function MeetingGrid({ meetings, handleMouseEnter, handleMouseLeave, handleOpenM
               <CardMedia
                 component="img"
                 height="140"
-                image="/StudyBuddyLogo Background Removed.png"
+                // Use modular arithmetic to cycle through the images
+                image={`/meeting-image${index % 6 + 1}.png`}
                 alt={meeting.title}
               />
               <CardContent>
