@@ -84,6 +84,7 @@ public class UserService {
             tutorRating.setUser(userOptional.get());
             tutorRating.setRating(rating);
             tutorRating.setComment(comment);
+            tutorRating.setTutor(tutorOptional.get());
 
             tutorRatingRepository.save(tutorRating);
             return true;

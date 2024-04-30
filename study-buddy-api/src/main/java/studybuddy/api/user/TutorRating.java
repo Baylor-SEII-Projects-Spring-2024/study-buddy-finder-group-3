@@ -24,6 +24,10 @@ public class TutorRating {
     @Column(name = "COMMENT", length = 500)
     private String comment;
 
+    @ManyToOne
+    @JoinColumn(name = "TUTOR_ID", referencedColumnName = "USER_ID", foreignKey = @ForeignKey(name = "FK_TUTOR_RATING_TUTOR_ID"))
+    private User tutor;
+
     public void setRating(int rating) {
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
