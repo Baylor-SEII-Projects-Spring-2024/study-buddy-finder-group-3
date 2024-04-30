@@ -27,6 +27,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import isValid from "date-fns/isValid"
 import VideocamIcon from "@mui/icons-material/Videocam"
+import UserProfileModal from "./UserProfileModal"
 
 function MeetingModal({
   meeting,
@@ -420,7 +421,7 @@ function MeetingModal({
             ))}
         </List>
         {selectedUser && (
-          <FriendProfile
+          <UserProfileModal
             open={friendProfileOpen}
             onClose={handleCloseFriendProfile}
             user={selectedUser}

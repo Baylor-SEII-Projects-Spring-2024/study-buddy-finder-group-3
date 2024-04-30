@@ -441,25 +441,27 @@ function ProfileDisplay({ editable = true, uniqueId = -1 }) {
           style={{ display: "none" }}
           ref={inputRef}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleUploadClick}
-          disabled={!editable}
-          sx={{
-            // marginLeft: "auto",
-            // marginRight: "auto",
-            marginTop: "15px",
-            marginBottom: "15px",
-            padding: "20px",
-            width: "200px",
-            // flexGrow: 1,
-            flexShrink: 0,
-            height: "30px",
-          }}
-        >
-          Change Photo
-        </Button>
+        {editable && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUploadClick}
+            disabled={!editable}
+            sx={{
+              // marginLeft: "auto",
+              // marginRight: "auto",
+              marginTop: "15px",
+              marginBottom: "15px",
+              padding: "20px",
+              width: "200px",
+              // flexGrow: 1,
+              flexShrink: 0,
+              height: "30px",
+            }}
+          >
+            Change Photo
+          </Button>
+        )}
       </div>
       <Box
         sx={{
@@ -720,26 +722,28 @@ function ProfileDisplay({ editable = true, uniqueId = -1 }) {
           />
         </div>
       </Box>
-      <Button
-        sx={{
-          // flexGrow: 0,
-          variant: "contained",
-          marginLeft: "auto",
-          marginRight: "auto",
-          marginTop: "10px",
-          marginBottom: "10px",
-          //padding: "20px",
-          //border: "1px solid #ddd",
-          //borderRadius: "5px",
-          width: "20vw",
-        }}
-        disabled={!editable}
-        onClick={editMode ? handleSaveClick : handleEditClick}
-        variant="contained"
-        color="primary"
-      >
-        {editMode ? "Save Changes" : "Edit Profile"}
-      </Button>
+      {editable && (
+        <Button
+          sx={{
+            // flexGrow: 0,
+            variant: "contained",
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginTop: "10px",
+            marginBottom: "10px",
+            //padding: "20px",
+            //border: "1px solid #ddd",
+            //borderRadius: "5px",
+            width: "20vw",
+          }}
+          disabled={!editable}
+          onClick={editMode ? handleSaveClick : handleEditClick}
+          variant="contained"
+          color="primary"
+        >
+          {editMode ? "Save Changes" : "Edit Profile"}
+        </Button>
+      )}{" "}
     </Box>
   )
 }
