@@ -16,7 +16,7 @@ import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { API_URL } from "@/utils/config"
-import { isFuture } from "date-fns"
+import { isFuture, max } from "date-fns"
 
 const style = {
   position: "absolute",
@@ -27,6 +27,8 @@ const style = {
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
+  maxHeight: "80vh",
+  overflowY: "auto",
 }
 
 function CreateMeeting({ open, onClose }) {
@@ -194,10 +196,33 @@ function CreateMeeting({ open, onClose }) {
     setSelectedInvites(selectedInvites.filter((u) => u.id !== userId))
   }
 
+  const resetForm = () => {
+    setMeetingDate(new Date())
+    setMeetingTitle("")
+    setMeetingDescription("")
+    setMeetingLink("")
+    setIsOnlineMeeting(false)
+    setMeetingLocation("")
+    setSearchTerm("")
+    setSearchResults([])
+    setSelectedInvites([])
+    setCourseSearchTerm("")
+    setCourseResults([])
+    setSelectedCourse(null)
+    setIsPrivateMeetings(true)
+    setIsBadDate(false)
+    setSelectedInvites([])
+  }
+
+  const handleClose = () => {
+    resetForm()
+    onClose()
+  }
+
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       aria-labelledby="create-meeting-modal"
       aria-describedby="create-meeting-modal-description"
     >

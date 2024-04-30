@@ -20,6 +20,7 @@ import {
   CardActionArea,
   CardMedia,
 } from "@mui/material"
+import { Parallax } from "react-parallax"
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
@@ -274,8 +275,8 @@ function DisplayMeetings() {
 
   return (
     <>
-      <Container>
         <Header />
+        <Parallax bgImage={"./unlock-potential.png"} strength={300}>
         <Box
           id="home-section"
           sx={{
@@ -287,23 +288,25 @@ function DisplayMeetings() {
             marginTop: "64px",
             padding: 2,
             boxSizing: "border-box",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
+            backgroundColor: "rgba(255, 255, 255, 0)", // semi-transparent white background
+            borderRadius: "10px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            zIndex: 1,
+            backdropFilter: "blur(10px)",
           }}
         >
           <Typography
             variant="h3"
             component="h1"
             gutterBottom
-            sx={{ color: "text.primary" }}
+            sx={{ color: "text.primary", marginLeft: 15}}
           >
             Welcome {user && user.username ? user.username : ""}
           </Typography>
           <Typography
             variant="subtitle1"
             gutterBottom
-            sx={{ color: "text.secondary" }}
+            sx={{ color: "text.secondary", marginLeft: 15 }}
           >
             You have {unreadNotifications} unread notifications
           </Typography>
@@ -314,6 +317,7 @@ function DisplayMeetings() {
               "& > *": {
                 marginRight: 1,
               },
+              marginLeft: 15
             }}
           >
             <Button
@@ -332,9 +336,10 @@ function DisplayMeetings() {
             </Button>
           </Box>
         </Box>
+        </Parallax>
         <Box
           id="meetings-section"
-          sx={{ minHeight: "100vh", pt: "64px", marginBottom: "64px" }}
+          sx={{ minHeight: "100vh", pt: "64px", marginBottom: "64px", paddingLeft: 20, paddingRight: 20}}
         >
           <Typography variant="h4" component="h2" gutterBottom align="center">
             Your Meetings
@@ -353,7 +358,8 @@ function DisplayMeetings() {
           />
         </Box>
         {/* beginning of rec meetings */}
-        <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px" }}>
+        <Parallax bgImage={"./unlock-potential.png"} strength={300}>
+        <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px", padding: 20 ,backdropFilter: "blur(10px)"}}>
           <Typography variant="h4" component="h2" gutterBottom align="center">
             Recommended Meetings
           </Typography>
@@ -422,8 +428,8 @@ function DisplayMeetings() {
             )}
           </Grid>
         </Box>
+        </Parallax>
         {/* end of recc meetings */}
-
         <Box
           id="friends-section"
           sx={{
@@ -433,7 +439,7 @@ function DisplayMeetings() {
             height: "100vh",
           }}
         >
-          <Box sx={{ width: "60%" }}>
+          <Box sx={{ width: "60%", padding: 20}}>
             <Typography variant="h4" component="h2" gutterBottom>
               Expand Your Network
             </Typography>
@@ -464,7 +470,6 @@ function DisplayMeetings() {
             sx={{
               width: "40%",
               height: 200,
-              bgcolor: "grey.300",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -474,12 +479,13 @@ function DisplayMeetings() {
               <Paper
                 elevation={0}
                 sx={{
+                  marginRight: 10,
                   height: 300,
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "#fff",
+                  // width: "100%",
+                  // display: "flex",
+                  // alignItems: "center",
+                  // justifyContent: "center",
+                  // backgroundColor: "#fff",
                   border: `1px solid ${theme.palette.primary.main}`,
                 }}
               >
@@ -535,7 +541,7 @@ function DisplayMeetings() {
           onMeetingClick={handleMeetingClick}
           onDeleteMeeting={handleDeleteMeetingFromModal}
         />
-      </Container>
+      {/* </Container> */}
     </>
   )
 }

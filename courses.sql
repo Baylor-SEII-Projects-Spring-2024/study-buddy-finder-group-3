@@ -17,22 +17,22 @@ INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) 
 (6, 'Explore the mechanisms of living organisms in Physiology.', 'Physiology', 'Biology');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
-(7, 'Master Pre-Calculus fundamentals.', 'Pre-Calculus', 'Math');
+(7, 'Master Pre-Calculus fundamentals.', 'Pre-Calculus', 'Mathematics');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
-(8, 'Enter the world of calculus with Calculus I.', 'Calculus I', 'Math');
+(8, 'Enter the world of calculus with Calculus I.', 'Calculus I', 'Mathematics');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
-(9, 'Advance your calculus skills in Calculus II.', 'Calculus II', 'Math');
+(9, 'Advance your calculus skills in Calculus II.', 'Calculus II', 'Mathematics');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
-(10, 'Explore multivariable calculus in Calculus III.', 'Calculus III', 'Math');
+(10, 'Explore multivariable calculus in Calculus III.', 'Calculus III', 'Mathematics');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
-(11, 'Dive into statistical analysis with Statistics.', 'Statistics', 'Math');
+(11, 'Dive into statistical analysis with Statistics.', 'Statistics', 'Mathematics');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
-(12, 'Explore the principles of linear algebra.', 'Linear Algebra', 'Math');
+(12, 'Explore the principles of linear algebra.', 'Linear Algebra', 'Mathematics');
 
 INSERT INTO studybuddy.courses (course_id, c_description, c_name, subject_area) VALUES 
 (13, 'Unravel the laws of physics in Physics I.', 'Physics I', 'Physics');

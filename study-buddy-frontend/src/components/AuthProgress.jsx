@@ -29,7 +29,7 @@ function AuthProgress({ onAuthComplete }) {
         console.log("do i be catching the invalid token:", error)
         dispatch(logout())
         setProgress(100)
-        router.push("/404")
+        router.push("/")
 
         onAuthComplete()
       }

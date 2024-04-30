@@ -11,6 +11,7 @@ import TutorInfo from "@/components/TutorInfo"
 import axios from "axios"
 import { API_URL } from "@/utils/config"
 import AuthProgress from "@/components/AuthProgress"
+
 function profiles() {
   const theme = useTheme()
   const token = useSelector(selectToken)
@@ -43,6 +44,8 @@ function profiles() {
 
   return (
     <>
+      {/* <Parallax bgImage={"./unlock-potential.png"} strength={300}> */}
+
       {!authComplete ? (
         <AuthProgress onAuthComplete={() => setAuthComplete(true)} />
       ) : (

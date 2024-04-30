@@ -441,25 +441,27 @@ function ProfileDisplay({ editable = true, uniqueId = -1 }) {
           style={{ display: "none" }}
           ref={inputRef}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleUploadClick}
-          disabled={!editable}
-          sx={{
-            // marginLeft: "auto",
-            // marginRight: "auto",
-            marginTop: "15px",
-            marginBottom: "15px",
-            padding: "20px",
-            width: "200px",
-            // flexGrow: 1,
-            flexShrink: 0,
-            height: "30px",
-          }}
-        >
-          Change Photo
-        </Button>
+        {editable && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleUploadClick}
+            disabled={!editable}
+            sx={{
+              // marginLeft: "auto",
+              // marginRight: "auto",
+              marginTop: "15px",
+              marginBottom: "15px",
+              padding: "20px",
+              width: "200px",
+              // flexGrow: 1,
+              flexShrink: 0,
+              height: "30px",
+            }}
+          >
+            Change Photo
+          </Button>
+        )}
       </div>
       <Box
         sx={{
@@ -620,6 +622,106 @@ function ProfileDisplay({ editable = true, uniqueId = -1 }) {
             label="Chemistry"
             disabled={!editMode}
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Science")}
+                onChange={handleCourseChange}
+                name="Science"
+              />
+            }
+            label="Science"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Fine Arts")}
+                onChange={handleCourseChange}
+                name="Fine Arts"
+              />
+            }
+            label="Fine Arts"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Language")}
+                onChange={handleCourseChange}
+                name="Language"
+              />
+            }
+            label="Language"
+            disabled={!editMode}
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Literature")}
+                onChange={handleCourseChange}
+                name="Literature"
+              />
+            }
+            label="Literature"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Engineering")}
+                onChange={handleCourseChange}
+                name="Engineering"
+              />
+            }
+            label="Engineering"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Business")}
+                onChange={handleCourseChange}
+                name="Business"
+              />
+            }
+            label="Business"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Political Science")}
+                onChange={handleCourseChange}
+                name="Political Science"
+              />
+            }
+            label="Political Science"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Education")}
+                onChange={handleCourseChange}
+                name="Education"
+              />
+            }
+            label="Education"
+            disabled={!editMode}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedCourses.includes("Social Sciences")}
+                onChange={handleCourseChange}
+                name="Social Sciences"
+              />
+            }
+            label="Social Sciences"
+            disabled={!editMode}
+          />
         </div>
       </Box>
       <Box
@@ -720,26 +822,28 @@ function ProfileDisplay({ editable = true, uniqueId = -1 }) {
           />
         </div>
       </Box>
-      <Button
-        sx={{
-          // flexGrow: 0,
-          variant: "contained",
-          marginLeft: "auto",
-          marginRight: "auto",
-          marginTop: "10px",
-          marginBottom: "10px",
-          //padding: "20px",
-          //border: "1px solid #ddd",
-          //borderRadius: "5px",
-          width: "20vw",
-        }}
-        disabled={!editable}
-        onClick={editMode ? handleSaveClick : handleEditClick}
-        variant="contained"
-        color="primary"
-      >
-        {editMode ? "Save Changes" : "Edit Profile"}
-      </Button>
+      {editable && (
+        <Button
+          sx={{
+            // flexGrow: 0,
+            variant: "contained",
+            marginLeft: "auto",
+            marginRight: "auto",
+            marginTop: "10px",
+            marginBottom: "10px",
+            //padding: "20px",
+            //border: "1px solid #ddd",
+            //borderRadius: "5px",
+            width: "20vw",
+          }}
+          disabled={!editable}
+          onClick={editMode ? handleSaveClick : handleEditClick}
+          variant="contained"
+          color="primary"
+        >
+          {editMode ? "Save Changes" : "Edit Profile"}
+        </Button>
+      )}{" "}
     </Box>
   )
 }
