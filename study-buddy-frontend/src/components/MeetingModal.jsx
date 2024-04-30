@@ -75,7 +75,7 @@ function MeetingModal({
   }, [open, meeting])
 
   useEffect(() => {
-    if (open && meeting.tutorIds.length > 0) {
+    if (open && meeting.tutorIds > 0) {
       console.log("check if already reviewied!!!!")
       checkIfAlreadyReviewed(meeting.tutorIds)
       setTutorIds(meeting.tutorIds)
