@@ -142,13 +142,34 @@ function SettingsMain() {
   }
 
   const handleSubmit = async () => {
+
     try {
+      const data = {
+      isTutor: selectedAccountType === "Tutor" ? true : false,
+    }
+      const response = await axios.put(`${API_URL}/users/${userId}/changeAccountType`, data)
+      ;
+
+      console.log("Response data:", response.data)
+
+      toast.success("Acoount type changed successfully");
+
+
+
+    } catch (error) {
+      console.error("Error fetching profile info:", error)
+    }
+  }
+  /*
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/profile/${userId}`)
       const data = {
         isTutor: selectedAccountType === "Tutor" ? true : false,
       } /*
         const data = {
             isTutor: newAccountType === "Tutor" ? true : false,
-        };*/
+        };*//*
 
       setProfile(response.data)
 
@@ -174,7 +195,7 @@ function SettingsMain() {
     } catch (error) {
       console.error("Error fetching profile info:", error)
     }
-  }
+  }*/
 
   return (
     <Box
