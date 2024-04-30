@@ -51,6 +51,7 @@ export default function FriendsRequest({ onUpdate }) {
         .post(`${API_URL}/friends/${user1.id}/delete/${user.id}`)
         .then((response) => {
           console.log(response)
+          fetchNotifications(); // refresh notis after accepting friend request
         })
     } catch (error) {
       console.error("Error removing request:", error)
@@ -58,6 +59,7 @@ export default function FriendsRequest({ onUpdate }) {
     const updatedFriends = friends.filter((user2) => user2.id !== user1.id)
     setFriendsList(updatedFriends)
     onUpdate()
+    
   }
 
   const fetchNotifications = async () => {
@@ -81,7 +83,6 @@ export default function FriendsRequest({ onUpdate }) {
     try {
       const response = await axios.post(`${API_URL}/friends/${user.id}/add/${user2.id}`);
       console.log(response);
-      fetchNotifications(); // refresh notis after accepting friend request
     } catch (error) {
       console.error("Error adding friend:", error);
     }
