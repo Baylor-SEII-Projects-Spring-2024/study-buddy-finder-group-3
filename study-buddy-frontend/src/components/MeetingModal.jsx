@@ -58,8 +58,10 @@ function MeetingModal({
   const [isCreator, setIsCreator] = useState(false)
   const [hasAlreadyReviewed, setHasAlreadyReviewed] = useState(false)
   const [selectedTutorIdForReview, setSelectedTutorIdForReview] = useState(null)
-  const [unreviewedTutors, setUnreviewedTutors] = useState([]);
+  const [unreviewedTutors, setUnreviewedTutors] = useState([])
   const [tutorIds, setTutorIds] = useState([])
+  const [userDetails, setUserDetails] = useState({})
+
   useEffect(() => {
     if (!open) {
       setEditMode(false)
@@ -81,6 +83,22 @@ function MeetingModal({
       setTutorIds(meeting.tutorIds)
     }
   }, [meeting, open])
+
+  useEffect(() => {
+    unreviewedTutors.forEach((tutorId) => {
+      if (!userDetails[tutorId]) {
+        fetch(`${API_URL}/users/${tutorId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setUserDetails((prevDetails) => ({
+              ...prevDetails,
+              [tutorId]: data.username,
+            }))
+          })
+          .catch((error) => console.error("Failed to fetch data: ", error))
+      }
+    })
+  }, [unreviewedTutors])
 
   const handleDateChange = (newDate) => {
     setEditedDate(newDate)
@@ -145,57 +163,58 @@ function MeetingModal({
 
   const checkIfAlreadyReviewed = async (tutorIds) => {
     if (!Array.isArray(tutorIds)) {
-      console.error("Invalid tutors data:", tutorIds);
-      return; // Exit if tutors is not an array
+      console.error("Invalid tutors data:", tutorIds)
+      return // Exit if tutors is not an array
     }
-  
+
     try {
       const responses = await Promise.all(
         tutorIds.map((tutorId) =>
-          axios.get(`${API_URL}/tutor/${user.id}/has-already-reviewed/${tutorId}`)
+          axios.get(
+            `${API_URL}/tutor/${user.id}/has-already-reviewed/${tutorId}`
+          )
         )
-      );
+      )
       console.log("is reviewed respones", responses)
       // Filter out tutors whose reviews do not exist based on the API response
       const newUnreviewedTutors = tutorIds.filter((tutorId, index) => {
-        const response = responses[index];
-        return !response.data;
-      });
-  
+        const response = responses[index]
+        return !response.data
+      })
+
       // Update state with tutors that have not been reviewed yet
-      setUnreviewedTutors(newUnreviewedTutors);
-      setHasAlreadyReviewed(newUnreviewedTutors.length !== tutorIds.length); // Update whether any reviews were found
+      setUnreviewedTutors(newUnreviewedTutors)
+      setHasAlreadyReviewed(newUnreviewedTutors.length !== tutorIds.length) // Update whether any reviews were found
     } catch (error) {
-      console.error("Failed to check if user has already reviewed:", error);
+      console.error("Failed to check if user has already reviewed:", error)
     }
   }
-    
-  
+
   const submitReview = async (tutorId) => {
     if (user.id === tutorId) {
-      toast.error("Cannot review yourself");
-      return;
+      toast.error("Cannot review yourself")
+      return
     }
-  
+
     try {
       const response = await axios.post(`${API_URL}/tutor/${tutorId}/review`, {
         userId: user.id,
         rating: rating,
         comment: comment,
-      });
-  
-      toast.success("Review submitted successfully");
+      })
+
+      toast.success("Review submitted successfully")
       // Re-check and update tutors list after submitting a review
-      
-      checkIfAlreadyReviewed(unreviewedTutors);
-      
-      setShowReviewFields(false); // Hide review fields after submission
+
+      checkIfAlreadyReviewed(unreviewedTutors)
+
+      setShowReviewFields(false) // Hide review fields after submission
     } catch (error) {
-      toast.error("Failed to submit review");
-      console.error("Failed to submit review:", error);
+      toast.error("Failed to submit review")
+      console.error("Failed to submit review:", error)
     }
   }
-    
+
   const handleAccept = async () => {
     try {
       const response = await axios.patch(
@@ -254,7 +273,7 @@ function MeetingModal({
 
   const handleOpenReviewFields = (tutorId) => {
     setSelectedTutorIdForReview(tutorId)
-    setShowReviewFields(true);
+    setShowReviewFields(true)
   }
 
   return (
@@ -410,15 +429,16 @@ function MeetingModal({
         {hasMeetingStarted &&
           !hasAlreadyReviewed &&
           unreviewedTutors.map(
-            (unreviewedTutor) =>
-              user.id !== unreviewedTutor && (
+            (tutorId) =>
+              user.id !== tutorId &&
+              userDetails[tutorId] && (
                 <Button
-                  key={unreviewedTutor}
+                  key={tutorId}
                   variant="contained"
                   color="primary"
-                  onClick={() => handleOpenReviewFields(unreviewedTutor)}
+                  onClick={() => handleOpenReviewFields(tutorId)}
                 >
-                  Leave a Review for {unreviewedTutor}
+                  Leave a Review for {userDetails[tutorId]}
                 </Button>
               )
           )}
@@ -443,13 +463,15 @@ function MeetingModal({
               onChange={(e) => setComment(e.target.value)}
               sx={{ mb: 2 }}
             />
-          {showReviewFields && <Button
-            variant="contained"
-            color="primary"
-            onClick={() => submitReview(selectedTutorIdForReview)}
-          >
-            Submit Review
-          </Button>}
+            {showReviewFields && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => submitReview(selectedTutorIdForReview)}
+              >
+                Submit Review
+              </Button>
+            )}
           </Box>
         )}
         {meeting?.isJoinable && (
