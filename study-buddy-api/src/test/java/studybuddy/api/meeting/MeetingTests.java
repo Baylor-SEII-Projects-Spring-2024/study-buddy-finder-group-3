@@ -26,6 +26,9 @@ public class MeetingTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MeetingRepository meetingRepository;
+
     @Test
     @DisplayName("Testing create meeting...")
     void testCreateMeeting() {
@@ -51,11 +54,37 @@ public class MeetingTests {
         assertEquals("Test Meeting", meetings.get(0).getTitle());
     }
 
-    @Test
-    void testUpdateMeeting() {
-    }
 
     @Test
+    @DisplayName("Testing delete meeting by creator...")
     void testDeleteMeeting() {
+        // Setup - create a user
+        User creator = new User();
+        creator.setUsername("creator");
+        creator = userRepository.save(creator);
+
+        // Create a meeting
+        Meeting meeting = new Meeting();
+        meeting.setTitle("Delete Test Meeting");
+        meeting.setDescription("This is a test meeting for deletion");
+        meeting.setDate(new Date());
+        meeting.setLocation("Virtual");
+        meeting.setCreatorUsername(creator.getUsername());
+        meeting.setInvitedUserIds(Collections.singletonList(creator.getId()));
+
+        // Persist the meeting
+        meetingService.createMeeting(meeting, creator.getUsername());
+        Meeting createdMeeting = meetingRepository.findMeetingsByUserId(creator.getId()).get(0);
+
+        // Delete the meeting
+        meetingService.deleteMeeting(createdMeeting.getId(), creator.getId());
+        Long creatorId = creator.getId();
+
+        // Verify the meeting is deleted
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            meetingService.getMeetingsByUserId(creatorId);
+        });
+        assertTrue(exception.getMessage().contains("Meeting not found"));
     }
 }
+
