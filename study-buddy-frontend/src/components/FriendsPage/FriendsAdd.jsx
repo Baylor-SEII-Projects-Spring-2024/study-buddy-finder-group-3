@@ -4,35 +4,33 @@ import Box from "@mui/material/Box"
 import TextField from "@mui/material/TextField"
 import IconButton from "@mui/material/IconButton"
 import SearchIcon from "@mui/icons-material/Search"
-import { useRouter } from "next/router"
-import { useSelector, useDispatch } from "react-redux"
-import { selectToken, selectUser } from "@/utils/authSlice.js"
+import { useSelector } from "react-redux"
+import { selectUser } from "@/utils/authSlice.js"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import ListItemText from "@mui/material/ListItemText"
-import { Dialog, DialogContent, Fab, ListItemButton, Menu, Typography } from "@mui/material"
+import {
+  Dialog,
+  DialogContent,
+  ListItemButton,
+  Menu,
+  Typography,
+} from "@mui/material"
 import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
-import ClickAwayListener from "@mui/material/ClickAwayListener"
-import Grow from "@mui/material/Grow"
-import Paper from "@mui/material/Paper"
-import Popper from "@mui/material/Popper"
 import ProfileDisplay from "../ProfileDisplay"
 import DialogActions from "@mui/material/DialogActions"
 import Button from "@mui/material/Button"
 
-
 function FriendsAdd() {
   const user = useSelector(selectUser)
-  const router = useRouter()
   const [friends, setFriendsList] = useState([])
-  const [userId, setUserid] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const anchorRef = React.useRef(null)
-  const token = useSelector(selectToken)
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
   const textFieldRef = useRef(null)
   const textFieldWidth = textFieldRef.current
     ? textFieldRef.current.getBoundingClientRect().width
@@ -45,13 +43,6 @@ function FriendsAdd() {
   const handleClose = () => {
     setAnchorEl(null)
   }
-
-  useEffect(() => {
-    if (user) {
-      console.log("here")
-      setUserid(user.id)
-    }
-  }, [user])
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -96,7 +87,7 @@ function FriendsAdd() {
   }
 
   const handleListItemClick = (event, user) => {
-    //sendRequest(event, user)
+    setSelectedUser(user.id)
     setDialogOpen(true)
   }
 
@@ -152,20 +143,23 @@ function FriendsAdd() {
                 >
                   <ListItemText primary={user.username} />
                 </ListItemButton>
-                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                  <DialogContent>
-                    <ProfileDisplay editable={false} uniqueId={user.id}/>
-                  </DialogContent>
-                  <DialogActions style={{justifyContent: "center"}}>
-                  <Button onClick={(event) => sendRequest(event, user)} variant={"contained"}>
-                    Send Friend Request
-                  </Button>
-                  </DialogActions>
-                </Dialog>
               </ListItem>
             ))}
           </List>
         )}
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <DialogContent>
+            <ProfileDisplay editable={false} uniqueId={selectedUser} />
+          </DialogContent>
+          <DialogActions style={{ justifyContent: "center" }}>
+            <Button
+              onClick={(event) => sendRequest(event, user)}
+              variant={"contained"}
+            >
+              Send Friend Request
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Menu>
     </Box>
   )

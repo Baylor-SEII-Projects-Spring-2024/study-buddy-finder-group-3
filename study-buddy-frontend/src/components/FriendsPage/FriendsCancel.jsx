@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react"
 import Box from "@mui/material/Box"
 import { useSelector } from "react-redux"
-import { selectToken, selectUser } from "@/utils/authSlice.js"
-import { useRouter } from "next/router"
+import { selectUser } from "@/utils/authSlice.js"
 import axios from "axios"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
@@ -12,23 +11,10 @@ import Button from "@mui/material/Button"
 import { API_URL } from "@/utils/config"
 
 export default function FriendsCancel({ onUpdate }) {
-  const token = useSelector(selectToken)
   const user = useSelector(selectUser)
-  const router = useRouter()
   const [friends, setFriendsList] = useState([])
-  const [userId, setUserid] = useState("")
-
-  // useEffect(() => {
-  //   if (!token || !user) {
-  //     router.push("/")
-  //   }
-  // }, [token, router])
 
   useEffect(() => {
-    if (user) {
-      console.log("here")
-      setUserid(user.id)
-    }
     fetchAllInfo()
   }, [user])
 

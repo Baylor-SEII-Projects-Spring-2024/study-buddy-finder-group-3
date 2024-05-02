@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react"
 import Box from "@mui/material/Box"
 import { useSelector } from "react-redux"
-import { selectToken, selectUser } from "@/utils/authSlice.js"
-import { useRouter } from "next/router"
+import { selectUser } from "@/utils/authSlice.js"
 import axios from "axios"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
-import ListItemText from "@mui/material/ListItemText"
 import Typography from "@mui/material/Typography"
-import { ListItemButton, CircularProgress } from "@mui/material"
+import { CircularProgress } from "@mui/material"
 import { API_URL } from "@/utils/config"
 import { Grid } from "@mui/material"
 import Card from "@mui/material/Card"
@@ -22,14 +20,9 @@ import ProfileDisplay from "../ProfileDisplay"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import { IconButton } from "@mui/material"
 
-const fallbackPic = "profilePicture.png"
-
 export default function FriendsList({ listType = "friends" }) {
-  const token = useSelector(selectToken)
   const user = useSelector(selectUser)
-  const router = useRouter()
   const [friends, setFriendsList] = useState([])
-  const [userId, setUserid] = useState("")
   const [open, setOpen] = useState(false)
   const [loadingFriendsList, setLoadingFriendsList] = useState(true)
   const [loadingPics, setLoadingPics] = useState(true)
@@ -45,16 +38,6 @@ export default function FriendsList({ listType = "friends" }) {
   }
 
   useEffect(() => {
-    // if (!token || !user) {
-    //   router.push("/")
-    // }
-
-    if (user) {
-      console.log("useEffect: FriendsList")
-      setUserid(user.id)
-    }
-
-    console.log(friends, "FriendsList")
 
     fetchAllInfo()
     getProfilePics(friends)
@@ -119,9 +102,6 @@ export default function FriendsList({ listType = "friends" }) {
     try {
       axios
         .post(`${API_URL}/friends/${user.id}/request/${id}`)
-        .then((response) => {
-          //console.log(response)
-        })
     } catch (error) {
       console.error("Error adding friend:", error)
     }
@@ -166,10 +146,7 @@ export default function FriendsList({ listType = "friends" }) {
         )
       }
 
-      // Wait for all promises to resolve
       const profilePicsArray = await Promise.all(promises)
-
-      // Update state with all profile pictures
       setProfilePics(profilePicsArray)
     } catch (error) {
       console.error("Error fetching profile pics:", error)

@@ -269,7 +269,6 @@ public class FriendsTests {
         assert users != null;
         assertEquals(0, users.size());
     }
-    //TODO: add test for getProfilePicture
 
     
 
