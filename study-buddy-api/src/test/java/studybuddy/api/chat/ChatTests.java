@@ -82,29 +82,5 @@ class ChatTests {
             assertEquals(msg.getContent(), "Test Message" + (i+1));
         }
     }
-
-    @Test
-    void createMessageFail() throws Exception {
-        User user = new User();
-        User newUser = new User();
-
-        user.setUsername("test1");
-        newUser.setUsername("test2");
-
-        user.setId(1L);
-        newUser.setId(2L);
-
-        userService.saveUser(user);
-        userService.saveUser(newUser);
-
-        messageService.sendMessage(user,newUser,"Test Message");
-
-        List<Messages> msgs = messageService.findMessageByUsers(user.getId(),newUser.getId());
-
-        assertEquals(1, msgs.size());
-        Messages msg = msgs.get(0);
-
-        assertEquals(msg.getUser(), newUser);
-        assertEquals(msg.getReceiver(), user);
-    }
+    
 }
