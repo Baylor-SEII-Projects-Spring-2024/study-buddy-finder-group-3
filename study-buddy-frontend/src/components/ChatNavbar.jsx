@@ -1,6 +1,7 @@
 import React from "react"
 import styles from "@/styles/Chat.module.css"
 import { Link } from "@mui/material"
+import { router } from "next/client"
 
 const navigateToProfile = () => {
   router.push("/profile")

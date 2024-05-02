@@ -1,15 +1,11 @@
 import React from "react"
 import styles from "@/styles/Chat.module.css"
 
-
 const Chats = ({ friends, onUserSelect, selectedUser }) => {
-
 
   const handleUserClick = (selectedUser) => {
     onUserSelect(selectedUser);
   };
-
-
 
   return (
     <div className={styles.Chats}>
