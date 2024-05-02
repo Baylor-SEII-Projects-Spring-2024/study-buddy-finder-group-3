@@ -1,5 +1,3 @@
-// ProfileDisplay.jsx
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Box from "@mui/material/Box";
@@ -288,7 +286,6 @@ function ProfileDisplay( {editable = true, uniqueId = -1}) {
             if (response.data === true) {
                 toast.success("Photo uploaded successfully!");
                 // Update the profile picture in the UI
-                // You can implement this part based on your UI structure
                 setTriggerUpdate(!triggerUpdate);
             } else {
                 toast.error("Failed to upload photo");
