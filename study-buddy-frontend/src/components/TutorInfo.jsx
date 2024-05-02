@@ -78,29 +78,6 @@ function TutorInfo({ modalUserId = -1 }) {
     return null // If tutorBool is false, don't render anything
   }
 
-  // function calculateAverageRating(ratings) {
-  //     const sum = ratings.reduce((acc, ratingString) => {
-  //         const [, rating] = ratingString.split(',');
-  //         return acc + parseInt(rating);
-  //     }, 0);
-  //     const average = sum / ratings.length;
-  //     return isNaN(average) ? 'N/A' : average.toFixed(1); // Display 'N/A' if no ratings
-  // }
-
-  // function calculateAverageRating(ratings) {
-  //     if (!ratings || ratings.length === 0) {
-  //         return 'N/A';
-  //     }
-  //
-  //     const sum = ratings.reduce((acc, ratingString) => {
-  //         const rating = parseFloat(ratingString.split(',')[1]);
-  //         return acc + rating;
-  //     }, 0);
-  //
-  //     const average = sum / ratings.length;
-  //     return isNaN(average) ? 'N/A' : average.toFixed(1);
-  // }
-
   function calculateAverageRating(ratings) {
     if (!ratings || ratings.length === 0) {
       return "N/A"
@@ -195,7 +172,7 @@ function TutorInfo({ modalUserId = -1 }) {
             if (!match) return null // If the ratingString doesn't match the pattern, skip it
             const [, comment, rating] = match // Extract the comment and rating from the match
             const numericRating = parseInt(rating) // Convert the rating string to a number
-            // Add a check to ensure numericRating is a valid number
+            // Check to ensure numericRating is a valid number
             const validNumericRating = isNaN(numericRating) ? 0 : numericRating
             return (
               <Box key={index} mt={1}>

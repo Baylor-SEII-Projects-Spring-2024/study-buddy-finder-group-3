@@ -1,5 +1,3 @@
-// ProfileDisplay.jsx
-
 import React, { useState, useEffect, useRef } from "react"
 import axios from "axios"
 import Box from "@mui/material/Box"
@@ -330,9 +328,9 @@ function ProfileDisplay({ editable = true, uniqueId = -1 }) {
     setSelectedPhoto(file)
 
     try {
-      // Compress the image if it's larger than 30kb
+      // Compress the image if it's larger than 16MB
 
-      //const compressedImage = await compressImage(file, 30 * 1024);
+      //const compressedImage = await compressImage(file, 60 * 1024 * 1024);
       const compressedImage = file
       const formData = new FormData()
       formData.append("photo", compressedImage)
