@@ -82,5 +82,5 @@ class ChatTests {
             assertEquals(msg.getContent(), "Test Message" + (i+1));
         }
     }
-    
+
 }
