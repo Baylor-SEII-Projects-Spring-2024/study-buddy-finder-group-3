@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styles from "@/styles/custom-cursor.module.css";
+import React, { useEffect, useRef } from "react"
+import styles from "@/styles/custom-cursor.module.css"
 
 const CustomCursor = ({ hover }) => {
   const cursorRef = useRef(null);

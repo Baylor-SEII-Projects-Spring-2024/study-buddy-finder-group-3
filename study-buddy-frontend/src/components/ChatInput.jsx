@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { API_URL } from "@/utils/config";
-import styles from "@/styles/Chat.module.css";
+import React, { useState } from "react"
+import axios from "axios"
+import { API_URL } from "@/utils/config"
+import styles from "@/styles/Chat.module.css"
 
 const ChatInput = ({ user, selectedUser }) => {
   const [inputValue, setInputValue] = useState("");

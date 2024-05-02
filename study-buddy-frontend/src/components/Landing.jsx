@@ -1,21 +1,6 @@
-import React, { useRef, useState, useEffect, containerRef } from "react"
-import { useRouter } from "next/router"
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  Typography,
-  Container,
-  Grid,
-  Paper,
-  styled,
-} from "@mui/material"
-import { Image as ImageIcon } from "@mui/icons-material"
-import {
-  Star as StarIcon,
-  AccountCircle as AccountCircleIcon,
-} from "@mui/icons-material"
+import React, { useEffect, useState } from "react"
+import { AppBar, Box, Button, Container, Grid, Paper, styled, Toolbar, Typography } from "@mui/material"
+import { AccountCircle as AccountCircleIcon, Star as StarIcon } from "@mui/icons-material"
 import AOS from "aos"
 import "aos/dist/aos.css"
 import { useTheme } from "@mui/material/styles"
@@ -23,9 +8,6 @@ import Login from "./Login"
 import CreateAccount from "./CreateAccount"
 import Footer from "./Footer"
 import styles from "@/styles/landing.module.css"
-import CustomCursor from "@/utils/customCursor"
-import { useSelector } from "react-redux"
-import { selectToken } from "@/utils/authSlice"
 import ChaseButton from "./ChaseButton"
 import { Parallax } from "react-parallax"
 

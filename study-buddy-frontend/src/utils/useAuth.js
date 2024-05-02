@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
-import { selectToken } from '@/utils/authSlice';
+import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
+import { useRouter } from "next/router"
+import { selectToken } from "@/utils/authSlice"
 
 export function useAuth() {
     const router = useRouter();

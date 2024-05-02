@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react"
-import styles from "@/styles/Chat.module.css";
-import axios from "axios"
-import { API_URL } from "@/utils/config"
+import React from "react"
+import styles from "@/styles/Chat.module.css"
 
 
 const Chats = ({ friends, onUserSelect, selectedUser }) => {

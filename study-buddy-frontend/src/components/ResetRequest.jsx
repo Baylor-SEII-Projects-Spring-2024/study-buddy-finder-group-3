@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react"
 import Button from "@mui/material/Button"
 import TextField from "@mui/material/TextField"
 import Dialog from "@mui/material/Dialog"
@@ -8,7 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText"
 import DialogTitle from "@mui/material/DialogTitle"
 import axios from "axios"
 import { toast } from "react-toastify"
-import { API_URL } from "@/utils/config";
+import { API_URL } from "@/utils/config"
 
 export default function ResetRequest({ open, onClose }) {
   const [email, setEmail] = useState("")

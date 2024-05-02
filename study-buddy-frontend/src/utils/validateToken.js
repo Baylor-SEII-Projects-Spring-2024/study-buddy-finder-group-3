@@ -1,9 +1,8 @@
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import axios from "axios"
-import { setUser, logout } from "@/utils/authSlice"
+import { logout, setToken, setUser } from "@/utils/authSlice"
 import { API_URL } from "./config"
-import { setToken } from "@/utils/authSlice"
 
 const ValidateToken = () => {
   const dispatch = useDispatch()

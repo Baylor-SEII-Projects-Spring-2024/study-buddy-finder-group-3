@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import styles from "@/styles/Chat.module.css";
-import ChatNavbar from "@/components/ChatNavbar";
-import Chats from "@/components/Chats";
-import axios from "axios";
-import { API_URL } from "@/utils/config";
+import React, { useEffect, useState } from "react"
+import styles from "@/styles/Chat.module.css"
+import ChatNavbar from "@/components/ChatNavbar"
+import Chats from "@/components/Chats"
+import axios from "axios"
+import { API_URL } from "@/utils/config"
 
 const ChatSidebar = ({ user, onUserSelect, SelectedUser }) => {
   const [friends, setFriends] = useState([]);

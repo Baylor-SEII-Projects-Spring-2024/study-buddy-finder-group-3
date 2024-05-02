@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import FriendsSidebar from '@/components/FriendsPage/FriendsSidebar';
-import AuthProgress from '@/components/AuthProgress';
+import React, { useState } from "react"
+import Box from "@mui/material/Box"
+import FriendsSidebar from "@/components/FriendsPage/FriendsSidebar"
+import AuthProgress from "@/components/AuthProgress"
 
 function Friends() {
   const [authComplete, setAuthComplete] = useState(false);

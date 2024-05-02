@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import Box from "@mui/material/Box"
 import { useSelector } from "react-redux"
 import { selectToken, selectUser } from "@/utils/authSlice.js"
@@ -8,21 +8,8 @@ import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import ListItemText from "@mui/material/ListItemText"
 import Typography from "@mui/material/Typography"
-import {
-  ListItemButton,
-  CircularProgress,
-  Avatar,
-  IconButton,
-  Popper,
-} from "@mui/material"
-import FriendProfile from "./FriendProfile"
+import { Avatar, CircularProgress, IconButton, ListItemButton } from "@mui/material"
 import { API_URL } from "@/utils/config"
-import MenuIcon from "@mui/icons-material/Menu"
-import ClickAwayListener from "@mui/material/ClickAwayListener"
-import Grow from "@mui/material/Grow"
-import Paper from "@mui/material/Paper"
-import MenuItem from "@mui/material/MenuItem"
-import MenuList from "@mui/material/MenuList"
 import CancelIcon from "@mui/icons-material/Cancel"
 
 export default function FriendsBlocked() {

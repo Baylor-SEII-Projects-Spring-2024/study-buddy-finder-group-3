@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import styles from "@/styles/Chat.module.css";
-import Messages from "@/components/Messages";
-import ChatInput from "@/components/ChatInput";
-import axios from "axios";
-import { API_URL } from "@/utils/config";
+import React, { useEffect, useState } from "react"
+import styles from "@/styles/Chat.module.css"
+import Messages from "@/components/Messages"
+import ChatInput from "@/components/ChatInput"
+import axios from "axios"
+import { API_URL } from "@/utils/config"
 
 const ChatComp = ({ user, selectedUser }) => {
   const [userData, setUserData] = useState(null);

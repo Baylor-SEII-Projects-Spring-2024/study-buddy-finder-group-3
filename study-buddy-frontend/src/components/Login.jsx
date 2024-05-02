@@ -9,7 +9,7 @@ import { toast } from "react-toastify"
 import { useRouter } from "next/router"
 import axios from "axios"
 import { useDispatch } from "react-redux"
-import { setToken, setUser } from "@/utils/authSlice.js"
+import { setUser } from "@/utils/authSlice.js"
 import { API_URL } from "@/utils/config"
 import ResetRequest from "./ResetRequest"
 

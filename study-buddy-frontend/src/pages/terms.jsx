@@ -1,10 +1,7 @@
 import React from "react"
 import { IconButton, Link, Typography } from "@mui/material"
-import { Button } from "react-scroll"
 import Footer from "@/components/Footer"
-import Header from "@/components/Header"
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"
-import { Padding } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 
 const Terms = () => {

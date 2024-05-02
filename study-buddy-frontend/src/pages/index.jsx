@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React from "react"
 import Head from "next/head"
 import LandingPage from "@/components/Landing"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 
 function landing() {

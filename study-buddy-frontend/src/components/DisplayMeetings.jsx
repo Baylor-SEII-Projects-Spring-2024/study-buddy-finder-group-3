@@ -1,33 +1,13 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
-import { useSelector, useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
-import {
-  List,
-  ListItem,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  Link,
-  Container,
-  Box,
-  CircularProgress,
-  IconButton,
-  Paper,
-  Avatar,
-  CardActionArea,
-  CardMedia,
-} from "@mui/material"
+import { Box, Card, CardContent, CircularProgress, Container, Grid, Paper, Typography } from "@mui/material"
 import { Parallax } from "react-parallax"
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied"
-import LocationOnIcon from "@mui/icons-material/LocationOn"
-import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import VideocamIcon from "@mui/icons-material/Videocam"
 import axios from "axios"
 import MeetingModal from "./MeetingModal.jsx"
-import DeleteIcon from "@mui/icons-material/Delete"
 import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
@@ -40,10 +20,10 @@ import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
 import { useTheme } from "@mui/material/styles"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
-import Footer from "./Footer.jsx"
 import { useActivePage } from "@/utils/activePageContext"
 import MeetingGrid from "./MeetingGrid.jsx"
 import AllMeetingsModal from "./AllMeetingsModal.jsx"
+
 //TODO: NEED TO REDUX THE RECOMMENDED MEETINGS ACCEPT
 
 function DisplayMeetings() {

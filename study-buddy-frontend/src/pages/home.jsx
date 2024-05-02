@@ -1,12 +1,6 @@
-import React, { useEffect, useState } from "react"
-import Header from "@/components/Header.jsx"
-import Sidebar from "@/components/Sidebar.jsx"
-import { useSelector } from "react-redux"
-import { selectToken } from "@/utils/authSlice.js"
-import { useRouter } from "next/router"
+import React, { useState } from "react"
 import DisplayMeetings from "@/components/DisplayMeetings"
 import Box from "@mui/material/Box"
-import { useAuth } from "@/utils/useAuth"
 import AuthProgress from "@/components/AuthProgress"
 
 function home() {

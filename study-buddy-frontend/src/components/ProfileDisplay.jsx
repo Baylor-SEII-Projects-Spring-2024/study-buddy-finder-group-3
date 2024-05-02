@@ -1,6 +1,4 @@
-// ProfileDisplay.jsx
-
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import Box from "@mui/material/Box"
 import Typography from "@mui/material/Typography"
@@ -10,7 +8,7 @@ import Checkbox from "@mui/material/Checkbox"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import Avatar from "@mui/material/Avatar"
 import { useSelector } from "react-redux"
-import { selectToken, selectUser, setUser } from "@/utils/authSlice.js"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
 import { useRouter } from "next/router"
 import { API_URL } from "@/utils/config"
 import { toast } from "react-toastify"

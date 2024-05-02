@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { logout } from './authSlice'
-import axios from 'axios';
-import { API_URL } from './config';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { logout } from "./authSlice"
+import axios from "axios"
+import { API_URL } from "./config"
 
 export const fetchMeetingsByUserId = createAsyncThunk(
   'meetings/fetchByUserId',

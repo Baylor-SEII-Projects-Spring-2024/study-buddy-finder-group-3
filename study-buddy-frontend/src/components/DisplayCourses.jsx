@@ -1,36 +1,27 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 import {
-    List,
-    ListItem,
-    Card,
-    CardContent,
-    Typography,
-    Grid,
-    Link,
-    Container,
-    Box,
-    CardMedia,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    IconButton
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  IconButton,
+  Typography
 } from "@mui/material"
-import LocationOnIcon from "@mui/icons-material/LocationOn"
-import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import VideocamIcon from "@mui/icons-material/Videocam"
 import axios from "axios"
 import DeleteIcon from "@mui/icons-material/Delete"
 import Button from "@mui/material/Button"
-import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
-
-import courses from "@/pages/courses";
 
 function DisplayCourses() {
     const user = useSelector(selectUser)

@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { API_URL } from "@/utils/config";
+import React, { useState } from "react"
+import TextField from "@mui/material/TextField"
+import Box from "@mui/material/Box"
 
 const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState('');

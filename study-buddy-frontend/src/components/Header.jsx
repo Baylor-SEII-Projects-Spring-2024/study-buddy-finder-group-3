@@ -1,20 +1,8 @@
-import React, { useState, useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { selectUser } from "@/utils/authSlice.js"
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Box,
-  Typography,
-  Menu,
-  MenuItem,
-  IconButton,
-  Badge,
-  Divider,
-} from "@mui/material"
+import React, { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { logout, selectUser } from "@/utils/authSlice.js"
+import { AppBar, Badge, Box, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material"
 import { useRouter } from "next/router"
-import { logout } from "@/utils/authSlice.js"
 import { API_URL } from "@/utils/config"
 import { setNotifications } from "@/utils/notificationSlice"
 import axios from "axios"
@@ -22,6 +10,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications"
 import MeetingModal from "./MeetingModal"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { useActivePage } from "@/utils/activePageContext"
+
 const sections = [
   { title: "Home", id: "home-section" },
   { title: "Friends", id: "friends-section" },

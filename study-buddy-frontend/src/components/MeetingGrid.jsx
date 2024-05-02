@@ -1,8 +1,8 @@
-import React from 'react';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Box, IconButton, Button } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from "react"
+import { Box, Button, Card, CardActionArea, CardContent, CardMedia, Grid, IconButton, Typography } from "@mui/material"
+import AccessTimeIcon from "@mui/icons-material/AccessTime"
+import LocationOnIcon from "@mui/icons-material/LocationOn"
+import DeleteIcon from "@mui/icons-material/Delete"
 
 function truncateDescription(description) {
   const maxChars = 100;
