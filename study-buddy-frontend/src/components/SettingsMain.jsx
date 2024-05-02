@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react"
-import { Avatar, Box, Button, Divider, FormControlLabel, MenuItem, Select, Switch, Typography } from "@mui/material"
+import {
+  Box,
+  Typography,
+  Avatar,
+  Select,
+  MenuItem,
+  Link,
+  Switch,
+  Divider,
+  Container,
+} from "@mui/material"
+import styles from "@/styles/ProfileDisplay.module.css"
 import axios from "axios"
+import { TextField, Button, Checkbox, FormControlLabel } from "@mui/material"
 import { useSelector } from "react-redux"
 import { selectToken, selectUser } from "@/utils/authSlice.js"
 import { useRouter } from "next/router"
 import { API_URL } from "@/utils/config"
 import ChangePassword from "@/components/ChangePassword"
 import { toast } from "react-toastify"
+import { Title } from "@mui/icons-material"
+import ProfileDisplay from "@/components/ProfileDisplay"
+import { useTheme } from "@mui/material/styles"
+import CreateCourse from "@/components/CreateCourse"
 
 function SettingsMain() {
   const [receiveEmails, setReceiveEmails] = useState(true)

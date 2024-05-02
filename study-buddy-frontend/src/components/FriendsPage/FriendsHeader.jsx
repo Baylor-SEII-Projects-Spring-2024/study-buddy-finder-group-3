@@ -1,12 +1,15 @@
 import * as React from "react"
+import axios from "axios"
 import AppBar from "@mui/material/AppBar"
 import Box from "@mui/material/Box"
 import Toolbar from "@mui/material/Toolbar"
 import Typography from "@mui/material/Typography"
 import Button from "@mui/material/Button"
+import IconButton from "@mui/material/IconButton"
+import MenuIcon from "@mui/icons-material/Menu"
 import { useRouter } from "next/router"
-import { useDispatch } from "react-redux"
-import { logout } from "@/utils/authSlice.js"
+import { useSelector, useDispatch } from "react-redux"
+import { selectToken, setToken, logout } from "@/utils/authSlice.js"
 
 export default function FriendsHeader() {
   const router = useRouter()

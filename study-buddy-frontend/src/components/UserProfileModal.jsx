@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react"
 import ProfileDisplay from "@/components/ProfileDisplay"
 import { useSelector } from "react-redux"
-import { selectToken } from "@/utils/authSlice.js"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
+import Header from "@/components/Header"
+import Sidebar from "@/components/Sidebar"
 import Box from "@mui/material/Box"
 import { useRouter } from "next/router"
 import { useTheme } from "@mui/material/styles"
 import TutorInfo from "@/components/TutorInfo"
 import axios from "axios"
 import { API_URL } from "@/utils/config"
+import AuthProgress from "@/components/AuthProgress"
 import { Modal } from "@mui/material"
 
 function UserProfileModal({ open, onClose, user }) {

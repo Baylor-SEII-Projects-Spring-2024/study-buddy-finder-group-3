@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { useRouter } from "next/router"
 import { AppBar, Box, Button, Toolbar } from "@mui/material"
 import styles from "@/styles/landing.module.css"
+import { useState } from "react"
 import { Parallax } from "react-parallax"
 import Typography from "@mui/material/Typography"
 import TextField from "@mui/material/TextField"
 import { toast } from "react-toastify"
 import axios from "axios"
-import { API_URL } from "@/utils/config"
+import { API_URL } from "@/utils/config";
 
 const sections = [
   { title: "Home", id: "home-section" },

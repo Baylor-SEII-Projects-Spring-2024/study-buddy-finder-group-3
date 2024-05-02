@@ -3,7 +3,6 @@ import Header from "@/components/Header"
 import Box from "@mui/material/Box"
 import DisplayCourses from "@/components/DisplayCourses"
 import AuthProgress from "@/components/AuthProgress"
-
 function courses() {
   const [authComplete, setAuthComplete] = useState(false)
   return (

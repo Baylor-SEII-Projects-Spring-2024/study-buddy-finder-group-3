@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from "react"
-import { Box, Button, Checkbox, Container, Divider, Typography } from "@mui/material"
-import axios from "axios"
-import { useSelector } from "react-redux"
-import { selectUser } from "@/utils/authSlice.js"
-import { useRouter } from "next/router"
-import { API_URL } from "@/utils/config"
-import CreateCourse from "@/components/CreateCourse"
-import Header from "./Header"
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Typography,
+  Divider,
+  Container,
+  Button,
+  Checkbox,
+} from "@mui/material";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { selectToken, selectUser } from "@/utils/authSlice.js";
+import { useRouter } from "next/router";
+import { API_URL } from "@/utils/config";
+import CreateCourse from "@/components/CreateCourse";
+import Header from "./Header";
 
 function UserCourses() {
   const user = useSelector(selectUser);

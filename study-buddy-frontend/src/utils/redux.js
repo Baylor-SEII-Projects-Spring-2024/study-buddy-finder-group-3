@@ -1,9 +1,9 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit"
-import { thunk } from "redux-thunk"
+import {combineReducers, configureStore} from '@reduxjs/toolkit';
+import {thunk} from 'redux-thunk';
 
-import authReducer from "./authSlice"
-import meetingsReducer from "./meetingsSlice"
-import notifcationsReducer from "./notificationSlice"
+import authReducer from './authSlice'
+import meetingsReducer from './meetingsSlice';
+import notifcationsReducer from './notificationSlice';
 
 const reducers = combineReducers({
   auth: authReducer,

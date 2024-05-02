@@ -1,15 +1,6 @@
-import React, { useState } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  Typography
-} from "@mui/material"
-import DeleteIcon from "@mui/icons-material/Delete"
+import React, { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, Typography, List, ListItem, IconButton, ListItemSecondaryAction } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function AllMeetingsModal({ open, handleClose, meetings, onMeetingClick, onDeleteMeeting }) {
   const [hoveredMeetingId, setHoveredMeetingId] = useState(null);

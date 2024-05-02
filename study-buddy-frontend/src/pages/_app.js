@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import Head from "next/head"
 import { Provider as ReduxProvider } from "react-redux"
 
@@ -14,6 +14,11 @@ import "react-toastify/dist/ReactToastify.css"
 import "@/styles/globals.css"
 import { DevSupport } from "@react-buddy/ide-toolbox-next"
 import { ComponentPreviews, useInitial } from "@/dev"
+
+import "@/styles/globals.css"
+import CustomCursor from "@/utils/customCursor"
+import { useDispatch } from "react-redux"
+import { setToken } from "@/utils/authSlice"
 import { ActivePageProvider } from "@/utils/activePageContext"
 
 // Initialize Redux

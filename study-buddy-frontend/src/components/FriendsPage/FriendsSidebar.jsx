@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react"
+import React, { useState, useEffect } from "react"
 import { styled, useTheme } from "@mui/material/styles"
 import Box from "@mui/material/Box"
 import MuiDrawer from "@mui/material/Drawer"
 import MuiAppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
 import List from "@mui/material/List"
 import CssBaseline from "@mui/material/CssBaseline"
 import Typography from "@mui/material/Typography"
@@ -11,18 +12,26 @@ import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import ListItemText from "@mui/material/ListItemText"
+import InboxIcon from "@mui/icons-material/MoveToInbox"
+import AppBar from "@mui/material/AppBar"
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
 import { KeyboardArrowLeft } from "@mui/icons-material"
 import FriendsAdd from "./FriendsAdd"
+import MenuOpenIcon from "@mui/icons-material/MenuOpen"
 import PeopleIcon from "@mui/icons-material/People"
 import PersonAddIcon from "@mui/icons-material/PersonAdd"
 import PersonOffIcon from "@mui/icons-material/PersonOff"
 import ForumIcon from "@mui/icons-material/Forum"
-import { Badge, Button } from "@mui/material"
+import { Button } from "@mui/material"
 import { useRouter } from "next/router"
-import { useDispatch, useSelector } from "react-redux"
-import { logout } from "@/utils/authSlice.js"
-import ChatParentComponent from "@/components/ChatParentComponent"
+import { useSelector, useDispatch } from "react-redux"
+import { selectToken, setToken, logout } from "@/utils/authSlice.js"
+import ChatComp from "@/components/ChatComp";
+import ChatParentComponent from "@/components/ChatParentComponent";
+import styles from "@/styles/Chat.module.css";
+import Messages from "@/components/Messages";
+import ChatInput from "@/components/ChatInput";
+import ChatSidebar from "@/components/ChatSidebar";
 
 import FriendsList from "./FriendsList"
 import axios from "axios"
@@ -30,11 +39,11 @@ import { API_URL } from "@/utils/config"
 import { selectUser } from "@/utils/authSlice"
 import FriendsRequest from "./FriendsRequests"
 import FriendsBlocked from "./FriendsBlocked"
+import { Badge } from "@mui/material"
 import Header from "../Header"
 import RecommendIcon from "@mui/icons-material/Recommend"
 import FriendsCancel from "./FriendsCancel"
 import { useActivePage } from "@/utils/activePageContext"
-
 const drawerWidth = 240
 
 const openedMixin = (theme) => ({

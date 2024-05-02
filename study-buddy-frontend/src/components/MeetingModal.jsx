@@ -1,11 +1,24 @@
+import FriendProfile from "./FriendsPage/FriendProfile"
 import CloseIcon from "@mui/icons-material/Close"
 import EditIcon from "@mui/icons-material/Edit"
 import SaveIcon from "@mui/icons-material/Save"
-import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import React, { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
 import { selectUser } from "@/utils/authSlice.js"
 
-import { Box, Button, IconButton, Link, List, ListItem, Modal, Rating, TextField, Typography } from "@mui/material"
+import {
+  List,
+  ListItem,
+  Typography,
+  Link,
+  Box,
+  Modal,
+  IconButton,
+  TextField,
+  Button,
+  MenuItem,
+  Rating,
+} from "@mui/material"
 import { API_URL } from "@/utils/config"
 import axios from "axios"
 import { toast } from "react-toastify"

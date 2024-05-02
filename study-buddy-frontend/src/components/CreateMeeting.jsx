@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Modal from "@mui/material/Modal"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
@@ -11,11 +11,12 @@ import { toast } from "react-toastify"
 import Checkbox from "@mui/material/Checkbox"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import { selectUser } from "@/utils/authSlice.js"
-import { useDispatch, useSelector } from "react-redux"
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { API_URL } from "@/utils/config"
-import { isFuture } from "date-fns"
+import { isFuture, max } from "date-fns"
 
 const style = {
   position: "absolute",

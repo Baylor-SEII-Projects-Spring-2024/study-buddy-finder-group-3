@@ -1,5 +1,7 @@
 import React from "react"
-import CreateAccount from "@/components/CreateAccount"
+import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
+import CreateAccount from "@/components/CreateAccount";
 import { useRouter } from "next/router"
 
 

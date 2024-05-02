@@ -1,6 +1,8 @@
 import React, { useState } from "react"
 import Header from "@/components/Header"
+import Sidebar from "@/components/Sidebar"
 import SettingsMain from "@/components/SettingsMain"
+import landingstyles from "@/styles/landing.module.css"
 import Box from "@mui/material/Box"
 import AuthProgress from "@/components/AuthProgress"
 

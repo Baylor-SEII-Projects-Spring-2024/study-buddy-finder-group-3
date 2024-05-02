@@ -1,18 +1,18 @@
-import React, { useState } from "react"
-import Modal from "@mui/material/Modal"
-import Box from "@mui/material/Box"
-import Typography from "@mui/material/Typography"
-import TextField from "@mui/material/TextField"
-import Button from "@mui/material/Button"
-import styles from "@/styles/login-create.module.css"
-import { toast } from "react-toastify"
+import React, { useState } from "react";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import styles from "@/styles/login-create.module.css";
+import { toast } from 'react-toastify';
 import { useRouter } from "next/router"
 import axios from "axios"
-import { useDispatch, useSelector } from "react-redux"
-import Select from "@mui/material/Select"
-import MenuItem from "@mui/material/MenuItem"
-import { API_URL } from "@/utils/config"
-import { selectUser } from "@/utils/authSlice"
+import {useDispatch, useSelector} from 'react-redux';
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import { API_URL } from "@/utils/config";
+import {selectUser} from "@/utils/authSlice";
 
 function CreateCourse({ open, onClose }) {
     const dispatch = useDispatch();

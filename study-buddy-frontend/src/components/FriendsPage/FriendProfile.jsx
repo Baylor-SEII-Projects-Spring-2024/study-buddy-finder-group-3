@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState, useEffect } from "react"
 import axios from "axios"
 import Box from "@mui/material/Box"
 import Typography from "@mui/material/Typography"
@@ -10,7 +10,7 @@ import Button from "@mui/material/Button"
 import { API_URL } from "@/utils/config"
 import BlockIcon from "@mui/icons-material/Block"
 import { useSelector } from "react-redux"
-import { selectUser } from "@/utils/authSlice.js"
+import { selectToken, selectUser } from "@/utils/authSlice.js"
 
 function FriendProfile({ open, onClose, user }) {
   const [profile, setProfile] = useState("")

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react"
-import styles from "@/styles/Chat.module.css"
-import Message from "./Message"
-import axios from "axios"
-import { API_URL } from "@/utils/config"
+import React, { useEffect, useRef, useState } from "react";
+import styles from "@/styles/Chat.module.css";
+import Message from "./Message";
+import axios from "axios";
+import { API_URL } from "@/utils/config";
 
 const Messages = ({ user, selectedUser }) => {
   const [messages, setMessages] = useState([]);
