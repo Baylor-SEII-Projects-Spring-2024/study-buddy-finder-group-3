@@ -34,6 +34,7 @@ function SettingsMain() {
   const [userId, setUserId] = useState("")
   const [userIsTutor, setUserIsTutor] = useState(false)
   const [selectedAccountType, setSelectedAccountType] = useState("Student")
+  //const [newAccountType, setNewAccountType] = useState("Student");
 
   const [theme, setTheme] = useState("light") // State to track selected theme
   const [notifications, setNotifications] = useState(false)
@@ -41,39 +42,28 @@ function SettingsMain() {
   const [newUserTypeIsTutor, setNewUserTypeIsTutor] = useState(false) // change to current type
   const [openChangePasswordModal, setChangePasswordModal] = useState(false)
 
-  useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
-  }, [token, router])
+  // useEffect(() => {
+  //   if (!token || !user) {
+  //     router.push("/")
+  //   }
+  // }, [token, router])
 
   useEffect(() => {
-    if (user) {
-      setUserId(user.id)
-      fetchProfileInfo(user.id)
-    }
-  }, [user])
-  /*
-    useEffect(() => {
-        if (user) {
-            setUserIsTutor(user.accountType === "Tutor");
-            setSelectedAccountType(user.accountType);
-            setProfile(user.profile); // Assuming user.profile contains profile information
-        }
-    }, [user]);*/
-
-  const handleNewAccountTypeChange = (event) => {
-    const newAccountType = event.target.value
-    setUserIsTutor(newAccountType === "Tutor")
-    setSelectedAccountType(newAccountType)
-  }
+    // if (!token || !user) {
+      // router.push("/")
+    // } else {
+      setUserId(user?.id)
+      fetchProfileInfo(user?.id)
+      fetchUserAccountType(user?.id)
+    // }
+  }, [ user])
 
   const fetchProfileInfo = async (userId) => {
     try {
       const response = await axios.get(`${API_URL}/profile/${userId}`)
 
       // Log the entire response data object
-      console.log("Response data:", response.data)
+      console.log("Response data:", response.data);
 
       setProfile(response.data)
 
@@ -98,6 +88,17 @@ function SettingsMain() {
       )
     } catch (error) {
       console.error("Error fetching profile info:", error)
+    }
+  }
+
+  const fetchUserAccountType = async (userId) => {
+    try {
+      const response = await axios.get(`${API_URL}/users/${userId}/is-tutor`)
+      const isTutor = response.data
+      setUserIsTutor(isTutor)
+      setSelectedAccountType(isTutor ? "Tutor" : "Student")
+    } catch (error) {
+      console.error("Error fetching user account type:", error)
     }
   }
 
@@ -130,21 +131,71 @@ function SettingsMain() {
   const handleCloseChangePasswordModal = () => {
     setChangePasswordModal(false)
   }
+  /*
+    const handleNewAccountTypeChange = (event) => {
+        setNewAccountType(event.target.value);
+    };*/
+  const handleNewAccountTypeChange = (event) => {
+    const newAccountType = event.target.value
+    setUserIsTutor(newAccountType === "Tutor")
+    setSelectedAccountType(newAccountType)
+  }
 
   const handleSubmit = async () => {
+
     try {
       const data = {
-        isTutor: selectedAccountType === "Tutor" ? true : false,
-      }
+      isTutor: selectedAccountType === "Tutor" ? true : false,
+    }
+      const response = await axios.put(`${API_URL}/users/${userId}/changeAccountType`, data)
+      ;
 
-      // Send a request to update the user's account type
-      await axios.put(`${API_URL}/users/${user.id}/changeAccountType`, data)
-      toast.success("Account type updated successfully!")
+      console.log("Response data:", response.data)
+
+      toast.success("Acoount type changed successfully");
+
+
+
     } catch (error) {
-      console.error("Error updating account type:", error)
-      toast.error("Failed to update account type. Please try again later.")
+      console.error("Error fetching profile info:", error)
     }
   }
+  /*
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/profile/${userId}`)
+      const data = {
+        isTutor: selectedAccountType === "Tutor" ? true : false,
+      } /*
+        const data = {
+            isTutor: newAccountType === "Tutor" ? true : false,
+        };*//*
+
+      setProfile(response.data)
+
+      // Extract courses from the areaOfStudy field
+      let coursesArray = []
+      if (response.data.areaOfStudy) {
+        if (typeof response.data.areaOfStudy === "string") {
+          // If areaOfStudy is a string, split it into an array
+          coursesArray = response.data.areaOfStudy
+            .split(",")
+            .map((course) => course.trim())
+        } else if (Array.isArray(response.data.areaOfStudy)) {
+          // If areaOfStudy is already an array, use it directly
+          coursesArray = response.data.areaOfStudy
+        }
+      }
+
+      setSelectedCourses(coursesArray)
+      console.log("User's initial courses are: ", response.data.areaOfStudy)
+      console.log(
+        `Fetched user profile with userId=${userId}, areaofstudy=${profile.areaOfStudy}, email=${profile.emailAddress}, firstName=${profile.nameFirst}, lastName=${profile.nameLast}, username=${profile.username}`
+      )
+    } catch (error) {
+      console.error("Error fetching profile info:", error)
+    }
+  }*/
 
   return (
     <Box
@@ -155,7 +206,7 @@ function SettingsMain() {
         alignItems: "flex-start",
         justifyContent: "center",
         marginLeft: "25vw",
-        height: "auto", 
+        height: "auto",
         padding: 2,
         overflow: "auto",
       }}
@@ -235,7 +286,7 @@ function SettingsMain() {
       <br />
 
       {/* Appearance  section */}
-      <Box
+      {/* <Box
         border={1}
         borderColor="primary.main"
         borderRadius={8}
@@ -269,8 +320,7 @@ function SettingsMain() {
             <MenuItem value="dark">Dark</MenuItem>
           </Select>
         </div>
-      </Box>
-      <br />
+      </Box> */}
 
       {/* Notifications section */}
       <Box
@@ -286,7 +336,7 @@ function SettingsMain() {
           Notifications
         </Typography>
         <Divider />
-        <FormControlLabel
+        {/* <FormControlLabel
           control={
             <Switch
               checked={notifications}
@@ -296,7 +346,7 @@ function SettingsMain() {
           label="Receive notifications"
           labelPlacement="start"
           style={{ justifyContent: "space-between", paddingRight: "20px" }}
-        />
+        /> */}
         <FormControlLabel
           control={
             <Switch checked={emails} onChange={handleEmailUpdatesChange} />
@@ -319,7 +369,7 @@ function SettingsMain() {
         width={"50vw"}
       >
         <Typography variant="h8" gutterBottom>
-          Account and Privacy
+          Account and Security
         </Typography>
         <Divider />
 
@@ -366,10 +416,10 @@ function SettingsMain() {
             <MenuItem value="Tutor">Tutor</MenuItem>
             <MenuItem value="Student">Student</MenuItem>
           </Select>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Save
-          </Button>
         </div>
+        <Button variant="contained" color="primary" onClick={handleSubmit}>
+          Save
+        </Button>
       </Box>
     </Box>
   )

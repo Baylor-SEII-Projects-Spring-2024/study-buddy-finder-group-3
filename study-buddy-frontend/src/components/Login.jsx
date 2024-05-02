@@ -1,31 +1,36 @@
-import React, { useState } from "react";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import styles from "@/styles/login-create.module.css";
-import { toast } from 'react-toastify';
+import React, { useState } from "react"
+import Modal from "@mui/material/Modal"
+import Box from "@mui/material/Box"
+import Typography from "@mui/material/Typography"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import styles from "@/styles/login-create.module.css"
+import { toast } from "react-toastify"
 import { useRouter } from "next/router"
 import axios from "axios"
-import { useDispatch } from 'react-redux';
-import { setToken, setUser } from '@/utils/authSlice.js';
-import { API_URL } from "@/utils/config";
+import { useDispatch } from "react-redux"
+import { setToken, setUser } from "@/utils/authSlice.js"
+import { API_URL } from "@/utils/config"
+import ResetRequest from "./ResetRequest"
 
 function Login({ open, onClose }) {
-  const dispatch = useDispatch();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch()
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [resetOpen, setResetOpen] = useState(false)
   const router = useRouter()
 
+  const handleResetClose = () => {
+    setResetOpen(false)
+  }
 
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
+    setUsername(event.target.value)
+  }
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+    setPassword(event.target.value)
+  }
 
   const handleClose = () => {
     setUsername("")
@@ -34,42 +39,41 @@ function Login({ open, onClose }) {
   }
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!username) {
-      toast.error("Username cannot be empty");
-      return;
+      toast.error("Username cannot be empty", { toastId: "username" })
+      return
     }
     if (!password) {
-      toast.error("Password cannot be empty");
-      return;
+      toast.error("Password cannot be empty", { toastId: "password" })
+      return
     }
 
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, {
-        username,
-        password
-      })
+      const response = await axios.post(
+        `${API_URL}/auth/login`,
+        {
+          username,
+          password,
+        },
+        {
+          withCredentials: true, // Send cookies with the request
+        }
+      )
       console.log(response)
-      if (response.status === 200){
-        dispatch(setToken(response.data.token))
+      if (response.status === 200) {
         dispatch(setUser(response.data.user))
-        localStorage.setItem('token', response.data.token);
-        console.log('user', response.data.user)
-        //authenticate token
-
-        router.push('/home')
-
+        console.log("user", response.data.user)
+        router.push("/home")
       } else {
         toast.error("Invalid username or password")
         console.log("Invalid username or password")
       }
-
-    } catch (error){
+    } catch (error) {
       toast.error("Invalid username or password")
       console.error(error)
     }
-
-  };
+  }
 
   return (
     <Modal
@@ -81,7 +85,16 @@ function Login({ open, onClose }) {
         <Typography id="login-modal-title" variant="h6" component="h2">
           Login
         </Typography>
-        <Box component="form" sx={{ mt: 1 }} onSubmit={handleLogin}>
+        <Box
+          component="form"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            mt: 1,
+          }}
+          onSubmit={handleLogin}
+        >
           <TextField
             margin="normal"
             fullWidth
@@ -103,6 +116,20 @@ function Login({ open, onClose }) {
             value={password}
           />
           <Button
+            onClick={() => setResetOpen(true)}
+            variant="text"
+            sx={{
+              position: "relative",
+              backgroundColor: "bluegrey",
+              "&:hover": {
+                backgroundColor: "bluegrey",
+              },
+            }}
+          >
+            Forgot your password?
+          </Button>
+
+          <Button
             type="submit"
             fullWidth
             variant="contained"
@@ -121,9 +148,10 @@ function Login({ open, onClose }) {
             Cancel
           </Button>
         </Box>
+        <ResetRequest open={resetOpen} onClose={handleResetClose} />
       </Box>
     </Modal>
-  );
+  )
 }
 
-export default Login;
+export default Login

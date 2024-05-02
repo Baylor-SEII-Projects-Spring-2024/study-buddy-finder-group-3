@@ -10,7 +10,11 @@ public class TutorRatingService {
     @Autowired
     private TutorRatingRepository tutorRatingRepository;
 
-    public List<String> getTutorRatingByUserId(Long userid) {
-        return tutorRatingRepository.findByUserId(userid);
+    public List<String> getTutorRatingByUserId(Long tutorId) {
+        return tutorRatingRepository.findByTutorId(tutorId);
+    }
+
+    public boolean hasAlreadyReviewed(Long userId, Long tutorId) {
+        return tutorRatingRepository.findByUserIdAndTutorId(userId, tutorId).isPresent();
     }
 }

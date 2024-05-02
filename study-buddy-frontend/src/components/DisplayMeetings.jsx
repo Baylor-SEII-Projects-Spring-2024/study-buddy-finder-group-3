@@ -20,6 +20,8 @@ import {
   CardActionArea,
   CardMedia,
 } from "@mui/material"
+import { Parallax } from "react-parallax"
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import AccessTimeIcon from "@mui/icons-material/AccessTime"
 import VideocamIcon from "@mui/icons-material/Videocam"
@@ -36,13 +38,19 @@ import { toast } from "react-toastify"
 import { API_URL } from "@/utils/config"
 import Header from "./Header.jsx"
 import CreateMeeting from "./CreateMeeting.jsx"
-
+import { useTheme } from "@mui/material/styles"
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"
 import Footer from "./Footer.jsx"
+import { useActivePage } from "@/utils/activePageContext"
+import MeetingGrid from "./MeetingGrid.jsx"
+import AllMeetingsModal from "./AllMeetingsModal.jsx"
+//TODO: NEED TO REDUX THE RECOMMENDED MEETINGS ACCEPT
 
 function DisplayMeetings() {
   const dispatch = useDispatch()
+  const theme = useTheme()
   const user = useSelector(selectUser)
+  console.log("user", user)
   const meetings = useSelector((state) => state.meetings.meetings)
   const meetingsStatus = useSelector((state) => state.meetings.status)
   const [selectedMeeting, setSelectedMeeting] = useState(null)
@@ -52,31 +60,45 @@ function DisplayMeetings() {
   const [showDeleteIcon, setShowDeleteIcon] = useState(false)
   const [recommendedMeetings, setRecommendedMeetings] = useState()
   const [createMeetingOpen, setCreateMeetingOpen] = useState(false)
-  const [tutorId, setTutorId] = useState(null)
+  // const [tutors, setTutorId] = useState(null)
+  const [tutorIds, setTutorIds] = useState([]) 
   const router = useRouter()
   const unreadNotifications = useSelector(
     (state) => state.notifications.notificationCount
   )
+  const { setActivePage } = useActivePage()
+  const [creatorId, setCreatorId] = useState(null)
+  const [isAllMeetingsModalOpen, setAllMeetingsModalOpen] = useState(false)
+
+  const handleOpenAllMeetingsModal = () => {
+    setAllMeetingsModalOpen(true)
+  }
+
+  const handleCloseAllMeetingsModal = () => {
+    setAllMeetingsModalOpen(false)
+  }
+
+  const handleMeetingClick = (meeting) => {
+    setSelectedMeeting(meeting)
+    setModalOpen(true)
+    handleCloseAllMeetingsModal()
+    setCreatorId(meeting?.user?.id)
+  }
+
+  const handleDeleteMeetingFromModal = (meeting) => {
+    setMeetingToDelete(meeting)
+    handleCloseAllMeetingsModal()
+    setOpenDeleteDialog(true)
+  }
 
   const handleInviteClick = () => {
     router.push("/friends")
   }
 
-  // useEffect(() => {
-  //   const fetchNotifications = async () => {
-  //     if (user && user.id) {
-  //       try {
-  //         const response = await axios.get(`${API_URL}/user/${user.id}/notifications`);
-  //         dispatch(setUnreadNotifications({ count: response.data.length
-  //         }));
-  //       } catch (error) {
-  //         console.error("Error fetching notifications:", error);
-  //       }
-  //     }
-  //   };
-
-  //   fetchNotifications();
-  // }, [dispatch, user]);
+  const handleRequestNavigate = () => {
+    setActivePage("requests")
+    router.push("/friends")
+  }
 
   const [hoveredMeetingId, setHoveredMeetingId] = useState(null)
   // ref to keep track of the current timeout without causing re-renders
@@ -90,7 +112,7 @@ function DisplayMeetings() {
     // new timeout
     hoverTimeoutRef.current = setTimeout(() => {
       setHoveredMeetingId(meetingId)
-    }, 1000)
+    })
   }
 
   const handleMouseLeave = () => {
@@ -138,33 +160,34 @@ function DisplayMeetings() {
     setCreateMeetingOpen(false)
   }
 
-  useEffect(() => {
-    const fetchRecommendedMeetings = async () => {
-      try {
-        const response = await axios.get(
-          `${API_URL}/recommendations/meetings/${user.id}`
-        )
-        setRecommendedMeetings(response.data)
-      } catch (error) {
-        console.error("Error fetching recommended meetings:", error)
-      }
+  const fetchRecommendedMeetings = async () => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/recommendations/meetings/${user.id}`
+      )
+      setRecommendedMeetings(response.data)
+    } catch (error) {
+      console.error("Error fetching recommended meetings:", error)
     }
+  }
 
+  useEffect(() => {
     fetchRecommendedMeetings() // Call the function to fetch recommended meetings
   }, [user])
 
   const handleDeleteMeeting = async () => {
     try {
-      await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}`)
+      await axios.delete(`${API_URL}/meeting/${meetingToDelete.id}/${user.id}`)
       setOpenDeleteDialog(false)
       dispatch(fetchMeetingsByUserId(user.id))
       toast.success("Meeting successfully deleted")
+      fetchRecommendedMeetings()
     } catch (error) {
       console.error("Failed to delete meeting:", error)
     }
     setTimeout(() => {
       scrollToSection("meetings-section")
-    }, 100)
+    }, 500)
     setOpenDeleteDialog(false)
   }
 
@@ -174,53 +197,57 @@ function DisplayMeetings() {
     }
   }, [dispatch, user, meetingsStatus])
 
-  const handleOpenModal = async (meeting) => {
-    //  attendeeUserIds is an array before proceeding
-    console.log("meeting ob", meeting)
-    const attendeeUserIds = meeting?.attendeeUserIds || []
-
+  const handleOpenModal = async (meeting, isJoinable) => {
+    setCreatorId(meeting?.user?.id);
+    const attendeeUserIds = meeting?.attendeeUserIds || [];
+    let localTutorIds = []; 
+    console.log("attendeeUserIds", attendeeUserIds)
     const attendeeProfiles = await Promise.all(
       attendeeUserIds
-        .filter((id) => id !== user.id)
+        .filter(id => id !== user.id)
         .map(async (userId) => {
           try {
             const [profileResponse, isTutorResponse] = await Promise.all([
               axios.get(`${API_URL}/profile/${userId}`),
-              axios.get(`${API_URL}/users/${userId}/is-tutor`),
-            ])
-            if (isTutorResponse.data == true) {
-              setTutorId(userId)
+              axios.get(`${API_URL}/users/${userId}/is-tutor`)
+            ]);
+            console.log("profileResponse", profileResponse.data)
+            console.log("isTutorResponse", isTutorResponse.data)
+            if (isTutorResponse.data === true) {
+              console.log("is tutor in t")
+              console.log("tutor is ", userId)
+              localTutorIds.push(userId);
             }
-            console.log("isTutorResponse", isTutorResponse)
-            // if (isTutorResponse.data.isTutor) {
-            //   response.data.isTutor = true;
-            // }
-            console.log("profile res", profileResponse)
-            return profileResponse.data
+            
+            return profileResponse.data;
           } catch (error) {
-            console.error("Error fetching attendee info:", error)
-            return null // null for errors fix later
+            console.error("Error fetching attendee info:", error);
+            return null;
           }
         })
-    )
+    );
 
-    // filter out any null profiles resulting from errors
-    const validAttendeeProfiles = attendeeProfiles.filter(
-      (profile) => profile !== null
-    )
-
+    console.log("localTutorIds", localTutorIds)
+    const validAttendeeProfiles = attendeeProfiles.filter(profile => profile !== null);
+  
     setSelectedMeeting({
       ...meeting,
       attendeeProfiles: validAttendeeProfiles,
-    })
+      isJoinable: isJoinable,
+      tutorIds: localTutorIds || []
+    });
 
-    setModalOpen(true)
+    
+    setTutorIds(localTutorIds);
+    setModalOpen(true);
   }
 
+  
   const handleCloseModal = () => {
-    setTutorId(null)
+    tutorIds.length = 0; // Clear the tutor IDs array
     setModalOpen(false)
     setSelectedMeeting(null)
+    fetchRecommendedMeetings()
   }
 
   if (meetingsStatus === "loading") {
@@ -248,8 +275,8 @@ function DisplayMeetings() {
 
   return (
     <>
-      <Container>
         <Header />
+        <Parallax bgImage={"./unlock-potential.png"} strength={300}>
         <Box
           id="home-section"
           sx={{
@@ -261,259 +288,260 @@ function DisplayMeetings() {
             marginTop: "64px",
             padding: 2,
             boxSizing: "border-box",
-            backgroundImage: "url('/home-gradient.webp')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
+            backgroundColor: "rgba(255, 255, 255, 0)", // semi-transparent white background
+            borderRadius: "10px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            zIndex: 1,
+            backdropFilter: "blur(10px)",
           }}
         >
           <Typography
             variant="h3"
             component="h1"
             gutterBottom
-            sx={{ color: "text.primary" }}
+            sx={{ color: "text.primary", marginLeft: 15}}
           >
             Welcome {user && user.username ? user.username : ""}
           </Typography>
           <Typography
             variant="subtitle1"
             gutterBottom
-            sx={{ color: "text.secondary" }}
+            sx={{ color: "text.secondary", marginLeft: 15 }}
           >
-              You have {unreadNotifications} unread notifications
+            You have {unreadNotifications} unread notifications
           </Typography>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    "& > *": {
-                        marginRight: 1,
-                    },
-                }}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              "& > *": {
+                marginRight: 1,
+              },
+              marginLeft: 15
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenCreateMeeting}
             >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleOpenCreateMeeting}
-                >
-                    Create
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => scrollToSection("recommended-meetings")}
-                >
-                    View Recommended Meetings
-                </Button>
-            </Box>
+              Create
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => scrollToSection("recommended-meetings")}
+            >
+              View Recommended Meetings
+            </Button>
+          </Box>
         </Box>
-          <Box
-              id="meetings-section"
-              sx={{ height: "100vh", pt: "64px", marginBottom: "64px" }}
-          >
-              <Typography variant="h4" component="h2" gutterBottom align="center">
-                  Your Meetings
-              </Typography>
-              <Typography variant="body1" align="center" gutterBottom>
-                  Here are your upcoming meetings
-              </Typography>
-              {/* need ot add fitlers  */}
-              <Grid container spacing={4} sx={{ mt: 4 }}>
-                  {meetings.slice(0, 6).map((meeting) => (
-                      <Grid
-                          item
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          key={meeting.id}
-                          onMouseEnter={() => handleMouseEnter(meeting.id)}
-                          onMouseLeave={handleMouseLeave}
-                      >
-                          <Card style={{ position: "relative" }}>
-                              {" "}
-                              <CardActionArea onClick={() => handleOpenModal(meeting)}>
-                                  <CardMedia
-                                      component="img"
-                                      height="140"
-                                      image="/StudyBuddyLogo Background Removed.png" // need to replace with random image idk what yet
-                                      alt={meeting.title}
-                                  />
-                                  <CardContent>
-                                      <Typography gutterBottom variant="h5" component="div">
-                                          {meeting.title}
-                                      </Typography>
-                                      <Typography variant="body2" color="text.secondary">
-                                          {meeting.description}
-                                      </Typography>
-                                      <Box
-                                          sx={{ display: "flex", mt: 2, alignItems: "center" }}
-                                      >
-                                          <AccessTimeIcon sx={{ mr: 1 }} />
-                                          <Typography variant="body2">
-                                              Date: {new Date(meeting.date).toLocaleString()}
-                                          </Typography>
-                                      </Box>
-                                      <Box
-                                          sx={{ display: "flex", mt: 1, alignItems: "center" }}
-                                      >
-                                          <LocationOnIcon sx={{ mr: 1 }} />
-                                          <Typography variant="body2">
-                                              Location: {meeting.location || "Not specified"}
-                                          </Typography>
-                                      </Box>
-                                  </CardContent>
-                              </CardActionArea>
-                              {hoveredMeetingId === meeting.id && (
-                                  <IconButton
-                                      onClick={() => handleOpenDeleteDialog(meeting)}
-                                      style={{
-                                          position: "absolute",
-                                          top: 0,
-                                          right: 0,
-                                          color: "red",
-                                      }}
-                                  >
-                                      <DeleteIcon />
-                                  </IconButton>
-                              )}
-                          </Card>
-                      </Grid>
-                  ))}
-              </Grid>
-          </Box>
-          {/* beginning of rec meetings */}
-          <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px" }}>
-              <Typography variant="h4" component="h2" gutterBottom align="center">
-                  Recommended Meetings
-              </Typography>
-              <Typography
-                  variant="subtitle1"
-                  color="text.secondary"
-                  gutterBottom
-                  align="center"
-              >
-                  Meetings we thought may interest you based on your preferences.
-              </Typography>
-              <Grid container spacing={4} justifyContent="center">
-                  {recommendedMeetings?.map((meeting) => (
-                      <Grid item xs={12} sm={6} md={4} key={meeting.id}>
-                          <Card>
-                              <CardContent>
-                                  <Typography gutterBottom variant="h5" component="div">
-                                      {meeting.title}
-                                  </Typography>
-                                  <Typography
-                                      variant="body2"
-                                      color="text.secondary"
-                                      gutterBottom
-                                  >
-                                      {meeting.description}
-                                  </Typography>
-                                  {meeting.blockedUser ? (
-                                      <Typography variant="body2" color="text.secondary" style={{ fontWeight: 'bold', color: 'red' }}>
-                                          BLOCKED USER ATTENDING MEETING
-                                      </Typography>
-                                  ) : (
-                                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                                          {meeting.areaOfStudy} - {meeting.courseName}
-                                      </Typography>
-                                  )}
-                                  <Button endIcon={<ArrowForwardIosIcon />} sx={{ mt: 2 }}>
-                                      View Meeting
-                                  </Button>
-                              </CardContent>
-                          </Card>
-                      </Grid>
-                  ))}
-              </Grid>
-              <Box textAlign="center" mt={2}>
-                  <Button>View All</Button>
-              </Box>
-          </Box>
-          {/* end of recc meetings */}
-
-          <Box
-              id="friends-section"
-              sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  height: "100vh",
-              }}
-          >
-              <Box sx={{ width: "60%" }}>
-                  <Typography variant="h4" component="h2" gutterBottom>
-                      Expand Your Network with Study Buddy
-                  </Typography>
-                  <Typography variant="subtitle1" gutterBottom>
-                      Invite friends or peers to join Study Buddy and enhance your study
-                      experience.
-                  </Typography>
-                  <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
-                      <Button
-                          variant="contained"
-                          color="primary"
-                          sx={{ mx: 1 }}
-                          onClick={handleInviteClick}
-                      >
-                          Invite
-                      </Button>
-                      <Button variant="outlined" color="primary" sx={{ mx: 1 }}>
-                          View Requests
-                      </Button>
-                  </Box>
-              </Box>
-              <Box
-                  sx={{
-                      width: "40%",
-                      height: 200,
-                      bgcolor: "grey.300",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                  }}
-              >
-                  <Typography variant="caption" display="block" gutterBottom>
-                      add image eventually
-                  </Typography>
-              </Box>
-          </Box>
-
-          {selectedMeeting && (
-              <MeetingModal
-                  meeting={selectedMeeting}
-                  open={modalOpen}
-                  handleClose={handleCloseModal}
-                  updateMeetingInParent={updateMeetingInState}
-                  tutorId={tutorId}
-              />
-          )}
-          <Dialog
-              open={openDeleteDialog}
-              onClose={() => setOpenDeleteDialog(false)}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-          >
-              <DialogTitle id="alert-dialog-title">
-                  {"Are you sure you want to delete this meeting?"}
-              </DialogTitle>
-              <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                      This action cannot be undone.
-                  </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                  <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-                  <Button onClick={handleDeleteMeeting} autoFocus>
-                      Delete
-                  </Button>
-              </DialogActions>
-          </Dialog>
-          <CreateMeeting
-              open={createMeetingOpen}
-              onClose={handleCloseCreateMeeting}
+        </Parallax>
+        <Box
+          id="meetings-section"
+          sx={{ minHeight: "100vh", pt: "64px", marginBottom: "64px", paddingLeft: 20, paddingRight: 20}}
+        >
+          <Typography variant="h4" component="h2" gutterBottom align="center">
+            Your Meetings
+          </Typography>
+          <Typography variant="body1" align="center" gutterBottom>
+            Here are your upcoming meetings
+          </Typography>
+          <MeetingGrid
+            meetings={meetings}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
+            handleOpenModal={handleOpenModal}
+            handleOpenDeleteDialog={handleOpenDeleteDialog}
+            hoveredMeetingId={hoveredMeetingId}
+            handleOpenAllMeetingsModal={handleOpenAllMeetingsModal}
           />
-      </Container>
+        </Box>
+        {/* beginning of rec meetings */}
+        <Parallax bgImage={"./unlock-potential.png"} strength={300}>
+        <Box id="recommended-meetings" sx={{ height: "100vh", pt: "64px", padding: 20 ,backdropFilter: "blur(10px)"}}>
+          <Typography variant="h4" component="h2" gutterBottom align="center">
+            Recommended Meetings
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            color="text.secondary"
+            gutterBottom
+            align="center"
+            paddingBottom={2}
+          >
+            Meetings we thought may interest you based on your preferences.
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            {recommendedMeetings && recommendedMeetings.length > 0 ? (
+              recommendedMeetings.map((meeting) => (
+                <Grid item xs={12} sm={6} md={4} key={meeting.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {meeting.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {meeting.description}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {meeting.areaOfStudy} - {meeting.courseName}
+                      </Typography>
+                      <Button
+                        endIcon={<ArrowForwardIosIcon />}
+                        sx={{ mt: 2 }}
+                        onClick={() => handleOpenModal(meeting, true)}
+                      >
+                        View Meeting
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  textAlign: "center",
+                  mt: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center", 
+                  justifyContent: "center", 
+                  height: "30vh", 
+                }}
+              >
+                <Typography variant="subtitle1">
+                  There doesn't seem to be any meetings that you might be
+                  interested in at the moment.
+                </Typography>
+                <SentimentDissatisfiedIcon sx={{ fontSize: 40 }} />
+              </Box>
+            )}
+          </Grid>
+        </Box>
+        </Parallax>
+        {/* end of recc meetings */}
+        <Box
+          id="friends-section"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            height: "100vh",
+          }}
+        >
+          <Box sx={{ width: "60%", padding: 20}}>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Expand Your Network
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Invite friends or peers as buddies and enhance your study
+              experience.
+            </Typography>
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "start" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ mx: 1 }}
+                onClick={handleInviteClick}
+              >
+                Invite
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                sx={{ mx: 1 }}
+                onClick={handleRequestNavigate}
+              >
+                View Requests
+              </Button>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              width: "40%",
+              height: 200,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography variant="caption" display="block" gutterBottom>
+              <Paper
+                elevation={0}
+                sx={{
+                  marginRight: 10,
+                  height: 300,
+                  // width: "100%",
+                  // display: "flex",
+                  // alignItems: "center",
+                  // justifyContent: "center",
+                  // backgroundColor: "#fff",
+                  border: `1px solid ${theme.palette.primary.main}`,
+                }}
+              >
+                <img
+                  src="/friends.png"
+                  alt="friends"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Paper>
+            </Typography>
+          </Box>
+        </Box>
+
+        {selectedMeeting && (
+          <MeetingModal
+            meeting={selectedMeeting}
+            open={modalOpen}
+            handleClose={handleCloseModal}
+            updateMeetingInParent={updateMeetingInState}
+            tutors={tutorIds} // Ensure it defaults to an empty array if undefined
+            creatorId={creatorId}
+          />
+        )}
+        <Dialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to delete this meeting?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              This action cannot be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+            <Button onClick={handleDeleteMeeting} autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <CreateMeeting
+          open={createMeetingOpen}
+          onClose={handleCloseCreateMeeting}
+        />
+        <AllMeetingsModal
+          open={isAllMeetingsModalOpen}
+          handleClose={handleCloseAllMeetingsModal}
+          meetings={meetings} // Pass all meetings to the modal
+          onMeetingClick={handleMeetingClick}
+          onDeleteMeeting={handleDeleteMeetingFromModal}
+        />
+      {/* </Container> */}
     </>
   )
 }

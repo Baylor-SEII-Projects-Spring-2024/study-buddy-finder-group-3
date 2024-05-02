@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux"
 import { fetchMeetingsByUserId } from "../utils/meetingsSlice.js"
 import { List, ListItem, ListItemText, Typography } from "@mui/material"
 import { API_URL } from "@/utils/config"
+import { isFuture, max } from "date-fns"
 
 const style = {
   position: "absolute",
@@ -26,6 +27,8 @@ const style = {
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
+  maxHeight: "80vh",
+  overflowY: "auto",
 }
 
 function CreateMeeting({ open, onClose }) {
@@ -43,6 +46,8 @@ function CreateMeeting({ open, onClose }) {
   const [courseSearchTerm, setCourseSearchTerm] = useState("")
   const [courseResults, setCourseResults] = useState([])
   const [selectedCourse, setSelectedCourse] = useState(null)
+  const [isPrivateMeetings, setIsPrivateMeetings] = useState(true)
+  const [isBadDate, setIsBadDate] = useState(false)
 
   const handleSearchChange = async (event) => {
     const newSearchTerm = event.target.value
@@ -54,7 +59,7 @@ function CreateMeeting({ open, onClose }) {
         )
         setSearchResults(response.data)
         console.log("response", response)
-        console.log("searchResults", searchResults);
+        console.log("searchResults", searchResults)
       } catch (error) {
         console.error("Failed to search users", error)
         setSearchResults([])
@@ -93,16 +98,35 @@ function CreateMeeting({ open, onClose }) {
     }
   }
 
+  const handleIsPrivateMeetingsChange = (event) => {
+    setIsPrivateMeetings(event.target.checked)
+  }
   const handleDateChange = (newValue) => {
-    setMeetingDate(newValue)
+    const now = new Date()
+    if (isFuture(newValue)) {
+      setMeetingDate(newValue)
+    } else {
+      toast.error("Please select a future date and time.", {
+        toastId: "meetingDate",
+      })
+      setIsBadDate(true)
+    }
   }
 
   const handleTitleChange = (event) => {
-    setMeetingTitle(event.target.value)
+    const title = event.target.value
+    if (title.length <= 100) {
+      // lim
+      setMeetingTitle(title)
+    }
   }
 
   const handleDescriptionChange = (event) => {
-    setMeetingDescription(event.target.value)
+    const description = event.target.value
+    if (description.length <= 255) {
+      // lim
+      setMeetingDescription(description)
+    }
   }
 
   const handleLinkChange = (event) => {
@@ -117,10 +141,16 @@ function CreateMeeting({ open, onClose }) {
       toast.error("Title cannot be empty")
       return
     }
+    if (isBadDate) {
+      toast.error("Please select a future date and time.", {
+        toastId: "meetingDate",
+      })
+      return
+    }
 
     try {
       const invitedUserIds = selectedInvites.map((invite) => invite.id)
-
+      console.log("is private", isPrivateMeetings)
       const response = await axios.post(`${API_URL}/meeting/createMeeting`, {
         title: meetingTitle,
         description: meetingDescription,
@@ -128,7 +158,9 @@ function CreateMeeting({ open, onClose }) {
         link: meetingLink,
         location: meetingLocation,
         creatorUsername: user.username,
-        course: { id: selectedCourse.id },
+        course: { id: selectedCourse?.id },
+        private: isPrivateMeetings,
+        userId: user.id,
         invitedUserIds,
       })
 
@@ -152,23 +184,57 @@ function CreateMeeting({ open, onClose }) {
     setCourseResults([])
   }
 
+  const handleUserSelect = (user) => {
+    if (!selectedInvites.find((u) => u.id === user.id)) {
+      setSelectedInvites([...selectedInvites, user])
+    }
+    setSearchTerm("") // Clear search term to allow new input
+    setSearchResults([]) // Clear search results
+  }
+
+  const handleRemoveUser = (userId) => {
+    setSelectedInvites(selectedInvites.filter((u) => u.id !== userId))
+  }
+
+  const resetForm = () => {
+    setMeetingDate(new Date())
+    setMeetingTitle("")
+    setMeetingDescription("")
+    setMeetingLink("")
+    setIsOnlineMeeting(false)
+    setMeetingLocation("")
+    setSearchTerm("")
+    setSearchResults([])
+    setSelectedInvites([])
+    setCourseSearchTerm("")
+    setCourseResults([])
+    setSelectedCourse(null)
+    setIsPrivateMeetings(true)
+    setIsBadDate(false)
+    setSelectedInvites([])
+  }
+
+  const handleClose = () => {
+    resetForm()
+    onClose()
+  }
+
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       aria-labelledby="create-meeting-modal"
       aria-describedby="create-meeting-modal-description"
     >
       <Box sx={style}>
         <TextField
-          margin="dense"
-          id="meetingTitle"
           label="Add Title"
-          type="text"
-          fullWidth
           variant="outlined"
-          sx={{ mt: 2 }}
+          value={meetingTitle}
           onChange={handleTitleChange}
+          fullWidth
+          helperText={`${meetingTitle.length}/100`}
+          FormHelperTextProps={{ style: { textAlign: "right" } }}
         />
         <Box display="flex" alignItems="center">
           <TextField
@@ -193,6 +259,17 @@ function CreateMeeting({ open, onClose }) {
             sx={{ ml: 2 }}
           />
         </Box>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isPrivateMeetings}
+              onChange={handleIsPrivateMeetingsChange}
+            />
+          }
+          label="Private Meeting"
+          sx={{ mt: 2 }}
+        />
+
         <TextField
           label="Search Courses"
           type="text"
@@ -214,23 +291,24 @@ function CreateMeeting({ open, onClose }) {
         </List>
 
         <TextField
-          margin="dense"
-          id="meetingDescription"
-          label="Add description"
-          type="text"
-          fullWidth
+          label="Add Description"
+          variant="outlined"
           multiline
           rows={4}
-          variant="outlined"
-          sx={{ mt: 2 }}
+          value={meetingDescription}
           onChange={handleDescriptionChange}
+          fullWidth
+          helperText={`${meetingDescription.length}/255`}
+          FormHelperTextProps={{ style: { textAlign: "right" } }}
         />
+
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker
             sx={{ mt: 2, mr: 4 }}
             label="Start Time"
             value={meetingDate}
             onChange={handleDateChange}
+            minDateTime={new Date()}
             renderInput={(params) => (
               <TextField {...params} sx={{ width: "200%", mt: 2, mr: 2 }} />
             )}
@@ -251,7 +329,7 @@ function CreateMeeting({ open, onClose }) {
             <ListItem
               key={user.id}
               button
-              onClick={() => setSelectedInvites([...selectedInvites, user])}
+              onClick={() => handleUserSelect(user)}
             >
               <ListItemText primary={user.username} />
             </ListItem>
@@ -262,13 +340,7 @@ function CreateMeeting({ open, onClose }) {
           {selectedInvites.map((invite) => (
             <ListItem key={invite.id}>
               <ListItemText primary={invite.username} />
-              <Button
-                onClick={() =>
-                  setSelectedInvites(
-                    selectedInvites.filter((i) => i.id !== invite.id)
-                  )
-                }
-              >
+              <Button onClick={() => handleRemoveUser(invite.id)}>
                 Remove
               </Button>
             </ListItem>

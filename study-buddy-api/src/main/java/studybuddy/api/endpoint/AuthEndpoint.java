@@ -1,20 +1,32 @@
 package studybuddy.api.endpoint;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import studybuddy.api.user.PasswordReset;
 import studybuddy.api.user.User;
 import studybuddy.api.user.UserService;
 import studybuddy.api.utils.JwtUtil;
 import studybuddy.api.utils.TokenStore;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
@@ -35,28 +47,26 @@ public class AuthEndpoint {
     private TokenStore tokenStore;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserReq loginRequest) {
+    public ResponseEntity<?> login(@RequestBody UserReq loginRequest, HttpServletResponse response) {
         log.info("Attempting login for username: {}", loginRequest.getUsername());
         Optional<User> user = userService.findByUsername(loginRequest.getUsername());
 
         if (user.isPresent()) {
             log.info("User found for username: {}", loginRequest.getUsername());
             User foundUser = user.get();
-//            if (user.get().getPassword().equals(loginRequest.getPassword())) {
-            //*Uncomment once password hashing exits
             if (passwordEncoder.matches(loginRequest.getPassword(), foundUser.getPassword())) {
                 log.info("Password match for user: {}", loginRequest.getUsername());
                 String token = jwtUtil.generateToken(foundUser); //tokenize
 
-                Map<String, Object> response = new HashMap<>();
-                response.put("token", token);
-
-                User safeUser = new User(foundUser);
-                safeUser.setPassword(null);
-
-                response.put("user", safeUser);
-
-                return ResponseEntity.ok().body(response);
+                // Set the token as a cookie in the response
+                Cookie cookie = new Cookie("token", token);
+                cookie.setHttpOnly(true);
+                cookie.setMaxAge(86400); //24hrs
+                cookie.setDomain("34.16.148.153");
+                response.addCookie(cookie);
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("user", new User(foundUser));
+                return ResponseEntity.ok().body(responseData);
             } else {
                 log.info("Password mismatch for user: {}", loginRequest.getUsername());
             }
@@ -151,32 +161,102 @@ public class AuthEndpoint {
 
 
     @GetMapping("/validateToken")
-    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String tokenHeader) {
-        String token = tokenHeader.replace("Bearer ", "");
-        try {
-            if (jwtUtil.validateToken(token)) {
-                String username = jwtUtil.extractUsername(token);
-                User user = userService.findByUsername(username).orElse(null);
-                if (user != null) {
-                    return ResponseEntity.ok(user);
+    public ResponseEntity<?> validateToken(HttpServletRequest request) {
+        // Check for cookie in the request
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("token".equals(cookie.getName())) {
+                    String token = cookie.getValue();
+                    if (jwtUtil.validateToken(token)) {
+                        try {
+                            Long userId = jwtUtil.extractUserId(token);
+                            User user = userService.getUserById(userId);
+                            if (user != null) {
+                                return ResponseEntity.ok().body(user);
+                            } else {
+                                return ResponseEntity.status(404).body("User not found");
+                            }
+                        } catch (Exception e) {
+                            return ResponseEntity.status(500).body("Error processing token");
+                        }
+                    }
                 }
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-        } catch (Exception e) {
-            log.error("Token validation error: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(401).body("Invalid token");
     }
 
-    @PostMapping("/invalidateToken")
-    public ResponseEntity<?> invalidateToken(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            tokenStore.invalidateToken(token);
-            return ResponseEntity.ok().build();
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        clearHttpOnlyCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
+    private void clearHttpOnlyCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0); // Expire the cookie immediately
+//        cookie.setSecure(true);
+        cookie.setDomain("34.16.148.153");
+        log.info("Clearing cookie " + cookie.getName());
+        response.addCookie(cookie);
+    }
+
+
+
+    @GetMapping("/generateResetToken/{email}")
+    public ResponseEntity<BigInteger> generateResetToken(@PathVariable String email) {
+        //Check if email is valid
+        String sql = "SELECT * FROM users WHERE email_address = ?";
+
+        List<User> users = jdbcTemplate.query(sql, new GetFriendsEndpoint.UserRowMapper(), email);
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.badRequest().body("Invalid Authorization header");
+
+        //Generate a token
+
+        SecureRandom random = new SecureRandom();
+
+        BigInteger token = BigInteger.valueOf(random.nextLong());
+
+        //Store token and userID in db
+
+        sql = "INSERT INTO password_reset (token, reset_user_id) VALUES(?, ?)";
+
+        jdbcTemplate.update(sql, token, users.get(0).getId());
+
+        //return token
+        return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
+    @GetMapping("/validateResetToken/{token}")
+    public ResponseEntity<User> validateResetToken(@PathVariable BigInteger token) {
+
+        String sql = "SELECT u.* FROM users u JOIN password_reset pr ON u.user_id = pr.reset_user_id WHERE pr.token = ?";
+
+        List<User> users = jdbcTemplate.query(sql, new GetFriendsEndpoint.UserRowMapper(), token);
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        if (users.size() > 1) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return new ResponseEntity<>(users.get(0), HttpStatus.OK);
+    }
+
+    @DeleteMapping("invalidateResetToken/{token}")
+    public ResponseEntity<?> invalidateResetToken(@PathVariable BigInteger token) {
+        String sql = "DELETE FROM password_reset WHERE token = ?";
+
+        jdbcTemplate.update(sql, token);
+
+        return ResponseEntity.ok().build();
     }
 
 

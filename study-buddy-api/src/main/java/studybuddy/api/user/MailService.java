@@ -1,9 +1,12 @@
 package studybuddy.api.user;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,15 +20,16 @@ public class MailService {
     }
 
     public boolean sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        log.debug("vibe check");
-        message.setFrom("studdybuddyofficialsite@gmail.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
         try {
+            helper.setFrom("studdybuddyofficialsite@gmail.com");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text, true); // true indicates html
             mailSender.send(message);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             log.error(e.getMessage());
             return false;
         }

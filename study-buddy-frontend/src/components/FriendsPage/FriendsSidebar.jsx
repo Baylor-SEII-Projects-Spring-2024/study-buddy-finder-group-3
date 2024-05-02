@@ -43,7 +43,7 @@ import { Badge } from "@mui/material"
 import Header from "../Header"
 import RecommendIcon from "@mui/icons-material/Recommend"
 import FriendsCancel from "./FriendsCancel"
-
+import { useActivePage } from "@/utils/activePageContext"
 const drawerWidth = 240
 
 const openedMixin = (theme) => ({
@@ -131,7 +131,9 @@ export default function FriendsSidebar() {
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
   const dispatch = useDispatch()
-  const [activePage, setActivePage] = React.useState("list")
+  const { activePage, setActivePage } = useActivePage();
+
+  // const [activePage, setActivePage] = React.useState("list")
   const [friends, setFriendsList] = useState([])
   const [message, setMessage] = useState("")
   const user = useSelector(selectUser)
@@ -207,10 +209,12 @@ export default function FriendsSidebar() {
 
   const setActivePageList = () => {
     setActivePage("list")
+    console.log("list", activePage)
   }
 
   const setActivePageRequests = () => {
     setActivePage("requests")
+    console.log("requests", activePage)
   }
 
   const setActivePageBlocked = () => {

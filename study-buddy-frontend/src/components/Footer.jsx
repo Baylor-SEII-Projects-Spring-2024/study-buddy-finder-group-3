@@ -29,15 +29,17 @@ export default function Footer() {
 
   const sendEmail = async () => {
     try {
-      const response = await axios.post(`${API_URL}/send-email`, mailRequest);
-      toast.success("Subscribed!");
+      const response = await axios.post(`${API_URL}/send-email`, mailRequest)
+      toast.success("Subscribed!")
     } catch (error) {
-      toast.error("Invalid email");
+      toast.error("Invalid email")
     }
   }
 
   return (
     <>
+      <Divider />
+
       <Box sx={{ flexGrow: 1, padding: 10 }}>
         <Box
           sx={{
@@ -55,109 +57,14 @@ export default function Footer() {
               style={{ maxHeight: "70px" }}
             />
           </Box>
-          <Box marginRight={Itemspacing}>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="h7" align={textAllign} fontWeight={"bold"}>
-                About Us
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Home
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Features
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Contact
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Pricing
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Blog
-              </Typography>
-            </Box>
-          </Box>
-          <Box marginRight={Itemspacing}>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="h7" align={textAllign} fontWeight={"bold"}>
-                Support
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                FAQ
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Terms
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Privacy
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Security
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Sitemap
-              </Typography>
-            </Box>
-          </Box>
-          <Box marginRight={Itemspacing}>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="h7" align={textAllign} fontWeight={"bold"}>
-                Resources
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Help Center
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Community
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Partners
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Developers
-              </Typography>
-            </Box>
-            <Box paddingBottom={textSpacing}>
-              <Typography variant="body2" align={textAllign}>
-                Documentation
-              </Typography>
-            </Box>
-          </Box>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-              maxWidth: "100%",
+              alignItems: "flex-end", // Aligns children horizontally to the end (right)
+              justifyContent: "flex-start", // Aligns children vertically to the start (top)
+              width: "100%", // Takes full width to ensure right alignment in a flex container
+                        //center
             }}
           >
             <Box paddingBottom={textSpacing}>
@@ -186,7 +93,12 @@ export default function Footer() {
                 fullWidth
                 sx={{ width: "20vw" }}
               />
-              <Button style={{ marginLeft: 20, color: "black" }} onClick={() => {sendEmail()}}>
+              <Button
+                style={{ marginLeft: 20, color: "black" }}
+                onClick={() => {
+                  sendEmail()
+                }}
+              >
                 Subscribe
               </Button>
             </Box>
@@ -198,7 +110,6 @@ export default function Footer() {
             </Box>
           </Box>
         </Box>
-        <Divider />
         <Box
           sx={{
             display: "flex",

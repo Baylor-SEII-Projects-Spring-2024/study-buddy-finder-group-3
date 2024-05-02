@@ -46,7 +46,7 @@ public class RecommendationEndpoint {
         String sql = "SELECT * FROM meeting " +
                 "WHERE meeting_id NOT IN " +
                 "(SELECT meeting_id FROM meeting JOIN user_meeting USING(meeting_id)" +
-                "WHERE user_meeting.user_id = ?)";
+                "WHERE user_meeting.user_id = ?) AND is_private = FALSE";
 
         List<MeetingReccomendations> recList = jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
                 new MeetingReccomendations(

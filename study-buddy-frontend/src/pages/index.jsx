@@ -1,7 +1,11 @@
 import React, { useState } from "react"
 import Head from "next/head"
 import LandingPage from "@/components/Landing"
+import { useSelector, useDispatch } from "react-redux"
+import { selectUser } from "@/utils/authSlice.js"
+
 function landing() {
+  const user = useSelector(selectUser)
   return (
     <>
       <Head>
