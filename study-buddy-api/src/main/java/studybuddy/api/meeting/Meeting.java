@@ -68,6 +68,9 @@ public class Meeting {
     @JoinColumn(name = "COURSE_ID", referencedColumnName = "COURSE_ID", foreignKey = @ForeignKey(name = "FK_MEETING_COURSE_ID"))
     private Courses course;
 
+    @Column(name = "IS_PRIVATE")
+    private boolean isPrivate;
+
     public Meeting(){
 
     }

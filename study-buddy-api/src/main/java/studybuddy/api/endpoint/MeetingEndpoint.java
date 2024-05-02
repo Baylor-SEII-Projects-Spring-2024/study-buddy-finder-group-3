@@ -9,6 +9,8 @@ import studybuddy.api.meeting.MeetingService;
 
 import java.util.List;
 
+import static studybuddy.api.meeting.MeetingService.log;
+
 @RestController
 @RequestMapping("/meeting")
 public class MeetingEndpoint {
@@ -18,8 +20,10 @@ public class MeetingEndpoint {
 
     @PostMapping("/createMeeting")
     public ResponseEntity<?> createMeeting(@RequestBody Meeting meeting) {
+        log.info("Creating meeting: {}", meeting);
         try {
             String creatorUsername = meeting.getCreatorUsername();
+            log.info("Creator username: {}", creatorUsername);
             if (creatorUsername == null || creatorUsername.isEmpty()) {
                 return ResponseEntity.badRequest().body("Creator username is missing");
             }
@@ -46,10 +50,11 @@ public class MeetingEndpoint {
         return ResponseEntity.ok(updatedMeeting);
     }
 
-    @DeleteMapping("/{meetingId}")
-    public ResponseEntity<?> deleteMeeting(@PathVariable Long meetingId) {
+    @DeleteMapping("/{meetingId}/{userDeletingId}")
+    public ResponseEntity<?> deleteMeeting(@PathVariable Long meetingId, @PathVariable Long userDeletingId) {
         try {
-            meetingService.deleteMeeting(meetingId);
+            log.info("Deleting meeting: {}", meetingId);
+            meetingService.deleteMeeting(meetingId, userDeletingId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete meeting");
@@ -76,6 +81,19 @@ public class MeetingEndpoint {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get pending invitations");
         }
     }
+
+    @PostMapping("/join/{meetingId}/{userId}")
+    public ResponseEntity<?> joinMeeting(@PathVariable Long meetingId, @PathVariable Long userId) {
+        log.info("Joining meeting: {}", userId);
+        try {
+            meetingService.joinMeeting(userId, meetingId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Failed to join meeting: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
 
 
 

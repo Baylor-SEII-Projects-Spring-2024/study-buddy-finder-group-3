@@ -84,6 +84,7 @@ public class UserService {
             tutorRating.setUser(userOptional.get());
             tutorRating.setRating(rating);
             tutorRating.setComment(comment);
+            tutorRating.setTutor(tutorOptional.get());
 
             tutorRatingRepository.save(tutorRating);
             return true;
@@ -96,5 +97,9 @@ public class UserService {
 
     public List<User> findUsersContainingUsernameExcludingSearcher(String searchTerm, Long userId) {
         return userRepository.findUsersContainingUsernameExcludingSearcher(searchTerm, userId);
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 }

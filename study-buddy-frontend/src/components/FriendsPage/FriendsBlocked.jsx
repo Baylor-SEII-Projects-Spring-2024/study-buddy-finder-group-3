@@ -46,9 +46,9 @@ export default function FriendsBlocked() {
   }
 
   useEffect(() => {
-    if (!token || !user) {
-      router.push("/")
-    }
+    // if (!token || !user) {
+    //   router.push("/")
+    // }
 
     if (user) {
       console.log("here")

@@ -129,7 +129,7 @@ function DisplayCourses() {
             <Box id="courses-section" >
                 {courses.length === 0 ? (
                     <Typography variant="h4" gutterBottom style={{ textAlign: "center", marginTop: "2rem" }}>
-                        No courses
+                        You have not joined any courses. Join one now by clicking "Add Course"!
                     </Typography>
                 ) : (
                     <Grid container spacing={4} sx={{ mt: 4 }}>
