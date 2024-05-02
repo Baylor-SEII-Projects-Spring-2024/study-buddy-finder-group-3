@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react"
-import { styled, useTheme } from "@mui/material/styles"
+import { styled } from "@mui/material/styles"
 import Box from "@mui/material/Box"
 import MuiDrawer from "@mui/material/Drawer"
-import MuiAppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
 import List from "@mui/material/List"
 import CssBaseline from "@mui/material/CssBaseline"
 import Typography from "@mui/material/Typography"
@@ -12,27 +10,16 @@ import ListItem from "@mui/material/ListItem"
 import ListItemButton from "@mui/material/ListItemButton"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import ListItemText from "@mui/material/ListItemText"
-import InboxIcon from "@mui/icons-material/MoveToInbox"
-import AppBar from "@mui/material/AppBar"
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"
 import { KeyboardArrowLeft } from "@mui/icons-material"
 import FriendsAdd from "./FriendsAdd"
-import MenuOpenIcon from "@mui/icons-material/MenuOpen"
 import PeopleIcon from "@mui/icons-material/People"
 import PersonAddIcon from "@mui/icons-material/PersonAdd"
 import PersonOffIcon from "@mui/icons-material/PersonOff"
 import ForumIcon from "@mui/icons-material/Forum"
 import { Button } from "@mui/material"
-import { useRouter } from "next/router"
-import { useSelector, useDispatch } from "react-redux"
-import { selectToken, setToken, logout } from "@/utils/authSlice.js"
-import ChatComp from "@/components/ChatComp";
+import { useSelector } from "react-redux"
 import ChatParentComponent from "@/components/ChatParentComponent";
-import styles from "@/styles/Chat.module.css";
-import Messages from "@/components/Messages";
-import ChatInput from "@/components/ChatInput";
-import ChatSidebar from "@/components/ChatSidebar";
-
 import FriendsList from "./FriendsList"
 import axios from "axios"
 import { API_URL } from "@/utils/config"
@@ -48,7 +35,6 @@ const drawerWidth = 240
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
-  //backgroundColor: "primary",
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -58,8 +44,6 @@ const openedMixin = (theme) => ({
 })
 
 const closedMixin = (theme) => ({
-  //backgroundColor: "primary",
-
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -77,35 +61,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}))
-
-const DrawerHeader2 = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-}))
-
-const StyledAppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }))
 
 const StyledDrawer = styled(MuiDrawer, {
@@ -127,52 +83,19 @@ const StyledDrawer = styled(MuiDrawer, {
 }))
 
 export default function FriendsSidebar() {
-  const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const router = useRouter()
-  const dispatch = useDispatch()
   const { activePage, setActivePage } = useActivePage();
-
-  // const [activePage, setActivePage] = React.useState("list")
   const [friends, setFriendsList] = useState([])
   const [message, setMessage] = useState("")
   const user = useSelector(selectUser)
-  const [userId, setUserid] = useState("")
-  const [loggingOut, setLoggingOut] = useState(false)
-  const [count, setCount] = useState(0)
   const [requestsValue, setRequestsValue] = useState(0)
   const [recommendationsValue, setRecommendationsValue] = useState(0)
-
-  const navigateToProfile = () => {
-    router.push("/profile")
-  }
-
-  const navigateFriends = () => {
-    router.push("/friends")
-  }
-
-  const navigateHome = () => {
-    router.push("/home")
-  }
-
-  const handleLogout = async () => {
-    setLoggingOut(true)
-    localStorage.removeItem("token")
-    dispatch(logout())
-    router.push("/")
-  }
 
   const toggleDrawer = () => {
     setOpen(!open)
   }
 
-  const handleButtonClick = () => {
-    setLoggingOut(true)
-    handleLogout()
-  }
-
   const fetchRequests = async () => {
-    if (loggingOut) return
     try {
       const response = await axios.get(
         `${API_URL}/friends/${user.id}/getRequests`
@@ -184,19 +107,9 @@ export default function FriendsSidebar() {
   }
 
   useEffect(() => {
-    if (user) {
-      console.log("here")
-      setUserid(user.id)
-    }
 
     fetchRequests()
 
-    const interval = setInterval(() => {
-      // Update the state every couple of seconds
-      setCount((prevCount) => prevCount + 1)
-    }, 2000) // 2000 milliseconds = 2 seconds
-
-    return () => clearInterval(interval)
   }, [user, message, activePage])
 
   const handleMessageUpdate = () => {
