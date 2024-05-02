@@ -40,14 +40,6 @@ const Messages = ({ user, selectedUser }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // useEffect(() => {
-  //   if (user && selectedUser && user.id && selectedUser.id) {
-  //     fetchMessages();
-  //     intervalRef.current = setInterval(fetchMessages, 2000);
-  //     return () => clearInterval(intervalRef.current);
-  //   }
-  // }, [user?.id, selectedUser?.id]);
-
   return (
     <div className={styles.Messages}>
       {loading && <p></p>}
@@ -55,7 +47,6 @@ const Messages = ({ user, selectedUser }) => {
         user && <Message key={msg.id} isOwner={msg.user.id !== user.id} content={msg.content} />
       ))}
       <div ref={messagesEndRef} />
-      {/* div for scrolling to bottom */}
     </div>
   );
 };

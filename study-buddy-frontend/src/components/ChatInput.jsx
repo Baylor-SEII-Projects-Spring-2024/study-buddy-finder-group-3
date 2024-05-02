@@ -24,19 +24,17 @@ const ChatInput = ({ user, selectedUser }) => {
 
     try {
       const response = await axios.post(`${API_URL}/chat/send`, {
-        user: user, // Assuming user is an object containing necessary user data
-        receiver: selectedUser, // Assuming selectedUser is an object containing necessary user data
+        user: user,
+        receiver: selectedUser,
         content: inputValue.trim()
       });
 
       console.log("Message sent successfully:", response.data);
 
-      // Clear the input field after sending the message
       setInputValue("");
       setErrorMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      // setErrorMessage("Failed to send message. Please try again later.");
     }
   };
 
@@ -51,7 +49,6 @@ const ChatInput = ({ user, selectedUser }) => {
       <div className={styles.Send}>
         <button onClick={sendMessage} style={{ borderRadius: "10px" }}>Send</button>
       </div>
-      {/*{errorMessage && <div className={styles.ErrorMessage}>{errorMessage}</div>}*/}
     </div>
   );
 };
