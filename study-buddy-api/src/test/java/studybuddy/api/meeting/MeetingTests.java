@@ -81,10 +81,7 @@ public class MeetingTests {
         Long creatorId = creator.getId();
 
         // Verify the meeting is deleted
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            meetingService.getMeetingsByUserId(creatorId);
-        });
-        assertTrue(exception.getMessage().contains("Meeting not found"));
+        assert (meetingService.getMeetingsByUserId(creatorId).isEmpty());
     }
 }
 
