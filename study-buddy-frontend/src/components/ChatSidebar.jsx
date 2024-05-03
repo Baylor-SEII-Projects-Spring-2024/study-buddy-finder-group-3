@@ -1,9 +1,7 @@
-// ChatSidebar.jsx
-
 import React, { useState, useEffect } from "react";
 import styles from "@/styles/Chat.module.css";
 import ChatNavbar from "@/components/ChatNavbar";
-import Chats from "@/components/Chats"; // Import Chats component
+import Chats from "@/components/Chats";
 import axios from "axios";
 import { API_URL } from "@/utils/config";
 
@@ -17,7 +15,6 @@ const ChatSidebar = ({ user, onUserSelect, SelectedUser }) => {
         setFriends(response.data);
       } catch (error) {
         console.error("Error fetching friends:", error);
-        // Handle the error state or retry logic here
       }
     };
 
@@ -31,8 +28,6 @@ const ChatSidebar = ({ user, onUserSelect, SelectedUser }) => {
   return (
     <div className={styles.ChatSidebar}>
       <ChatNavbar user={user} />
-      {/*<ChatSearch user={user} />*/}
-      {/* Pass the onUserSelect callback prop to Chats */}
       <Chats user={user} friends={friends} onUserSelect={onUserSelect} selectedUser={SelectedUser} />
     </div>
   );
