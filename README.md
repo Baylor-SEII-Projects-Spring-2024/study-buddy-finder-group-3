@@ -1,4 +1,11 @@
-# Study Buddy Spring 2024
+# Pair It Study
+
+## Running the Application
+If you wish to run the application on localhost, rather than viewing it on our deployed site, please do the following
+  1. In the `/api` folder, please navigate to `AuthEndpoint.java` and replace the IP in lines 65 and 201 with "localhost"
+  2. In the `/frontend` folder, please create a `.env` file with the contents: `NEXT_PUBLIC_API_URL=http://localhost:8080`
+  3. In order to have pre-populated courses, load the database in Intellij with the `courses.sql` file
+  4. Run the application, making sure to follow the [Docker Guide Below](#mysql-database-setup-instructions)
 
 This is the template project for the Baylor Software Engineering II class project for Spring 2024. There are several parts to this template project:
  - `/study-buddy-api` - API/Backend - The server component of the project, using Java Spring as a framework.
