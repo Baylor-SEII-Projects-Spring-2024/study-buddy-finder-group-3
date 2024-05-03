@@ -7,13 +7,11 @@ If you wish to run the application on localhost, rather than viewing it on our d
   3. In order to have pre-populated courses, load the database in Intellij with the `courses.sql` file
   4. Run the application, making sure to follow the [Docker Guide Below](#mysql-database-setup-instructions)
 
-This is the template project for the Baylor Software Engineering II class project for Spring 2024. There are several parts to this template project:
  - `/study-buddy-api` - API/Backend - The server component of the project, using Java Spring as a framework.
  - `/study-buddy-frontend` - Web/Frontend - The web component of the project, using React and Material UI as a framework.
  - `/docs` - Project documentation, including the project SOW and timeline/schedule.
  - `/cicd` and `/docker` - Sample resources to aid you in getting your GCP deployment working.
 
-This `README.md` file will serve as a general setup guide for the project. In addition, some folders also have `README.md` files to further go into detail about their contents and provide some project guidance.
 
 ## Table of Contents
 
