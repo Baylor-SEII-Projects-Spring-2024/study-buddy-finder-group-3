@@ -1,4 +1,4 @@
-# Pair It Study
+# PairIt Study Buddy
 
 ### We strongly recommend you to run this application via our CICD link in order to avoid extra setup steps
 
