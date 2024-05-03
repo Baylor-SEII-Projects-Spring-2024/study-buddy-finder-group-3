@@ -1,5 +1,7 @@
 # Pair It Study
 
+### We strongly recommend you to run this application via our CICD link in order to avoid extra setup steps
+
 ## Running the Application
 If you wish to run the application on localhost, rather than viewing it on our deployed site, please do the following
   1. In the `/api` folder, please navigate to `AuthEndpoint.java` and replace the IP in lines 65 and 201 with "localhost"
