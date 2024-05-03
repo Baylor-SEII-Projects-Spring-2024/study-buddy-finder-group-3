@@ -8,30 +8,16 @@ import Typography from "@mui/material/Typography"
 import TextField from "@mui/material/TextField"
 import { toast } from "react-toastify"
 import axios from "axios"
-import { API_URL } from "@/utils/config";
+import { API_URL } from "@/utils/config"
 
-const sections = [
-  { title: "Home", id: "home-section" },
-  //{ title: "About", id: "about-us-section" },
-  //{ title: "Potential", id: "unlock-potential-section" },
-  //{ title: "Customers", id: "customers-section" },
-]
+const sections = [{ title: "Home", id: "home-section" }]
 
 export default function resetPassword() {
   const router = useRouter()
   const { token } = router.query
-  const [isHovered, setIsHovered] = useState(false)
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [userId, setUserId] = useState("")
-
-  const scrollToSection = (id) => {}
-
-  const scrollToTop = () => {}
-
-  const handleOpenCreateAccount = () => {}
-
-  const handleOpenLogin = () => {}
 
   const returnHome = () => {
     router.push("/")
@@ -39,9 +25,9 @@ export default function resetPassword() {
 
   useEffect(() => {
     if (token) {
-        validateToken()
+      validateToken()
     }
-    }, [token])
+  }, [token])
 
   const validateToken = async () => {
     try {
@@ -58,13 +44,13 @@ export default function resetPassword() {
 
   const invalidateToken = async () => {
     try {
-        const response = await axios.delete(
-            `${API_URL}/auth/invalidateResetToken/${token}`
-        )
+      const response = await axios.delete(
+        `${API_URL}/auth/invalidateResetToken/${token}`
+      )
     } catch (error) {
-        console.error("Error invalidating token:", error)
+      console.error("Error invalidating token:", error)
     }
-    }
+  }
 
   const changePassword = async () => {
     if (!password) {
@@ -103,8 +89,6 @@ export default function resetPassword() {
         { password: password }
       )
       toast.success("Password reset successfully")
-
-      
     } catch (error) {
       console.error("Error resetting password:", error)
       toast.error("Error resetting password")
@@ -124,12 +108,6 @@ export default function resetPassword() {
           >
             {sections.map((section) => (
               <Button
-                onMouseEnter={() => {
-                  setIsHovered(true)
-                }}
-                onMouseLeave={() => {
-                  setIsHovered(false)
-                }}
                 key={section.title}
                 color="inherit"
                 className={styles.buttonUnderlineCenter}
@@ -137,7 +115,6 @@ export default function resetPassword() {
                 sx={{
                   "&:hover": {
                     backgroundColor: "transparent",
-                    // cursor: 'none',
                     "@media (hover: none)": {
                       backgroundColor: "transparent",
                     },
@@ -148,8 +125,6 @@ export default function resetPassword() {
               </Button>
             ))}
           </Box>
-
-          {/* center section */}
           <Box
             style={{
               display: "flex",

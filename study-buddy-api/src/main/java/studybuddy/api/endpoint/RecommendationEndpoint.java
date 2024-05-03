@@ -82,7 +82,7 @@ public class RecommendationEndpoint {
             // Gets meeting course ID
             sql = "SELECT course_id FROM meeting WHERE meeting_id = ?";
             Long meetingCourse = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, Long.class);
-            System.out.println("Course ID: " + meetingCourse);
+            //System.out.println("Course ID: " + meetingCourse);
             // Gets user course IDs
             sql = "SELECT course_id FROM courses JOIN usercourses USING(course_id)"
                     + " WHERE user_id = ?";
@@ -109,9 +109,9 @@ public class RecommendationEndpoint {
 
             try {
                 meetingSubject = jdbcTemplate.queryForObject(sql, new Object[]{meetingId}, String.class);
-                System.out.println("Meeting subject area: " + meetingSubject);
+                //System.out.println("Meeting subject area: " + meetingSubject);
             } catch (EmptyResultDataAccessException e) {
-                System.out.println("No subject area found for meeting ID: " + meetingId);
+                //System.out.println("No subject area found for meeting ID: " + meetingId);
             } catch (DataAccessException e) {
                 e.printStackTrace();
             }
@@ -132,7 +132,7 @@ public class RecommendationEndpoint {
                 System.out.println("THIS HAD NO ROWS");
             }
 
-            // TODO: Implementation for blocked users
+            // Implementation for blocked users
             sql = "SELECT user_id FROM user_meeting WHERE meeting_id = ? AND user_id != ?";
             List<Long> meetingUsers = jdbcTemplate.query(sql, new Object[]{meetingId, userId}, new RowMapper<Long>() {
                 public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -145,7 +145,7 @@ public class RecommendationEndpoint {
                     if(Objects.equals(l1, l2)){
                         mr.addBlockedPts();
                         mr.getMeeting().setBlockedUser(true);
-                        System.out.println("Blocked user");
+                        //System.out.println("Blocked user");
                     }
                     break;
                 }
@@ -415,7 +415,7 @@ public class RecommendationEndpoint {
             if (!(userMeetingType == null || otherUserMeetingType == null)){
                 //if(userMeetingType.equals("morning")){
                 if(userMeetingType.equalsIgnoreCase(otherUserMeetingType)){
-                    ur.addTimePts();
+                    ur.addMeetingTypePts();
                 }
                 //}
             }
@@ -578,7 +578,7 @@ public class RecommendationEndpoint {
             if (!(userMeetingType == null || otherUserMeetingType == null)){
                 //if(userMeetingType.equals("morning")){
                     if(userMeetingType.equalsIgnoreCase(otherUserMeetingType)){
-                    ur.addTimePts();
+                        ur.addMeetingTypePts();
                     }
                 //}
             }

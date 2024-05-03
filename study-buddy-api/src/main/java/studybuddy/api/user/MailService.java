@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class MailService {
             helper.setFrom("studdybuddyofficialsite@gmail.com");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(text, true); // true indicates html
+            helper.setText(text, true);
             mailSender.send(message);
         } catch (MessagingException e) {
             log.error(e.getMessage());

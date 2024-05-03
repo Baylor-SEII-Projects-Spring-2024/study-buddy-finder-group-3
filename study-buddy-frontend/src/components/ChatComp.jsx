@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import styles from "@/styles/Chat.module.css";
 import Messages from "@/components/Messages";
 import ChatInput from "@/components/ChatInput";
-import axios from "axios"; // Import Axios for making HTTP requests
-import { API_URL } from "@/utils/config"; // Assuming you have an API_URL constant
+import axios from "axios";
+import { API_URL } from "@/utils/config";
 
 const ChatComp = ({ user, selectedUser }) => {
   const [userData, setUserData] = useState(null);
@@ -11,12 +11,10 @@ const ChatComp = ({ user, selectedUser }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Use the selected user's ID to fetch their data
         const response = await axios.get(`${API_URL}/users/${selectedUser.id}`);
         setUserData(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        // Handle the error state or retry logic here
       }
     };
 
@@ -35,9 +33,6 @@ const ChatComp = ({ user, selectedUser }) => {
         ) : (
           <span>Select a User to Chat With</span>
         )}
-        {/*<div className={styles.chatIcons}>*/}
-        {/*  /!*{selectedUser.profilePicture}*!/*/}
-        {/*</div>*/}
       </div>
       <Messages user={user} selectedUser={selectedUser} />
       <ChatInput user={user} selectedUser={selectedUser} />

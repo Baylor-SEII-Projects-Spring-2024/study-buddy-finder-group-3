@@ -15,7 +15,6 @@ import {
   IconButton,
   Popper,
 } from "@mui/material"
-import FriendProfile from "./FriendProfile"
 import { API_URL } from "@/utils/config"
 import MenuIcon from "@mui/icons-material/Menu"
 import ClickAwayListener from "@mui/material/ClickAwayListener"
